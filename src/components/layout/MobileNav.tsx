@@ -2,15 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Activity, Newspaper, Zap, Trophy } from 'lucide-react'
+import { Home, Activity, Newspaper, Zap, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
     { label: 'Home', href: '/', icon: Home },
     { label: 'Live', href: '/live', icon: Activity, live: true },
     { label: 'News', href: '/news', icon: Newspaper },
+    { label: 'Blog', href: '/blog', icon: FileText },
     { label: 'Predict', href: '/predictions', icon: Zap },
-    { label: 'Fantasy', href: '/fantasy', icon: Trophy },
 ]
 
 export function MobileNav() {
