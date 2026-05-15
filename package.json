@@ -43,7 +43,7 @@
         "geist": "^1.7.0",
         "jose": "^6.2.3",
         "lucide-react": "^0.441.0",
-        "next": "15.0.0",
+        "next": "^16.2.6",
         "next-sitemap": "^4.2.3",
         "next-themes": "^0.3.0",
         "react": "^19.0.0",
