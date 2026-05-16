@@ -23,7 +23,7 @@ const TENNIS_HOST       = process.env.TENNIS_APISPORTS_HOST ?? ''
 const RUGBY_HOST        = process.env.RUGBY_HOST || 'rugbyapi2.p.rapidapi.com'
 
 import { recordAPISuccess, recordAPIError } from './api-status'
-import { getActiveKey, handleRateLimit, type ProviderName } from './key-manager'
+import { getActiveKey, handleRateLimit, onKeyChange, type ProviderName } from './key-manager'
 
 // Map hosts to readable names for status tracking
 const HOST_NAMES: Record<string, { name: string; sport: string }> = {
@@ -60,10 +60,49 @@ async function getKeyForHost(host: string): Promise<string> {
 
 
 
+// ─── Dynamic Server-Side Cache ───────────────────────────────────────────────
+interface CacheEntry {
+    data: any
+    timestamp: number
+    ttl: number
+}
+const serverCache = new Map<string, CacheEntry>()
+
+function getCacheTTL(url: string): number {
+    const u = url.toLowerCase()
+    // Live scores / odds / real-time data: cache for 2 minutes
+    if (u.includes('live') || u.includes('odds') || u.includes('realtime') || u.includes('score')) {
+        return 2 * 60 * 1000
+    }
+    // Fixtures / schedule / date filters: cache for 5 minutes
+    if (u.includes('fixture') || u.includes('schedule') || u.includes('date')) {
+        return 5 * 60 * 1000
+    }
+    // Static lists (leagues, categories, sports, teams): cache for 20 minutes
+    return 20 * 60 * 1000
+}
+
+// Clear server cache when API key transitions occur (prevents stale data)
+if (typeof onKeyChange === 'function') {
+    onKeyChange(() => {
+        serverCache.clear()
+        console.log('[API Cache] API Key change/rotation detected. Cleared server cache.')
+    })
+}
+
 async function rapidFetch<T>(url: string, host: string, _retried = false): Promise<T | null> {
     const isApiSports = API_SPORTS_HOSTS.has(host)
-    const key = await getKeyForHost(host)
     const info = HOST_NAMES[host] ?? { name: host, sport: 'Unknown' }
+
+    // Check server cache first
+    const cacheKey = `${host}:${url}`
+    const cached = serverCache.get(cacheKey)
+    if (cached && (Date.now() - cached.timestamp) < cached.ttl) {
+        console.log(`[API Cache HIT] ${info.sport} (${info.name}): ${url}`)
+        return cached.data as T
+    }
+
+    const key = await getKeyForHost(host)
 
     if (!key) {
         console.warn(`[API] No API key configured for ${host} – skipping fetch`)
@@ -141,6 +180,16 @@ async function rapidFetch<T>(url: string, host: string, _retried = false): Promi
         }
 
         recordAPISuccess(info.name, host, info.sport, res.headers)
+
+        // Cache successful response in memory
+        if (data) {
+            serverCache.set(cacheKey, {
+                data,
+                timestamp: Date.now(),
+                ttl: getCacheTTL(url)
+            })
+        }
+
         return data as T
     } catch (err: any) {
         console.error(`[RapidAPI] Fetch error:`, err)
@@ -150,7 +199,7 @@ async function rapidFetch<T>(url: string, host: string, _retried = false): Promi
 }
 
 // ─── Player-Props API Normalizer ───────────────────────────────────────────────
-function normalisePlayerPropsEvent(e: any, sportName: string = 'Boxing') {
+function normalisePlayerPropsEvent(e: any, sportName: string = 'Sport') {
     const isLive = e.live === true
     const commenceDate = new Date(e.commence_time)
     const isUpcoming = commenceDate > new Date()

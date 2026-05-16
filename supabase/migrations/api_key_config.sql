@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS api_key_config (
     id TEXT PRIMARY KEY,              -- provider name: 'apisports', 'cricbuzz'
-    active_slot INTEGER NOT NULL DEFAULT 1 CHECK (active_slot BETWEEN 1 AND 5),
+    active_slot INTEGER NOT NULL DEFAULT 1 CHECK (active_slot BETWEEN 1 AND 10),
     notes TEXT,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -16,7 +16,6 @@ VALUES
     ('mma', 1, 'MMA / UFC (API-Sports)'),
     ('rugby', 1, 'Rugby (API-Sports)'),
     ('formula1', 1, 'Formula 1 (API-Sports)'),
-    ('boxing', 1, 'Boxing (API-Sports)'),
     ('tennis', 1, 'Tennis (API-Sports)'),
     ('cricket', 1, 'Cricbuzz Cricket API (RapidAPI)')
 ON CONFLICT (id) DO NOTHING;
@@ -29,3 +28,8 @@ ON api_key_config
 FOR ALL
 USING (true)
 WITH CHECK (true);
+
+-- Alter constraint in case table already exists
+ALTER TABLE api_key_config DROP CONSTRAINT IF EXISTS api_key_config_active_slot_check;
+ALTER TABLE api_key_config ADD CONSTRAINT api_key_config_active_slot_check CHECK (active_slot BETWEEN 1 AND 10);
+

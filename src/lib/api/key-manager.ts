@@ -65,10 +65,14 @@ let cacheInitialised = false
 // ─── Supabase admin client (bypasses RLS) ────────────────────────────────────
 
 function getAdminClient() {
-    return createSupabaseAdmin(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    )
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!url || !key) {
+        throw new Error('[KeyManager] Missing Supabase environment variables')
+    }
+
+    return createSupabaseAdmin(url, key)
 }
 
 // ─── Initialise from DB ──────────────────────────────────────────────────────
@@ -105,8 +109,15 @@ async function ensureInitialised() {
 
 function getSlots(provider: ProviderName): KeySlot[] {
     const prefix = PROVIDERS[provider].envPrefix
-    return [1, 2, 3, 4, 5].map(slot => {
-        const key = process.env[`${prefix}_${slot}`] ?? ''
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(slot => {
+        let rawKey = process.env[`${prefix}_${slot}`] ?? ''
+
+        // Sanitize: remove inline comments, spaces, and trailing dots
+        let key = rawKey.split(/[#\s]/)[0].trim()
+        if (key.endsWith('.')) {
+            key = key.slice(0, -1)
+        }
+
         return { slot, key, configured: key.length > 0 }
     })
 }
@@ -129,7 +140,8 @@ export async function getActiveKey(provider: ProviderName): Promise<string> {
     if (fallback) {
         activeSlots[provider] = fallback.slot
         // Fire-and-forget DB update
-        persistSlot(provider, fallback.slot).catch(() => {})
+        persistSlot(provider, fallback.slot).catch(() => { })
+        notifyKeyChange()
         return fallback.key
     }
 
@@ -162,6 +174,7 @@ export async function rotateToNextKey(provider: ProviderName): Promise<KeySwitch
 
     activeSlots[provider] = nextSlot
     await persistSlot(provider, nextSlot)
+    notifyKeyChange()
 
     console.log(`[KeyManager] ${provider}: rotated from slot ${currentSlot} → ${nextSlot}`)
 
@@ -195,6 +208,7 @@ export async function setActiveSlot(provider: ProviderName, slot: number): Promi
     const previousSlot = activeSlots[provider] ?? 1
     activeSlots[provider] = slot
     await persistSlot(provider, slot)
+    notifyKeyChange()
 
     return {
         success: true,
@@ -278,3 +292,23 @@ export async function handleRateLimit(provider: ProviderName): Promise<boolean> 
     const result = await rotateToNextKey(provider)
     return result.success
 }
+
+// ─── Key Change Listener System ──────────────────────────────────────────────
+
+type Listener = () => void
+const keyChangeListeners: Listener[] = []
+
+export function onKeyChange(listener: Listener) {
+    keyChangeListeners.push(listener)
+}
+
+export function notifyKeyChange() {
+    for (const listener of keyChangeListeners) {
+        try {
+            listener()
+        } catch (e) {
+            console.error('Error in key change listener:', e)
+        }
+    }
+}
+

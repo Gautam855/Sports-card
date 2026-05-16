@@ -5,6 +5,7 @@ import {
     AlertTriangle, CheckCircle2, XCircle, HelpCircle, 
     RefreshCw, Wifi, Zap, Clock, Timer
 } from 'lucide-react'
+import { useAuth } from '@/components/providers/AuthProvider'
 
 interface APIStatus {
     name: string
@@ -69,16 +70,27 @@ function formatCountdown(totalSeconds: number | null): string | null {
 export function APIStatusPanel() {
     const [statuses, setStatuses] = useState<APIStatus[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [refreshing, setRefreshing] = useState(false)
     const [tick, setTick] = useState(0) // For live countdown
+    const { getToken } = useAuth()
 
     const fetchStatuses = useCallback(async () => {
         try {
-            const res = await fetch('/api/admin/api-status')
+            const token = getToken()
+            const headers: Record<string, string> = {}
+            if (token) headers['Authorization'] = `Bearer ${token}`
+
+            const res = await fetch('/api/admin/api-status', { headers })
             const data = await res.json()
-            setStatuses(data.statuses ?? [])
-        } catch {
-            // Silently fail
+            if (data.error) {
+                setError(data.error)
+            } else {
+                setStatuses(data.statuses ?? [])
+                setError(null)
+            }
+        } catch (err: any) {
+            setError(err?.message ?? 'Failed to connect to status API')
         } finally {
             setLoading(false)
             setRefreshing(false)
@@ -126,16 +138,30 @@ export function APIStatusPanel() {
         } catch { return null }
     }
 
-    if (loading) {
+    if (loading && statuses.length === 0) {
         return (
             <div className="bg-card border border-border/60 rounded-xl p-6">
                 <div className="animate-pulse space-y-4">
                     <div className="h-6 bg-accent rounded w-48"></div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {[1, 2, 3, 4, 5].map(i => (
+                        {[1, 2, 3].map(i => (
                             <div key={i} className="h-32 bg-accent rounded-lg"></div>
                         ))}
                     </div>
+                </div>
+            </div>
+        )
+    }
+
+    if (error && statuses.length === 0) {
+        return (
+            <div className="bg-card border border-border/60 rounded-xl p-6 flex items-center justify-center min-h-[200px]">
+                <div className="text-center">
+                    <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-red-500">{error}</p>
+                    <button onClick={handleRefresh} className="mt-4 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                        Retry Connection
+                    </button>
                 </div>
             </div>
         )

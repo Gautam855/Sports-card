@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getAllAPIStatuses, recordAPISuccess, recordAPIError } from '@/lib/api/api-status'
 import { getActiveKey } from '@/lib/api/key-manager'
+import { verifyAdmin } from '@/lib/api/admin-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -172,22 +173,11 @@ async function runHealthChecks() {
     )
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
-        const supabase = await createClient()
-        
-        // Check authorization
-        const { data: { user: authUser } } = await supabase.auth.getUser()
-        if (!authUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', authUser.id)
-            .single()
-
-        if (!profile || (profile.role !== 'admin' && profile.role !== 'super_admin' && profile.role !== 'editor')) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        const auth = await verifyAdmin(req)
+        if ('error' in auth) {
+            return NextResponse.json({ error: auth.error }, { status: auth.status })
         }
 
         await runHealthChecks()

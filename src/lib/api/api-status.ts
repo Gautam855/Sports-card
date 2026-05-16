@@ -130,7 +130,7 @@ export function getAllAPIStatuses(): APIStatus[] {
         { name: 'SportScore', host: process.env.SPORTSCORE_HOST ?? 'sportscore6.p.rapidapi.com', sport: 'Basketball' },
         { name: 'Baseball Data', host: process.env.BASEBALL_HOST ?? 'baseball-data.p.rapidapi.com', sport: 'Baseball' },
         { name: 'Rugby Data', host: process.env.RUGBY_HOST ?? 'rugbyapi2.p.rapidapi.com', sport: 'Rugby' },
-        { name: 'Tennis', host: process.env.TENNIS_APISPORTS_HOST ?? 'not-configured', sport: 'Tennis' },
+        { name: 'Tennis Data', host: process.env.TENNIS_APISPORTS_HOST ?? 'not-configured', sport: 'Tennis' },
         { name: 'SerpApi', host: 'serpapi.com', sport: 'Real-time News' },
     ]
 

@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/components/providers/AuthProvider'
 
 interface UserProfile {
     id: string
@@ -34,6 +35,7 @@ export default function AdminUsersPage() {
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
     const [roleFilter, setRoleFilter] = useState('all')
+    const { getToken } = useAuth()
 
     useEffect(() => {
         fetchUsers()
@@ -42,7 +44,11 @@ export default function AdminUsersPage() {
     const fetchUsers = async () => {
         try {
             setLoading(true)
-            const res = await fetch('/api/admin/users')
+            const token = getToken()
+            const headers: Record<string, string> = {}
+            if (token) headers['Authorization'] = `Bearer ${token}`
+
+            const res = await fetch('/api/admin/users', { headers })
             const data = await res.json()
             setUsers(data.users || [])
         } catch (error) {
@@ -54,9 +60,15 @@ export default function AdminUsersPage() {
 
     const handleRoleChange = async (userId: string, newRole: string) => {
         try {
+            const token = getToken()
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json'
+            }
+            if (token) headers['Authorization'] = `Bearer ${token}`
+
             const res = await fetch('/api/admin/users', {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({ id: userId, role: newRole })
             })
             if (res.ok) {
@@ -71,7 +83,14 @@ export default function AdminUsersPage() {
         if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return
 
         try {
-            const res = await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE' })
+            const token = getToken()
+            const headers: Record<string, string> = {}
+            if (token) headers['Authorization'] = `Bearer ${token}`
+
+            const res = await fetch(`/api/admin/users?id=${userId}`, { 
+                method: 'DELETE',
+                headers
+            })
             if (res.ok) {
                 setUsers(users.filter(u => u.id !== userId))
             }

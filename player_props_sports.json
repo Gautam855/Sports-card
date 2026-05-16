@@ -1,1 +1,162 @@
-[{"key":"baseball_mlb","title":"MLB","active":true},{"key":"basketball_nba","title":"NBA","active":true},{"key":"football_nfl","title":"NFL","active":true},{"key":"hockey_nhl","title":"NHL","active":true},{"key":"basketball_ncaab","title":"NCAAB","active":true},{"key":"football_ncaaf","title":"NCAAF","active":true},{"key":"golf","title":"Golf","active":true},{"key":"tennis","title":"Tennis","active":true},{"key":"soccer_epl","title":"EPL","active":true},{"key":"soccer_la_liga","title":"La Liga","active":true},{"key":"soccer_serie_a","title":"Serie A","active":true},{"key":"soccer_bundesliga","title":"Bundesliga","active":true},{"key":"soccer_ligue_1","title":"Ligue 1","active":true},{"key":"soccer_mls","title":"MLS","active":true},{"key":"mma_ufc","title":"UFC","active":true},{"key":"boxing","title":"Boxing","active":true},{"key":"soccer_championship","title":"Championship","active":true},{"key":"soccer_eredivisie","title":"Eredivisie","active":true},{"key":"soccer_liga_mx","title":"Liga MX","active":true},{"key":"soccer_primeira_liga","title":"Primeira Liga","active":true},{"key":"soccer_brasileirao","title":"Brasileirão","active":true},{"key":"soccer_argentina_primera","title":"Liga Profesional","active":true},{"key":"soccer_scottish_premiership","title":"Scottish Premiership","active":true},{"key":"soccer_saudi_pro","title":"Saudi Pro League","active":true},{"key":"soccer_eliteserien","title":"Eliteserien","active":true},{"key":"soccer_japan_j_league","title":"J1 League","active":true},{"key":"soccer_turkey_super_lig","title":"Süper Lig","active":true},{"key":"soccer_belgium_pro_league","title":"Belgian Pro League","active":true},{"key":"soccer_sweden_allsvenskan","title":"Allsvenskan","active":true},{"key":"soccer_greek_super_league","title":"Greek Super League","active":true},{"key":"soccer_swiss_super_league","title":"Swiss Super League","active":true},{"key":"soccer_a_league","title":"A-League","active":true},{"key":"soccer_uefa_champions_league","title":"UEFA Champions League","active":true}]
+[
+    {
+        "key": "baseball_mlb",
+        "title": "MLB",
+        "active": true
+    },
+    {
+        "key": "basketball_nba",
+        "title": "NBA",
+        "active": true
+    },
+    {
+        "key": "football_nfl",
+        "title": "NFL",
+        "active": true
+    },
+    {
+        "key": "hockey_nhl",
+        "title": "NHL",
+        "active": true
+    },
+    {
+        "key": "basketball_ncaab",
+        "title": "NCAAB",
+        "active": true
+    },
+    {
+        "key": "football_ncaaf",
+        "title": "NCAAF",
+        "active": true
+    },
+    {
+        "key": "golf",
+        "title": "Golf",
+        "active": true
+    },
+    {
+        "key": "tennis",
+        "title": "Tennis",
+        "active": false
+    },
+    {
+        "key": "soccer_epl",
+        "title": "EPL",
+        "active": false
+    },
+    {
+        "key": "soccer_la_liga",
+        "title": "La Liga",
+        "active": false
+    },
+    {
+        "key": "soccer_serie_a",
+        "title": "Serie A",
+        "active": true
+    },
+    {
+        "key": "soccer_bundesliga",
+        "title": "Bundesliga",
+        "active": true
+    },
+    {
+        "key": "soccer_ligue_1",
+        "title": "Ligue 1",
+        "active": true
+    },
+    {
+        "key": "soccer_mls",
+        "title": "MLS",
+        "active": true
+    },
+    {
+        "key": "mma_ufc",
+        "title": "UFC",
+        "active": true
+    },
+    {
+        "key": "soccer_championship",
+        "title": "Championship",
+        "active": true
+    },
+    {
+        "key": "soccer_eredivisie",
+        "title": "Eredivisie",
+        "active": true
+    },
+    {
+        "key": "soccer_liga_mx",
+        "title": "Liga MX",
+        "active": true
+    },
+    {
+        "key": "soccer_primeira_liga",
+        "title": "Primeira Liga",
+        "active": true
+    },
+    {
+        "key": "soccer_brasileirao",
+        "title": "Brasileirão",
+        "active": true
+    },
+    {
+        "key": "soccer_argentina_primera",
+        "title": "Liga Profesional",
+        "active": true
+    },
+    {
+        "key": "soccer_scottish_premiership",
+        "title": "Scottish Premiership",
+        "active": true
+    },
+    {
+        "key": "soccer_saudi_pro",
+        "title": "Saudi Pro League",
+        "active": true
+    },
+    {
+        "key": "soccer_eliteserien",
+        "title": "Eliteserien",
+        "active": true
+    },
+    {
+        "key": "soccer_japan_j_league",
+        "title": "J1 League",
+        "active": true
+    },
+    {
+        "key": "soccer_turkey_super_lig",
+        "title": "Süper Lig",
+        "active": true
+    },
+    {
+        "key": "soccer_belgium_pro_league",
+        "title": "Belgian Pro League",
+        "active": true
+    },
+    {
+        "key": "soccer_sweden_allsvenskan",
+        "title": "Allsvenskan",
+        "active": true
+    },
+    {
+        "key": "soccer_greek_super_league",
+        "title": "Greek Super League",
+        "active": true
+    },
+    {
+        "key": "soccer_swiss_super_league",
+        "title": "Swiss Super League",
+        "active": true
+    },
+    {
+        "key": "soccer_a_league",
+        "title": "A-League",
+        "active": true
+    },
+    {
+        "key": "soccer_uefa_champions_league",
+        "title": "UEFA Champions League",
+        "active": true
+    }
+]

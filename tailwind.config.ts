@@ -42,7 +42,6 @@ const config: Config = {
                     cricket: '#f59e0b',
                     basketball: '#f97316',
                     tennis: '#84cc16',
-                    boxing: '#ef4444',
                     f1: '#dc2626',
                     ufc: '#7c3aed',
                     rugby: '#4f46e5',

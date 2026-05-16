@@ -1,28 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getAllProviderStatuses, setActiveSlot, rotateToNextKey, type ProviderName } from '@/lib/api/key-manager'
+import { verifyAdmin } from '@/lib/api/admin-auth'
 
-const VALID_PROVIDERS = ['football536', 'basketball', 'baseball', 'boxing', 'tennis', 'cricket', 'rugby']
+const VALID_PROVIDERS = ['football536', 'basketball', 'baseball', 'tennis', 'cricket', 'rugby']
 
 /**
  * GET /api/admin/api-keys — List all provider key statuses
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
-        const supabase = await createClient()
-        
-        // Check authorization
-        const { data: { user: authUser } } = await supabase.auth.getUser()
-        if (!authUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', authUser.id)
-            .single()
-
-        if (!profile || (profile.role !== 'admin' && profile.role !== 'super_admin' && profile.role !== 'editor')) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        const auth = await verifyAdmin(req)
+        if ('error' in auth) {
+            return NextResponse.json({ error: auth.error }, { status: auth.status })
         }
 
         const statuses = await getAllProviderStatuses()
@@ -43,20 +33,9 @@ export async function GET() {
  */
 export async function POST(req: NextRequest) {
     try {
-        const supabase = await createClient()
-        
-        // Check authorization
-        const { data: { user: authUser } } = await supabase.auth.getUser()
-        if (!authUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', authUser.id)
-            .single()
-
-        if (!profile || (profile.role !== 'admin' && profile.role !== 'super_admin' && profile.role !== 'editor')) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        const auth = await verifyAdmin(req)
+        if ('error' in auth) {
+            return NextResponse.json({ error: auth.error }, { status: auth.status })
         }
 
         const body = await req.json()
@@ -83,9 +62,9 @@ export async function POST(req: NextRequest) {
         }
 
         // ── Switch to specific slot ──
-        if (!slot || slot < 1 || slot > 5) {
+        if (!slot || slot < 1 || slot > 10) {
             return NextResponse.json(
-                { error: 'Slot must be between 1 and 5' },
+                { error: 'Slot must be between 1 and 10' },
                 { status: 400 }
             )
         }

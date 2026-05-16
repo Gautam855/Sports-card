@@ -164,10 +164,6 @@
         @apply bg-sport-tennis/10 text-sport-tennis border border-sport-tennis/20;
     }
 
-    .sport-pill-boxing {
-        @apply bg-sport-boxing/10 text-sport-boxing border border-sport-boxing/20;
-    }
-
     .sport-pill-f1 {
         @apply bg-sport-f1/10 text-sport-f1 border border-sport-f1/20;
     }

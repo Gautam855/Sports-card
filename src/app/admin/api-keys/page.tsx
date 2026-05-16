@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import {
-    Key, RefreshCw, CheckCircle2, XCircle, AlertTriangle,
+    Key, RefreshCw, CheckCircle2, XCircle, AlertTriangle, HelpCircle,
     ChevronDown, Loader2, ArrowRightLeft, Shield, Clock, Zap,
     Activity, Timer
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/components/providers/AuthProvider'
 
 interface KeySlot {
     slot: number
@@ -51,9 +52,9 @@ interface SwitchResult {
 const PROVIDER_TO_STATUS_NAME: Record<string, string> = {
     football536: 'Football536',
     basketball: 'SportScore',
-    baseball: 'API-Baseball',
+    baseball: 'Baseball Data',
     cricket: 'Cricbuzz',
-    tennis: 'API-Tennis',
+    tennis: 'Tennis Data',
     rugby: 'Rugby Data',
 }
 
@@ -61,22 +62,37 @@ export default function APIKeysPage() {
     const [providers, setProviders] = useState<ProviderStatus[]>([])
     const [apiStatuses, setApiStatuses] = useState<APILiveStatus[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [switching, setSwitching] = useState<string | null>(null)
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+    const { getToken } = useAuth()
 
     const fetchKeys = useCallback(async () => {
         try {
             setLoading(true)
+            const token = getToken()
+            const headers: Record<string, string> = {}
+            if (token) headers['Authorization'] = `Bearer ${token}`
+
             const [keysRes, statusRes] = await Promise.all([
-                fetch('/api/admin/api-keys'),
-                fetch('/api/admin/api-status'),
+                fetch('/api/admin/api-keys', { headers }),
+                fetch('/api/admin/api-status', { headers }),
             ])
+            
             const keysData = await keysRes.json()
             const statusData = await statusRes.json()
-            setProviders(keysData.providers ?? [])
+
+            if (keysData.error) {
+                setError(keysData.error)
+            } else {
+                setProviders(keysData.providers ?? [])
+                setError(null)
+            }
+
             setApiStatuses(statusData.statuses ?? [])
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to fetch API keys:', err)
+            setError(err?.message ?? 'Failed to load API key data')
         } finally {
             setLoading(false)
         }
@@ -96,9 +112,15 @@ export default function APIKeysPage() {
     async function handleSwitchSlot(provider: string, slot: number) {
         setSwitching(`${provider}-${slot}`)
         try {
+            const token = getToken()
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json'
+            }
+            if (token) headers['Authorization'] = `Bearer ${token}`
+
             const res = await fetch('/api/admin/api-keys', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({ provider, slot }),
             })
             const result: SwitchResult = await res.json()
@@ -119,9 +141,15 @@ export default function APIKeysPage() {
     async function handleRotateNow(provider: string) {
         setSwitching(`rotate-${provider}`)
         try {
+            const token = getToken()
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json'
+            }
+            if (token) headers['Authorization'] = `Bearer ${token}`
+
             const res = await fetch('/api/admin/api-keys', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({ provider, action: 'rotate' }),
             })
             const result: SwitchResult = await res.json()
@@ -178,7 +206,7 @@ export default function APIKeysPage() {
                     <div className="text-sm">
                         <p className="font-semibold text-blue-500 mb-1">How Key Rotation Works</p>
                         <ul className="text-muted-foreground space-y-1">
-                            <li>• Each provider has <strong>5 key slots</strong>. Configure multiple API keys in your <code className="text-xs bg-muted px-1 py-0.5 rounded">.env</code> file.</li>
+                            <li>• Each provider supports up to <strong>10 key slots</strong>. Configure multiple API keys in your <code className="text-xs bg-muted px-1 py-0.5 rounded">.env</code> file.</li>
                             <li>• When a key gets <strong>rate limited (429)</strong>, returns <strong>401/403</strong>, or credits run out, the system auto-switches to the next configured key.</li>
                             <li>• The active slot is <strong>persisted in database</strong> — survives server restarts.</li>
                             <li>• You can also <strong>manually switch</strong> the active key slot below.</li>
@@ -198,10 +226,24 @@ export default function APIKeysPage() {
                 </div>
             )}
 
+            {/* Error State */}
+            {error && (
+                <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 flex items-center gap-3 text-red-500">
+                    <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+                    <p className="text-sm font-medium">{error}</p>
+                    <button onClick={fetchKeys} className="ml-auto text-xs underline hover:no-underline">Try again</button>
+                </div>
+            )}
+
             {/* Loading */}
-            {loading && providers.length === 0 ? (
+            {loading && providers.length === 0 && !error ? (
                 <div className="flex items-center justify-center py-20">
                     <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+            ) : providers.length === 0 && !loading && !error ? (
+                <div className="text-center py-20 border border-dashed rounded-2xl">
+                    <HelpCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
+                    <p className="text-muted-foreground">No API providers found.</p>
                 </div>
             ) : (
                 /* Provider Cards */
@@ -277,6 +319,10 @@ function ProviderCard({
     const hasMultipleKeys = configuredCount > 1
     const isRotating = switching === `rotate-${provider.provider}`
 
+    const lastConfiguredSlot = provider.slots.reduce((max, s) => s.configured ? Math.max(max, s.slot) : max, 0)
+    const maxSlotToShow = Math.max(5, lastConfiguredSlot, provider.activeSlot)
+    const visibleSlots = provider.slots.filter(s => s.slot <= maxSlotToShow)
+
     return (
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
             {/* Card Header */}
@@ -300,10 +346,10 @@ function ProviderCard({
                             <span className="flex items-center gap-1">
                                 {configuredCount > 0 ? (
                                     <CheckCircle2 className="w-3 h-3 text-green-500" />
-                                ) : (
+                               ) : (
                                     <XCircle className="w-3 h-3 text-red-500" />
                                 )}
-                                {configuredCount}/5 keys configured
+                                {configuredCount}/{maxSlotToShow} keys configured
                             </span>
                             <span>•</span>
                             <span className="font-mono">Active: Slot {provider.activeSlot}</span>
@@ -448,13 +494,16 @@ function ProviderCard({
                         <div className="text-xs text-muted-foreground mb-4">
                             Configure keys in <code className="bg-muted px-1.5 py-0.5 rounded font-mono">.env</code> →{' '}
                             <code className="bg-muted px-1.5 py-0.5 rounded font-mono">
-                                {provider.envPrefix}_1 ... _5
+                                {provider.envPrefix}_1 ... _{maxSlotToShow}
                             </code>
                         </div>
 
                         {/* Slot Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                            {provider.slots.map((slot) => {
+                        <div className={cn(
+                            "grid gap-3",
+                            maxSlotToShow <= 5 ? "grid-cols-1 sm:grid-cols-5" : "grid-cols-2 sm:grid-cols-5"
+                        )}>
+                            {visibleSlots.map((slot) => {
                                 const isActive = slot.slot === provider.activeSlot
                                 const isSwitching = switching === `${provider.provider}-${slot.slot}`
 
