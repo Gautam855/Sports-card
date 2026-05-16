@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { getAllLiveMatches, getAllTodayMatches } from '@/lib/api/rapid'
+import { getAllLiveMatches, getAllTodayMatches, getFootballHighlights } from '@/lib/api/rapid'
 import { getFeaturedNews, getTrendingNews, getRealTimeNews, getNews } from '@/lib/api/news'
 
 import { HeroSection } from '@/components/sports/HeroSection'
 import { LiveMatchesSection } from '@/components/sports/LiveMatchesSection'
+import { HighlightsSection } from '@/components/sports/HighlightsSection'
 import { LatestNewsSection } from '@/components/news/LatestNewsSection'
 import { BlogSection } from '@/components/blog/BlogSection'
 import { LeagueStandingsSection } from '@/components/sports/LeagueStandingsSection'
@@ -14,6 +15,7 @@ import { TrendingSection } from '@/components/news/TrendingSection'
 import { MatchCardSkeleton } from '@/components/sports/MatchCard'
 import { NewsCardSkeleton } from '@/components/news/NewsCard'
 import { AdBanner } from '@/components/AdBanner'
+import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
 
 export const metadata: Metadata = {
     title: 'SportsPulse — Live Scores, News & Expert Blogs',
@@ -29,14 +31,14 @@ export const revalidate = 60 // ISR - revalidate every 60 seconds
 
 export default async function HomePage() {
     // Fetch live data from RapidAPI + news from Supabase (all graceful)
-    const [liveResult, todayResult, newsResult, trendingResult, serpNewsResult, blogsResult] = await Promise.allSettled([
+    const [liveResult, todayResult, newsResult, trendingResult, serpNewsResult, blogsResult, highlightsResult] = await Promise.allSettled([
         getAllLiveMatches(),
         getAllTodayMatches(),
         getFeaturedNews(3),
         getTrendingNews(8),
         getRealTimeNews("top sports news today", 6),
-        getNews({}, { limit: 3 }) // Fetch latest blogs for homepage section
-
+        getNews({}, { limit: 3 }), // Fetch latest blogs for homepage section
+        getFootballHighlights()
     ])
 
 
@@ -51,6 +53,7 @@ export default async function HomePage() {
     ]
 
     const blogs = (blogsResult.status === 'fulfilled' ? blogsResult.value.data : []) as any[]
+    const highlights = (highlightsResult.status === 'fulfilled' ? highlightsResult.value.slice(0, 4) : []) as any[]
 
 
     return (
@@ -73,6 +76,13 @@ export default async function HomePage() {
                 <AdBanner placement="homepage_hero" />
             </div>
 
+            {/* Highlights Section */}
+            {highlights.length > 0 && (
+                <Suspense fallback={<SectionSkeleton />}>
+                    <HighlightsSection highlights={highlights} />
+                </Suspense>
+            )}
+
             {/* 3. Latest News + Trending */}
             <section className="container-wide py-10">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -83,6 +93,17 @@ export default async function HomePage() {
                         <TrendingSection articles={trending} />
                     </div>
                 </div>
+            </section>
+
+            {/* Merchandise Store Showcase (Homepage) */}
+            <section className="container-wide py-8 border-t border-border/50">
+                <MerchandiseShowcase 
+                    placement="homepage" 
+                    layout="carousel" 
+                    limit={5} 
+                    title="Official Store"
+                    subtitle="Gear up with top-selling merchandise and signature athlete gear"
+                />
             </section>
 
             {/* 4. Blog Section */}

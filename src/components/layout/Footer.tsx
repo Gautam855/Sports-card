@@ -6,15 +6,15 @@ const SPORTS_LINKS = [
     { label: 'Cricket', href: '/sport/cricket' },
     { label: 'Basketball', href: '/sport/basketball' },
     { label: 'Tennis', href: '/sport/tennis' },
-    { label: 'Formula 1', href: '/sport/formula-1' },
-    { label: 'UFC / MMA', href: '/sport/ufc-mma' },
-    { label: 'Badminton', href: '/sport/badminton' },
-    { label: 'Boxing', href: '/sport/boxing' },
+    { label: 'Baseball', href: '/sport/baseball' },
+    { label: 'Rugby', href: '/sport/rugby' },
 ]
 
 const CONTENT_LINKS = [
     { label: 'Live Scores', href: '/live' },
+    { label: 'Football Highlights', href: '/highlights' },
     { label: 'Match Predictions', href: '/predictions' },
+    { label: 'Betting Arbitrage', href: '/arbitrage' },
     { label: 'Fantasy Tips', href: '/fantasy' },
     { label: 'Sports News', href: '/news' },
     { label: 'Match Schedule', href: '/matches' },

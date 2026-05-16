@@ -34,18 +34,20 @@ export function SportMatchBoard({
     live, 
     recent, 
     upcoming,
+    standings = null,
     sportName = "Matches",
     sportEmoji = "🎯"
 }: { 
     live: any[]
     recent: any[]
     upcoming: any[]
+    standings?: any[] | null
     sportName?: string
     sportEmoji?: string
 }) {
     // Default to the first tab that has data
     const initialTab = live.length > 0 ? 'live' : (upcoming.length > 0 ? 'upcoming' : (recent.length > 0 ? 'recent' : 'live'))
-    const [activeTab, setActiveTab] = useState<'live' | 'upcoming' | 'recent'>(initialTab)
+    const [activeTab, setActiveTab] = useState<'live' | 'upcoming' | 'recent' | 'standings'>(initialTab)
 
     const [filterType, setFilterType] = useState<string>('All')
     const [filterCountry, setFilterCountry] = useState<string>('All')
@@ -152,11 +154,10 @@ export function SportMatchBoard({
                 <button
                     onClick={() => setActiveTab('upcoming')}
                     className={cn(
-                        "px-6 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2",
+                        "px-6 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap",
                         activeTab === 'upcoming' ? "bg-brand-500 text-white shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     )}
                 >
-                    <Calendar className={cn("w-3.5 h-3.5", activeTab === 'upcoming' ? "text-white" : "text-muted-foreground")} />
                     Upcoming ({filteredUpcoming.length})
                 </button>
                 <button
@@ -168,6 +169,17 @@ export function SportMatchBoard({
                 >
                     Completed ({filteredRecent.length})
                 </button>
+                {standings && (
+                    <button
+                        onClick={() => setActiveTab('standings')}
+                        className={cn(
+                            "px-6 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap",
+                            activeTab === 'standings' ? "bg-brand-500 text-white shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                        )}
+                    >
+                        Standings
+                    </button>
+                )}
             </div>
 
             {/* Date Picker – only visible on Upcoming tab */}
@@ -312,8 +324,69 @@ export function SportMatchBoard({
                 </div>
             </div>
 
-            {/* Match Grid */}
-            {filteredMatches.length > 0 ? (
+            {/* Match List or Standings */}
+            {activeTab === 'standings' && standings ? (
+                <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
+                    <div className="p-4 bg-muted/30 border-b border-border flex items-center justify-between">
+                        <h3 className="font-bold text-lg">{sportName} Standings</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <div className="min-w-[600px]">
+                            <div className="p-3 bg-muted/10 border-b border-border grid grid-cols-12 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                                <div className="col-span-5 pl-2">Team</div>
+                                <div className="text-center">P</div>
+                                <div className="text-center">W</div>
+                                <div className="text-center">L</div>
+                                <div className="text-center">GD</div>
+                                <div className="text-center pr-2 col-span-3">Form</div>
+                                <div className="text-center pr-2">Pts</div>
+                            </div>
+                            <div className="divide-y divide-border">
+                                {standings.map((team: any, idx: number) => (
+                                    <div key={team.id} className="p-3 grid grid-cols-12 items-center text-sm hover:bg-muted/30 transition-colors">
+                                        <div className="col-span-5 flex items-center gap-3">
+                                            <span className="text-[11px] text-muted-foreground w-4 text-center font-mono font-bold">{idx + 1}</span>
+                                            <div className="w-8 h-8 rounded-full overflow-hidden bg-muted flex-shrink-0 border border-border/50">
+                                                <img src={team.logo_url} alt={team.name} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div>
+                                                <div className="font-bold truncate text-foreground">{team.name}</div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">{team.short_name}</div>
+                                                    {team.league_name && (
+                                                        <span className="text-[9px] px-1 rounded bg-muted text-muted-foreground border border-border/50">
+                                                            {team.league_name}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-center text-muted-foreground font-mono text-xs">{team.played}</div>
+                                        <div className="text-center text-muted-foreground font-mono text-xs">{team.won}</div>
+                                        <div className="text-center text-muted-foreground font-mono text-xs">{team.lost}</div>
+                                        <div className="text-center text-muted-foreground font-mono text-xs">
+                                            {team.goal_diff > 0 ? `+${team.goal_diff}` : team.goal_diff}
+                                        </div>
+                                        <div className="col-span-3 flex justify-center gap-1">
+                                            {(team.form || []).map((f: string, i: number) => (
+                                                <span key={i} className={cn(
+                                                    "w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black",
+                                                    f === 'W' ? "bg-green-500/20 text-green-500" : 
+                                                    f === 'L' ? "bg-red-500/20 text-red-500" : 
+                                                    "bg-yellow-500/20 text-yellow-500"
+                                                )}>
+                                                    {f}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <div className="text-center font-black text-foreground font-mono text-base pr-2">{team.points}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : filteredMatches.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
                     {filteredMatches.map(match => (
                         <MatchCard key={match.id} match={match} />
@@ -324,9 +397,13 @@ export function SportMatchBoard({
                     <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mb-4 text-3xl">
                         {sportEmoji}
                     </div>
-                    <h3 className="text-lg font-bold">No {sportName} Matches Found</h3>
+                    <h3 className="text-lg font-bold">
+                        No {activeTab === 'live' ? 'Live' : activeTab === 'upcoming' ? 'Upcoming' : 'Completed'} {sportName} Matches Found
+                    </h3>
                     <p className="text-muted-foreground max-w-sm mt-1">
-                        Try adjusting your filters or search query to find what you're looking for.
+                        {(filterType !== 'All' || filterCountry !== 'All' || filterLeague !== 'All' || searchQuery || selectedDate !== 'all') 
+                            ? "Try adjusting your filters, date, or search query to find what you're looking for." 
+                            : `There are currently no ${activeTab} matches available for ${sportName}. Check back later!`}
                     </p>
                     {(filterType !== 'All' || filterCountry !== 'All' || filterLeague !== 'All' || searchQuery || selectedDate !== 'all') && (
                         <button 
@@ -337,7 +414,7 @@ export function SportMatchBoard({
                                 setSearchQuery('')
                                 setSelectedDate('all')
                             }}
-                            className="mt-4 text-brand-500 text-sm font-medium hover:underline"
+                            className="mt-4 text-brand-500 text-sm font-medium hover:underline px-4 py-2 bg-brand-500/10 rounded-lg"
                         >
                             Clear all filters
                         </button>

@@ -15,11 +15,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         if (!loading) {
             if (!user) {
                 router.push('/login?redirect=/admin')
+            } else if (!isAdmin) {
+                // If logged in but not admin, kick to home
+                router.push('/')
             } else {
                 setChecked(true)
             }
         }
-    }, [user, loading, router])
+    }, [user, loading, isAdmin, router])
 
     if (loading || !checked) {
         return (

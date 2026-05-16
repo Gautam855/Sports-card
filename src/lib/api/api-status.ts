@@ -29,6 +29,7 @@ function extractResetTime(headers?: Headers): string | null {
     // Common reset headers (unix timestamp or seconds)
     const resetEpoch = headers.get('x-ratelimit-requests-reset')
         ?? headers.get('x-ratelimit-reset')
+        ?? headers.get('x-ratelimit-rapid-free-plans-hard-limit-reset')
     
     if (resetEpoch) {
         const num = parseInt(resetEpoch)
@@ -57,10 +58,16 @@ export function recordAPISuccess(
     name: string, host: string, sport: string, headers?: Headers,
     opts?: { remaining?: number; limit?: number; resetsAt?: string }
 ) {
-    const remaining = opts?.remaining
-        ?? (headers?.get('x-ratelimit-requests-remaining') ?? headers?.get('x-ratelimit-remaining') ? parseInt(headers?.get('x-ratelimit-requests-remaining') ?? headers?.get('x-ratelimit-remaining') ?? '') : null)
-    const limit = opts?.limit
-        ?? (headers?.get('x-ratelimit-requests-limit') ?? headers?.get('x-ratelimit-limit') ? parseInt(headers?.get('x-ratelimit-requests-limit') ?? headers?.get('x-ratelimit-limit') ?? '') : null)
+    const remainingHeader = headers?.get('x-ratelimit-requests-remaining') 
+        ?? headers?.get('x-ratelimit-remaining') 
+        ?? headers?.get('x-ratelimit-rapid-free-plans-hard-limit-remaining')
+    const remaining = opts?.remaining ?? (remainingHeader ? parseInt(remainingHeader) : null)
+
+    const limitHeader = headers?.get('x-ratelimit-requests-limit') 
+        ?? headers?.get('x-ratelimit-limit') 
+        ?? headers?.get('x-ratelimit-rapid-free-plans-hard-limit-limit')
+    const limit = opts?.limit ?? (limitHeader ? parseInt(limitHeader) : null)
+
     const resetsAt = opts?.resetsAt ?? extractResetTime(headers)
 
     apiStatusMap.set(name, {
@@ -118,16 +125,12 @@ export function getAllAPIStatuses(): APIStatus[] {
 
     // Provide defaults for APIs we haven't tried yet
     const defaultAPIs: Omit<APIStatus, 'status' | 'statusCode' | 'lastChecked' | 'lastError' | 'remainingRequests' | 'dailyLimit' | 'resetsAt' | 'resetsInSeconds'>[] = [
-        { name: 'API-Football', host: process.env.FOOTBALL_APISPORTS_HOST ?? 'not-configured', sport: 'Football' },
+        { name: 'Football536', host: process.env.FOOTBALL536_HOST ?? 'football536.p.rapidapi.com', sport: 'Football' },
         { name: 'Cricbuzz', host: process.env.CRICKET_CRICBUZZ_HOST ?? 'not-configured', sport: 'Cricket' },
-        { name: 'API-Basketball', host: process.env.BASKETBALL_APISPORTS_HOST ?? 'not-configured', sport: 'Basketball' },
-        { name: 'API-Baseball', host: process.env.BASEBALL_APISPORTS_HOST ?? 'not-configured', sport: 'Baseball' },
-        { name: 'API-Formula1', host: process.env.FORMULA1_APISPORTS_HOST ?? 'not-configured', sport: 'Formula 1' },
-        { name: 'API-MMA', host: process.env.MMA_APISPORTS_HOST ?? 'not-configured', sport: 'MMA' },
-        { name: 'API-Rugby', host: process.env.RUGBY_APISPORTS_HOST ?? 'not-configured', sport: 'Rugby' },
-        { name: 'TheSportsDB', host: process.env.BADMINTON_TSDB_HOST ?? 'not-configured', sport: 'Badminton / Boxing' },
-        { name: 'API-Boxing', host: 'player-props.p.rapidapi.com', sport: 'Boxing (Props)' },
-        { name: 'API-Tennis', host: 'player-props.p.rapidapi.com', sport: 'Tennis (Props)' },
+        { name: 'SportScore', host: process.env.SPORTSCORE_HOST ?? 'sportscore6.p.rapidapi.com', sport: 'Basketball' },
+        { name: 'Baseball Data', host: process.env.BASEBALL_HOST ?? 'baseball-data.p.rapidapi.com', sport: 'Baseball' },
+        { name: 'Rugby Data', host: process.env.RUGBY_HOST ?? 'rugbyapi2.p.rapidapi.com', sport: 'Rugby' },
+        { name: 'Tennis', host: process.env.TENNIS_APISPORTS_HOST ?? 'not-configured', sport: 'Tennis' },
         { name: 'SerpApi', host: 'serpapi.com', sport: 'Real-time News' },
     ]
 

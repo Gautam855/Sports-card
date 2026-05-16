@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { MatchCard } from './MatchCard'
 import type { Match } from '@/lib/types'
+import Link from 'next/link'
 
 interface HeroSectionProps {
   liveMatches: Match[]
@@ -40,12 +41,16 @@ export function HeroSection({ liveMatches, featuredMatches }: HeroSectionProps) 
               Real-time updates, expert insights, and fantasy tips for every major sport. Never miss a moment with SportsPulse.
             </p>
             <div className="flex flex-wrap gap-4">
-              <button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-bold transition-all shadow-lg shadow-primary/25">
-                Go Live
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full font-bold transition-all border border-white/10 backdrop-blur-sm">
-                Predictions
-              </button>
+              <Link href="/live">
+                <button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-bold transition-all shadow-lg shadow-primary/25">
+                  Go Live
+                </button>
+              </Link>
+              <Link href="/matches">
+                <button className="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full font-bold transition-all border border-white/10 backdrop-blur-sm">
+                  View Scores
+                </button>
+              </Link>
             </div>
           </motion.div>
 

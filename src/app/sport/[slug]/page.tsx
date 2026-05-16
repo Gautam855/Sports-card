@@ -1,24 +1,19 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import {
-    getLiveFootball, getTodayFootball, 
-    getLiveBasketball, getTodayBasketball,
-    getLiveBaseball, getTodayBaseball,
-    getLiveMMA, getUpcomingMMA,
-    getLiveRugby, getTodayRugby,
-    getUpcomingBadminton, getRecentBadminton,
-    getUpcomingBoxing, getRecentBoxing,
+    getLiveFootball, getTodayFootball, getUpcomingFootball,
+    getLiveBasketball, getTodayBasketball, getRecentBasketball,
+    getLiveBaseball, getTodayBaseball, getRecentBaseball, getRealBaseballStandings,
+    getLiveRugby, getTodayRugby, getRecentRugby,
     getLiveTennis, getUpcomingTennis, getRecentTennis,
     getLiveCricket, getRecentCricket, getUpcomingCricket,
-
-
-
-    getF1Races
+    getRealBasketballStandings
 } from '@/lib/api/rapid'
 import { MatchCard } from '@/components/sports/MatchCard'
 import { Suspense } from 'react'
 import { MatchCardSkeleton } from '@/components/sports/MatchCard'
 import { SportMatchBoard } from '@/components/sports/SportMatchBoard'
+import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
 
 // ── Sport definitions ────────────────────────────────────────────
 
@@ -50,20 +45,6 @@ const SPORTS: Record<string, {
         color: 'text-sport-basketball',
         keywords: ['nba live score', 'basketball score today', 'euroleague'],
     },
-    'formula-1': {
-        name: 'Formula 1',
-        emoji: '🏎️',
-        description: 'F1 race results, qualifying times, driver standings and live race updates.',
-        color: 'text-sport-f1',
-        keywords: ['f1 results', 'formula 1 standings', 'f1 live'],
-    },
-    mma: {
-        name: 'MMA',
-        emoji: '🥊',
-        description: 'UFC and MMA fight results, upcoming fight cards, and live bout updates.',
-        color: 'text-red-600',
-        keywords: ['ufc results', 'mma fight today', 'ufc live', 'ufc schedule'],
-    },
     baseball: {
         name: 'Baseball',
         emoji: '⚾',
@@ -74,23 +55,9 @@ const SPORTS: Record<string, {
     rugby: {
         name: 'Rugby',
         emoji: '🏉',
-        description: 'Live rugby scores, fixtures and results from major leagues and international tournaments.',
-        color: 'text-sport-rugby',
-        keywords: ['rugby live score', 'rugby match today', 'rugby results'],
-    },
-    badminton: {
-        name: 'Badminton',
-        emoji: '🏸',
-        description: 'BWF World Tour and international badminton live scores, rankings and tournament schedules.',
-        color: 'text-sport-ufc', // Reusing a vibrant purple
-        keywords: ['badminton live score', 'bwf world tour', 'badminton results'],
-    },
-    boxing: {
-        name: 'Boxing',
-        emoji: '🥊',
-        description: 'World boxing rankings, fight schedules and live results from WBC, WBA, IBF and WBO.',
-        color: 'text-red-500',
-        keywords: ['boxing live score', 'boxing schedule', 'wbc results', 'boxing fight night'],
+        description: 'Live rugby scores, Six Nations, Rugby Championship, and Premiership fixtures and results.',
+        color: 'text-orange-600',
+        keywords: ['rugby live score', 'rugby match today', 'six nations results'],
     },
     tennis: {
         name: 'Tennis',
@@ -137,72 +104,52 @@ async function getSportMatches(slug: string) {
             }
         }
         case 'football': {
-            const [live, today] = await Promise.allSettled([
+            const [live, today, upcoming] = await Promise.allSettled([
                 getLiveFootball(),
                 getTodayFootball(),
+                getUpcomingFootball(),
             ])
             const todayMatches = today.status === 'fulfilled' ? today.value : []
+            const upcomingMatches = upcoming.status === 'fulfilled' ? upcoming.value : []
+            
+            // Combine and deduplicate by ID
+            const all = [...todayMatches, ...upcomingMatches]
+            const uniqueMap = new Map(all.map(m => [m.id, m]))
+            const allMatches = Array.from(uniqueMap.values())
+
             return {
                 live: live.status === 'fulfilled' ? live.value : [],
-                recent: todayMatches.filter(m => m.status === 'completed'),
-                upcoming: todayMatches.filter(m => m.status === 'scheduled'),
+                recent: allMatches.filter(m => m.status === 'completed'),
+                upcoming: allMatches.filter(m => m.status === 'scheduled'),
             }
         }
         case 'basketball': {
-            const [live, today] = await Promise.allSettled([
+            const [live, today, recent, standings] = await Promise.allSettled([
                 getLiveBasketball(),
                 getTodayBasketball(),
+                getRecentBasketball(),
+                getRealBasketballStandings()
             ])
             const todayMatches = today.status === 'fulfilled' ? today.value : []
+            const recentMatches = recent.status === 'fulfilled' ? recent.value : []
+            
             return {
                 live: live.status === 'fulfilled' ? live.value : [],
-                recent: todayMatches.filter(m => m.status === 'completed'),
+                recent: [...recentMatches, ...todayMatches.filter(m => m.status === 'completed')],
                 upcoming: todayMatches.filter(m => m.status === 'scheduled'),
-            }
-        }
-        case 'mma': {
-            const [live, upcoming] = await Promise.allSettled([
-                getLiveMMA(),
-                getUpcomingMMA()
-            ])
-            return {
-                live: live.status === 'fulfilled' ? live.value : [],
-                recent: [],
-                upcoming: upcoming.status === 'fulfilled' ? upcoming.value : [],
+                standings: standings.status === 'fulfilled' ? standings.value : null
             }
         }
         case 'rugby': {
-            const [live, today] = await Promise.allSettled([
+            const [live, today, recent] = await Promise.allSettled([
                 getLiveRugby(),
                 getTodayRugby(),
+                getRecentRugby(),
             ])
-            const todayMatches = today.status === 'fulfilled' ? today.value : []
             return {
                 live: live.status === 'fulfilled' ? live.value : [],
-                recent: todayMatches.filter(m => m.status === 'completed'),
-                upcoming: todayMatches.filter(m => m.status === 'scheduled'),
-            }
-        }
-        case 'badminton': {
-            const [recent, upcoming] = await Promise.allSettled([
-                getRecentBadminton(),
-                getUpcomingBadminton(),
-            ])
-            return {
-                live: [], // TSDB free doesn't have good live feed for badminton
                 recent: recent.status === 'fulfilled' ? recent.value : [],
-                upcoming: upcoming.status === 'fulfilled' ? upcoming.value : [],
-            }
-        }
-        case 'boxing': {
-            const [recent, upcoming] = await Promise.allSettled([
-                getRecentBoxing(),
-                getUpcomingBoxing(),
-            ])
-            return {
-                live: [],
-                recent: recent.status === 'fulfilled' ? recent.value : [],
-                upcoming: upcoming.status === 'fulfilled' ? upcoming.value : [],
+                upcoming: today.status === 'fulfilled' ? (today.value as any[]).filter(m => m.status === 'scheduled') : [],
             }
         }
         case 'tennis': {
@@ -220,24 +167,21 @@ async function getSportMatches(slug: string) {
 
 
         case 'baseball': {
-            const [live, today] = await Promise.allSettled([
+            const [live, today, recent, standings] = await Promise.allSettled([
                 getLiveBaseball(),
                 getTodayBaseball(),
+                getRecentBaseball(),
+                getRealBaseballStandings()
             ])
             const todayMatches = today.status === 'fulfilled' ? today.value : []
+            const recentMatches = recent.status === 'fulfilled' ? recent.value : []
+            
             return {
                 live: live.status === 'fulfilled' ? live.value : [],
-                recent: todayMatches.filter(m => m.status === 'completed'),
+                recent: [...recentMatches, ...todayMatches.filter(m => m.status === 'completed')],
                 upcoming: todayMatches.filter(m => m.status === 'scheduled'),
+                standings: standings.status === 'fulfilled' ? standings.value : null
             }
-        }
-        case 'formula-1': {
-            const [live, recent, upcoming] = await Promise.all([
-                getF1Races('live'),
-                getF1Races('recent'),
-                getF1Races('upcoming')
-            ])
-            return { live, recent, upcoming }
         }
         default:
             return { live: [], recent: [], upcoming: [] }
@@ -253,22 +197,59 @@ export default async function SportPage({ params }: { params: Promise<{ slug: st
     const sport = SPORTS[slug]
     if (!sport) notFound()
 
-    const { live, recent, upcoming } = await getSportMatches(slug)
+    const { live, recent, upcoming, standings } = await getSportMatches(slug)
+
+    // Dynamic gradient based on sport color
+    const gradientMap: Record<string, string> = {
+        cricket: 'from-sport-cricket/20 via-background to-background',
+        football: 'from-sport-football/20 via-background to-background',
+        basketball: 'from-sport-basketball/20 via-background to-background',
+        baseball: 'from-blue-600/20 via-background to-background',
+        tennis: 'from-lime-500/20 via-background to-background',
+    }
+
+    const headerGradient = gradientMap[slug] || 'from-brand-500/10 via-background to-background'
 
     return (
-        <div className="container-wide py-6 md:py-10">
-            {/* Header */}
-            <div className="mb-8">
-                <div className={`inline-flex items-center gap-2 ${sport.color} bg-current/10 border border-current/20 rounded-full px-3 py-1 text-xs font-semibold mb-3`}>
-                    <span>{sport.emoji}</span> {sport.name}
+        <div className="min-h-screen pb-20">
+            {/* Creative Header */}
+            <div className={`relative h-[300px] flex items-center justify-center overflow-hidden bg-gradient-to-b ${headerGradient}`}>
+                <div className="absolute inset-0 opacity-30">
+                    <div className="absolute top-0 left-1/4 w-64 h-64 bg-brand-500/20 rounded-full blur-[100px]" />
+                    <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-brand-500/20 rounded-full blur-[100px]" />
                 </div>
-                <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
-                    {sport.name} Live Scores & Fixtures
-                </h1>
-                <p className="text-muted-foreground max-w-2xl">{sport.description}</p>
+                
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <span className="inline-block text-5xl mb-4 animate-bounce-slow">{sport.emoji}</span>
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 text-foreground">
+                        {sport.name}
+                    </h1>
+                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
+                        {sport.description}
+                    </p>
+                </div>
             </div>
 
-            <SportMatchBoard live={live} recent={recent} upcoming={upcoming} sportName={sport.name} sportEmoji={sport.emoji} />
+            <div className="container mx-auto px-4 -mt-10 relative z-20 space-y-12">
+                <SportMatchBoard 
+                    live={live} 
+                    recent={recent} 
+                    upcoming={upcoming}
+                    standings={standings}
+                    sportName={sport.name}
+                    sportEmoji={sport.emoji}
+                />
+
+                {/* Sport-specific Merchandise */}
+                <MerchandiseShowcase 
+                    placement="sport_page" 
+                    layout="grid" 
+                    limit={4} 
+                    sport={slug}
+                    title={`${sport.name} Essentials`}
+                    subtitle={`Gear up with official ${sport.name} merchandise and fan favorites`}
+                />
+            </div>
         </div>
     )
 }

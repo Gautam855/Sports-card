@@ -226,3 +226,36 @@
         @apply max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8;
     }
 }
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes live-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.95); }
+}
+
+@keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.animate-bounce-slow {
+    animation: bounce-slow 3s ease-in-out infinite;
+}
+
+/* Glass Morphism Improvements */
+.glass-panel {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl;
+}
+
+.dark .glass-panel {
+    @apply bg-black/20 backdrop-blur-md border border-white/5 shadow-2xl;
+}

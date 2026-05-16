@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { 
     getAllTodayMatches, 
-    getTodayFootball, getTodayBasketball, getUpcomingTennis, getUpcomingMMA,
-    getLiveCricket, getRecentCricket, getUpcomingCricket 
+    getTodayFootball, getTodayBasketball, getUpcomingTennis,
+    getLiveCricket, getRecentCricket, getUpcomingCricket,
+    getLiveRugby, getTodayRugby, getRecentRugby
 } from '@/lib/api/rapid'
 
 export const revalidate = 60
@@ -21,13 +22,16 @@ export async function GET(request: NextRequest) {
             matches = await getTodayBasketball()
         } else if (sport === 'tennis') {
             matches = await getUpcomingTennis()
-        } else if (sport === 'mma') {
-            matches = await getUpcomingMMA()
         } else if (sport === 'cricket') {
             if (type === 'live') matches = await getLiveCricket()
             else if (type === 'recent') matches = await getRecentCricket()
             else if (type === 'upcoming') matches = await getUpcomingCricket()
             else matches = await getLiveCricket()
+        } else if (sport === 'rugby') {
+            if (type === 'live') matches = await getLiveRugby()
+            else if (type === 'recent') matches = await getRecentRugby()
+            else if (type === 'upcoming') matches = await getTodayRugby()
+            else matches = await getTodayRugby()
         } else {
             matches = await getAllTodayMatches()
         }

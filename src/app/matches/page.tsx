@@ -17,7 +17,7 @@ interface Match {
     slug: string
 }
 
-const SPORTS = ['All', 'Cricket', 'Football', 'Basketball', 'Tennis', 'MMA']
+const SPORTS = ['All', 'Cricket', 'Football', 'Basketball', 'Tennis', 'Rugby']
 
 export default function MatchesPage() {
     const [allMatches, setAllMatches] = useState<Match[]>([])
@@ -43,8 +43,8 @@ export default function MatchesPage() {
             if (statusFilter === 'finished' && match.status !== 'completed' && match.status !== 'finished') return false
             
             // Sport Filter
-            const matchSport = typeof match.sport === 'object' ? match.sport.name : match.sport
-            if (sportFilter !== 'All' && matchSport.toLowerCase() !== sportFilter.toLowerCase()) return false
+            const matchSport = typeof match.sport === 'object' ? match.sport?.name : (match.sport || (match as any).sport_type || (match as any).sport_id || '')
+            if (sportFilter !== 'All' && (!matchSport || matchSport.toLowerCase() !== sportFilter.toLowerCase())) return false
             
             // Search Query
             if (searchQuery) {
@@ -182,7 +182,7 @@ export default function MatchesPage() {
                             <div className="p-4 bg-muted/10 border-t border-border/50 flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
                                     <Calendar className="w-3.5 h-3.5" />
-                                    <span className="text-xs font-medium">
+                                    <span className="text-xs font-medium" suppressHydrationWarning>
                                         {new Date(match.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                 </div>

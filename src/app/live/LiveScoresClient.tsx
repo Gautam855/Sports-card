@@ -16,7 +16,6 @@ const SPORT_TABS = [
     { id: 'cricket', label: 'Cricket' },
     { id: 'basketball', label: 'Basketball' },
     { id: 'tennis', label: 'Tennis' },
-    { id: 'mma', label: 'MMA' },
 ]
 
 interface LiveScoresClientProps {
@@ -29,6 +28,9 @@ export function LiveScoresClient({ initialMatches }: LiveScoresClientProps) {
     const [isConnected, setIsConnected] = useState(false)
     const [lastUpdated, setLastUpdated] = useState(new Date())
     const [updatedIds, setUpdatedIds] = useState<Set<string>>(new Set())
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => { setMounted(true) }, [])
 
     const highlightUpdate = useCallback((id: string) => {
         setUpdatedIds(prev => new Set(prev).add(id))
@@ -84,8 +86,8 @@ export function LiveScoresClient({ initialMatches }: LiveScoresClientProps) {
                     {isConnected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
                     {isConnected ? 'Live updates connected' : 'Connecting...'}
                 </div>
-                <span className="text-xs text-muted-foreground">
-                    Updated {lastUpdated.toLocaleTimeString()}
+                <span className="text-xs text-muted-foreground" suppressHydrationWarning>
+                    Updated {mounted ? lastUpdated.toLocaleTimeString() : '--:--:--'}
                 </span>
             </div>
 

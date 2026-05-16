@@ -43,7 +43,7 @@ export function getSportColor(sport?: string): string {
         boxing: '#ef4444',
         formula1: '#dc2626',
         ufc: '#7c3aed',
-        badminton: '#06b6d4',
+        rugby: '#ea580c',
         motogp: '#f59e0b',
         olympics: '#3b82f6',
     }
