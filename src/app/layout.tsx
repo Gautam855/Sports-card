@@ -13,6 +13,7 @@ import { Footer } from '@/components/layout/Footer'
 import { Analytics } from '@/components/Analytics'
 import { DynamicScripts } from '@/components/seo/DynamicScripts'
 import '../globals.css'
+import { createClient } from '@/lib/supabase/server'
 
 const spaceGrotesk = Space_Grotesk({
     subsets: ['latin'],
@@ -20,48 +21,81 @@ const spaceGrotesk = Space_Grotesk({
     display: 'swap',
 })
 
-export const metadata: Metadata = {
-    metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
-    title: {
-        default: 'SportsPulse — Live Scores, Predictions & Fantasy Tips',
-        template: '%s | SportsPulse',
-    },
-    description:
-        'Get live sports scores, expert match predictions, fantasy team tips, breaking news and player stats for Football, Cricket, Basketball, Tennis and more.',
-    keywords: [
-        'live scores', 'cricket live score', 'football live score', 'match prediction',
-        'fantasy cricket', 'dream11 prediction', 'ipl 2025', 'premier league scores',
-        'today match', 'playing 11', 'sports news',
-    ],
-    authors: [{ name: 'SportsPulse' }],
-    creator: 'SportsPulse',
-    publisher: 'SportsPulse Media',
-    robots: {
-        index: true,
-        follow: true,
-        googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
-    },
-    openGraph: {
-        type: 'website',
-        locale: 'en_US',
-        url: process.env.NEXT_PUBLIC_SITE_URL,
-        siteName: 'SportsPulse',
-        title: 'SportsPulse — Live Scores, Predictions & Fantasy Tips',
+export async function generateMetadata(): Promise<Metadata> {
+    // Fetch dynamic meta tags from database
+    let dynamicOther: Record<string, string>[] = []
+    let googleVerification: string | undefined = process.env.GOOGLE_SITE_VERIFICATION
+    try {
+        const supabase = await createClient()
+        const { data } = await supabase
+            .from('site_scripts')
+            .select('slug, script_type, content, attributes')
+            .eq('is_active', true)
+            .in('script_type', ['meta'])
+            .order('priority', { ascending: true })
+
+        if (data) {
+            for (const s of data) {
+                if (s.attributes?.name === 'google-site-verification') {
+                    googleVerification = s.content
+                } else if (s.attributes?.name || s.attributes?.property) {
+                    dynamicOther.push({
+                        ...(s.attributes || {}),
+                        content: s.content,
+                    })
+                }
+            }
+        }
+    } catch {
+        // Don't break the site if DB is unreachable
+    }
+
+    return {
+        metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
+        title: {
+            default: 'SportsPulse — Live Scores, Predictions & Fantasy Tips',
+            template: '%s | SportsPulse',
+        },
         description:
-            'Live scores, expert predictions, fantasy tips, and breaking sports news.',
-        images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'SportsPulse' }],
-    },
-    twitter: {
-        card: 'summary_large_image',
-        site: '@SportsPulse',
-        creator: '@SportsPulse',
-    },
-    alternates: {
-        canonical: process.env.NEXT_PUBLIC_SITE_URL,
-    },
-    verification: {
-        google: process.env.GOOGLE_SITE_VERIFICATION,
-    },
+            'Get live sports scores, expert match predictions, fantasy team tips, breaking news and player stats for Football, Cricket, Basketball, Tennis and more.',
+        keywords: [
+            'live scores', 'cricket live score', 'football live score', 'match prediction',
+            'fantasy cricket', 'dream11 prediction', 'ipl 2025', 'premier league scores',
+            'today match', 'playing 11', 'sports news',
+        ],
+        authors: [{ name: 'SportsPulse' }],
+        creator: 'SportsPulse',
+        publisher: 'SportsPulse Media',
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+        },
+        openGraph: {
+            type: 'website',
+            locale: 'en_US',
+            url: process.env.NEXT_PUBLIC_SITE_URL,
+            siteName: 'SportsPulse',
+            title: 'SportsPulse — Live Scores, Predictions & Fantasy Tips',
+            description:
+                'Live scores, expert predictions, fantasy tips, and breaking sports news.',
+            images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'SportsPulse' }],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            site: '@SportsPulse',
+            creator: '@SportsPulse',
+        },
+        alternates: {
+            canonical: process.env.NEXT_PUBLIC_SITE_URL,
+        },
+        verification: {
+            google: googleVerification,
+        },
+        other: Object.fromEntries(
+            dynamicOther.map(m => [m.name || m.property || 'custom', m.content])
+        ),
+    }
 }
 
 export const viewport: Viewport = {
