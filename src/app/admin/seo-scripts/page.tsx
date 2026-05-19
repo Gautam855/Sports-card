@@ -6,7 +6,8 @@ import { toast } from 'sonner'
 import {
     Plus, Search, Trash2, Save, Power, PowerOff, Code2, Globe, Tag,
     FileCode, Megaphone, BarChart3, Shield, Braces, ChevronDown, ChevronUp,
-    Copy, ExternalLink, AlertTriangle, CheckCircle2, XCircle, Loader2, Filter
+    Copy, ExternalLink, AlertTriangle, CheckCircle2, XCircle, Loader2, Filter,
+    Upload
 } from 'lucide-react'
 
 /* ───────── types ───────── */
@@ -68,6 +69,8 @@ export default function SeoScriptsPage() {
     const [expandedId, setExpandedId] = useState<string | null>(null)
     const [showCreate, setShowCreate] = useState(false)
     const [newScript, setNewScript] = useState<SiteScript>({ ...EMPTY })
+    const [siteFiles, setSiteFiles] = useState<string[]>([])
+    const [uploading, setUploading] = useState(false)
 
     const headers = useCallback(() => {
         const token = getToken()
@@ -84,6 +87,54 @@ export default function SeoScriptsPage() {
     }, [headers])
 
     useEffect(() => { fetchScripts() }, [fetchScripts])
+
+    const fetchSiteFiles = useCallback(async () => {
+        try {
+            const token = getToken()
+            const res = await fetch('/api/admin/site-files', {
+                headers: token ? { Authorization: `Bearer ${token}` } : {}
+            })
+            const data = await res.json()
+            if (data.files) setSiteFiles(data.files)
+        } catch {}
+    }, [getToken])
+
+    useEffect(() => { fetchSiteFiles() }, [fetchSiteFiles])
+
+    async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0]
+        if (!file) return
+        setUploading(true)
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+            const token = getToken()
+            const res = await fetch('/api/admin/site-files', {
+                method: 'POST',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+                body: formData
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error)
+            toast.success(`Uploaded: ${data.filename}`)
+            fetchSiteFiles()
+        } catch (err: any) { toast.error(err.message || 'Upload failed') }
+        finally { setUploading(false); e.target.value = '' }
+    }
+
+    async function handleFileDelete(filename: string) {
+        if (!confirm(`Delete ${filename}?`)) return
+        try {
+            const token = getToken()
+            const res = await fetch(`/api/admin/site-files?filename=${filename}`, {
+                method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {}
+            })
+            if (!res.ok) throw new Error()
+            setSiteFiles(prev => prev.filter(f => f !== filename))
+            toast.success('Deleted')
+        } catch { toast.error('Failed to delete') }
+    }
 
     async function handleToggle(script: SiteScript) {
         setSaving(script.id)
@@ -185,6 +236,50 @@ export default function SeoScriptsPage() {
                 <StatCard label="Active" value={activeCount} icon={CheckCircle2} color="green" />
                 <StatCard label="Inactive" value={scripts.length - activeCount} icon={XCircle} color="red" />
                 <StatCard label="Categories" value={new Set(scripts.map(s => s.category)).size} icon={Filter} color="purple" />
+            </div>
+
+            {/* Verification Files */}
+            <div className="bg-card border border-border rounded-2xl p-5">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-amber-500/15">
+                            <Shield className="w-4 h-4 text-amber-400" />
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-sm">Verification Files</h3>
+                            <p className="text-xs text-muted-foreground">Upload HTML/TXT files to public folder (Google Search Console, Bing, etc.)</p>
+                        </div>
+                    </div>
+                    <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer transition-colors ${uploading ? 'bg-muted text-muted-foreground' : 'bg-amber-500/15 text-amber-400 hover:bg-amber-500/25'}`}>
+                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                        {uploading ? 'Uploading...' : 'Upload File'}
+                        <input type="file" accept=".html,.txt,.xml,.json" onChange={handleFileUpload} disabled={uploading} className="hidden" />
+                    </label>
+                </div>
+                {siteFiles.length > 0 ? (
+                    <div className="space-y-2">
+                        {siteFiles.map(f => (
+                            <div key={f} className="flex items-center justify-between px-3 py-2 rounded-lg bg-muted/30 border border-border">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <FileCode className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                    <span className="text-sm font-mono truncate">{f}</span>
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                    <a href={`/${f}`} target="_blank" rel="noopener noreferrer"
+                                        className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                    <button onClick={() => handleFileDelete(f)}
+                                        className="p-1.5 rounded-md text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors">
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-xs text-muted-foreground text-center py-3">No verification files uploaded yet</p>
+                )}
             </div>
 
             {/* Create Form */}
