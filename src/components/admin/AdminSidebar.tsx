@@ -15,15 +15,11 @@ import { useRouter } from 'next/navigation'
 
 const NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-    { label: 'Matches', href: '/admin/matches', icon: Calendar },
-    { label: 'News Feed', href: '/admin/news', icon: Newspaper },
     { label: 'Blogs', href: '/admin/blogs', icon: PenTool },
     { label: 'Merchandise', href: '/admin/merchandise', icon: ShoppingBag },
     { label: 'Users', href: '/admin/users', icon: Users },
-    { label: 'Advertisements', href: '/admin/ads', icon: Megaphone },
     { label: 'SEO & Scripts', href: '/admin/seo-scripts', icon: Code2 },
     { label: 'Notifications', href: '/admin/notifications', icon: Bell },
-    { label: 'Settings', href: '/admin/settings', icon: Settings },
     { label: 'API Keys', href: '/admin/api-keys', icon: Key },
     { label: 'API Status', href: '/admin/api-status', icon: Activity },
 ]

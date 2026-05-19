@@ -10,7 +10,6 @@ const NAV_ITEMS = [
     { label: 'Live', href: '/live', icon: Activity, live: true },
     { label: 'Video', href: '/highlights', icon: Play },
     { label: 'News', href: '/news', icon: Newspaper },
-    { label: 'Predict', href: '/predictions', icon: Zap },
 ]
 
 export function MobileNav() {
