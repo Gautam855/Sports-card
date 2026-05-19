@@ -138,12 +138,15 @@ export function DynamicScripts() {
  */
 function MetaTag({ slug, content, attributes }: { slug: string; content: string; attributes: Record<string, any> }) {
     useEffect(() => {
-        const id = `site-meta-${slug}`
-        let el = document.getElementById(id) as HTMLMetaElement | null
+        const metaName = attributes?.name || attributes?.property || slug
+        const selector = attributes?.property
+            ? `meta[property="${metaName}"]`
+            : `meta[name="${metaName}"]`
+
+        let el = document.querySelector(selector) as HTMLMetaElement | null
         if (!el) {
             el = document.createElement('meta')
-            el.id = id
-            document.head.appendChild(el)
+            document.head.prepend(el)
         }
 
         // Set content
@@ -157,12 +160,11 @@ function MetaTag({ slug, content, attributes }: { slug: string; content: string;
             el.setAttribute('http-equiv', attributes['http-equiv'])
             el.setAttribute('content', content)
         } else {
-            // Fallback: set name=slug
             el.setAttribute('name', slug)
             el.setAttribute('content', content)
         }
 
-        // Apply additional attributes
+        // Apply additional attributes (skip name/property/http-equiv as already set)
         Object.entries(attributes || {}).forEach(([key, val]) => {
             if (key !== 'name' && key !== 'property' && key !== 'http-equiv') {
                 el!.setAttribute(key, String(val))
@@ -187,7 +189,7 @@ function LinkTag({ slug, content, attributes }: { slug: string; content: string;
         if (!el) {
             el = document.createElement('link')
             el.id = id
-            document.head.appendChild(el)
+            document.head.prepend(el)
         }
 
         if (content) el.href = content
