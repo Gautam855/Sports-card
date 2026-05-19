@@ -11,6 +11,7 @@ import { Header } from '@/components/layout/Header'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { Footer } from '@/components/layout/Footer'
 import { Analytics } from '@/components/Analytics'
+import { DynamicScripts } from '@/components/seo/DynamicScripts'
 import '../globals.css'
 
 const spaceGrotesk = Space_Grotesk({
@@ -105,6 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     </QueryProvider>
                 </ThemeProvider>
                 <Analytics />
+                <DynamicScripts />
             </body>
         </html>
     )
