@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyAdmin } from '@/lib/api/admin-auth'
-import fs from 'fs/promises'
-import path from 'path'
+import { createClient } from '@/lib/supabase/server'
 
-const PUBLIC_DIR = path.join(process.cwd(), 'public')
-
-// Only allow safe file extensions for verification/SEO files
+const BUCKET = 'site-files'
 const ALLOWED_EXTENSIONS = ['.html', '.txt', '.xml', '.json']
 
 /**
- * GET /api/admin/site-files — List root-level verification/SEO files in public/
+ * GET /api/admin/site-files — List all verification/SEO files
  */
 export async function GET(req: NextRequest) {
     try {
@@ -18,10 +15,14 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: auth.error }, { status: auth.status })
         }
 
-        const entries = await fs.readdir(PUBLIC_DIR, { withFileTypes: true })
-        const files = entries
-            .filter(e => e.isFile() && ALLOWED_EXTENSIONS.some(ext => e.name.endsWith(ext)))
-            .map(e => e.name)
+        const supabase = await createClient()
+        const { data, error } = await supabase.storage.from(BUCKET).list('', {
+            limit: 100,
+            sortBy: { column: 'name', order: 'asc' }
+        })
+
+        if (error) throw error
+        const files = (data || []).map(f => f.name)
 
         return NextResponse.json({ files })
     } catch (err: any) {
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
 }
 
 /**
- * POST /api/admin/site-files — Upload a file to public/
+ * POST /api/admin/site-files — Upload a verification file
  */
 export async function POST(req: NextRequest) {
     try {
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Validate extension
-        const ext = path.extname(file.name).toLowerCase()
+        const ext = '.' + (file.name.split('.').pop() || '').toLowerCase()
         if (!ALLOWED_EXTENSIONS.includes(ext)) {
             return NextResponse.json(
                 { error: `Invalid file type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}` },
@@ -55,21 +56,27 @@ export async function POST(req: NextRequest) {
             )
         }
 
-        // Validate size (max 100KB — verification files are tiny)
+        // Validate size (max 100KB)
         if (file.size > 100 * 1024) {
             return NextResponse.json({ error: 'File too large. Max 100KB.' }, { status: 400 })
         }
 
-        // Sanitize filename — keep only alphanumeric, dots, hyphens
+        // Sanitize filename
         const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '')
         if (!safeName) {
             return NextResponse.json({ error: 'Invalid filename' }, { status: 400 })
         }
 
         const arrayBuffer = await file.arrayBuffer()
-        const buffer = Buffer.from(arrayBuffer)
+        const buffer = new Uint8Array(arrayBuffer)
 
-        await fs.writeFile(path.join(PUBLIC_DIR, safeName), buffer)
+        const supabase = await createClient()
+        const { error } = await supabase.storage.from(BUCKET).upload(safeName, buffer, {
+            contentType: file.type || 'text/html',
+            upsert: true,
+        })
+
+        if (error) throw error
 
         return NextResponse.json({ filename: safeName, size: file.size }, { status: 201 })
     } catch (err: any) {
@@ -78,7 +85,7 @@ export async function POST(req: NextRequest) {
 }
 
 /**
- * DELETE /api/admin/site-files — Delete a file from public/
+ * DELETE /api/admin/site-files — Delete a verification file
  */
 export async function DELETE(req: NextRequest) {
     try {
@@ -94,17 +101,12 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ error: 'Filename is required' }, { status: 400 })
         }
 
-        // Prevent path traversal
-        const safeName = path.basename(filename)
-        const filePath = path.join(PUBLIC_DIR, safeName)
+        const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '')
 
-        // Don't allow deleting critical files
-        const PROTECTED = ['favicon.ico', 'robots.txt', 'sitemap.xml']
-        if (PROTECTED.includes(safeName)) {
-            return NextResponse.json({ error: 'Cannot delete protected file' }, { status: 403 })
-        }
+        const supabase = await createClient()
+        const { error } = await supabase.storage.from(BUCKET).remove([safeName])
 
-        await fs.unlink(filePath)
+        if (error) throw error
         return NextResponse.json({ success: true })
     } catch (err: any) {
         return NextResponse.json({ error: err?.message ?? 'Delete failed' }, { status: 500 })

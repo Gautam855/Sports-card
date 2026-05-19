@@ -55,6 +55,10 @@ const nextConfig: NextConfig = {
         return [
             { source: '/sitemap.xml', destination: '/api/sitemap' },
             { source: '/robots.txt', destination: '/api/robots' },
+            // Verification files served from Supabase Storage
+            { source: '/:filename(google[a-z0-9]+\\.html)', destination: '/api/site-files/:filename' },
+            { source: '/:filename(BingSiteAuth\\.xml)', destination: '/api/site-files/:filename' },
+            { source: '/:filename(yandex_[a-z0-9]+\\.html)', destination: '/api/site-files/:filename' },
         ]
     },
 }
