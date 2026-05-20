@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { Space_Grotesk } from 'next/font/google'
@@ -115,6 +116,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             suppressHydrationWarning
             className={`${GeistSans.variable} ${GeistMono.variable} ${spaceGrotesk.variable}`}
         >
+            <head>
+                <Script
+                    async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4573815949018090"
+                    crossOrigin="anonymous"
+                    strategy="afterInteractive"
+                />
+            </head>
             <body className="min-h-screen bg-background font-sans antialiased">
                 <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
                     <QueryProvider>
