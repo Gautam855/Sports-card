@@ -54,8 +54,8 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
         title: {
-            default: 'SportsPulse — Live Scores, Predictions & Fantasy Tips',
-            template: '%s | SportsPulse',
+            default: 'SportsLNV — Live Scores, Predictions & Fantasy Tips',
+            template: '%s | SportsLNV',
         },
         description:
             'Get live sports scores, expert match predictions, fantasy team tips, breaking news and player stats for Football, Cricket, Basketball, Tennis and more.',
@@ -64,9 +64,9 @@ export async function generateMetadata(): Promise<Metadata> {
             'fantasy cricket', 'dream11 prediction', 'ipl 2025', 'premier league scores',
             'today match', 'playing 11', 'sports news',
         ],
-        authors: [{ name: 'SportsPulse' }],
-        creator: 'SportsPulse',
-        publisher: 'SportsPulse Media',
+        authors: [{ name: 'SportsLNV' }],
+        creator: 'SportsLNV',
+        publisher: 'SportsLNV Media',
         robots: {
             index: true,
             follow: true,
@@ -76,16 +76,16 @@ export async function generateMetadata(): Promise<Metadata> {
             type: 'website',
             locale: 'en_US',
             url: process.env.NEXT_PUBLIC_SITE_URL,
-            siteName: 'SportsPulse',
-            title: 'SportsPulse — Live Scores, Predictions & Fantasy Tips',
+            siteName: 'SportsLNV',
+            title: 'SportsLNV — Live Scores, Predictions & Fantasy Tips',
             description:
                 'Live scores, expert predictions, fantasy tips, and breaking sports news.',
-            images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'SportsPulse' }],
+            images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'SportsLNV' }],
         },
         twitter: {
             card: 'summary_large_image',
-            site: '@SportsPulse',
-            creator: '@SportsPulse',
+            site: '@SportsLNV',
+            creator: '@SportsLNV',
         },
         alternates: {
             canonical: process.env.NEXT_PUBLIC_SITE_URL,

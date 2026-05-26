@@ -18,11 +18,11 @@ import { AdBanner } from '@/components/AdBanner'
 import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
 
 export const metadata: Metadata = {
-    title: 'SportsPulse — Live Scores, News & Expert Blogs',
+    title: 'SportsLNV — Live Scores, News & Expert Blogs',
     description:
         'Follow live cricket, football, basketball scores. Get expert analysis, in-depth blogs, and breaking sports news.',
     openGraph: {
-        title: 'SportsPulse — Your #1 Live Sports Destination',
+        title: 'SportsLNV — Your #1 Live Sports Destination',
         description: 'Live scores, expert blogs, and breaking sports news all in one place.',
     },
 }

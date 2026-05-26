@@ -38,7 +38,7 @@ export function HeroSection({ liveMatches, featuredMatches }: HeroSectionProps) 
               </span>
             </h1>
             <p className="text-slate-400 text-lg md:text-xl max-w-lg mb-8 leading-relaxed">
-              Real-time updates, expert insights, and fantasy tips for every major sport. Never miss a moment with SportsPulse.
+              Real-time updates, expert insights, and fantasy tips for every major sport. Never miss a moment with SportsLNV.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/live">

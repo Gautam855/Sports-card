@@ -3,7 +3,7 @@ import { getFootballHighlights } from '@/lib/api/rapid'
 import { Play, Calendar, Trophy, Zap } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Football Highlights & Videos — SportsPulse',
+    title: 'Football Highlights & Videos — SportsLNV',
     description: 'Watch the latest football highlights, goals, and match summaries from top leagues around the world.',
 }
 

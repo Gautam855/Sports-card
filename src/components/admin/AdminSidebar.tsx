@@ -47,7 +47,7 @@ export function AdminSidebar({ profile }: AdminSidebarProps) {
                     <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
                         <Zap className="w-4 h-4 text-white" fill="white" />
                     </div>
-                    <span className="font-display font-bold">SportsPulse</span>
+                    <span className="font-display font-bold">SportsLNV</span>
                 </Link>
                 <div className="mt-1 text-xs text-muted-foreground">Admin Panel</div>
             </div>

@@ -1,15 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { verifyToken } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
+/**
+ * Create a Supabase admin client using the SERVICE_ROLE_KEY.
+ * This bypasses RLS so the server can upload to storage
+ * without needing a Supabase Auth session.
+ */
+function createAdminClient() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+    if (!serviceKey) {
+        throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set in environment variables')
+    }
+    return createSupabaseClient(url, serviceKey)
+}
+
 export async function POST(req: NextRequest) {
     try {
-        const supabase = await createClient()
-        const { data: { user } } = await supabase.auth.getUser()
+        // ── Auth: verify our custom JWT (not Supabase Auth) ──
+        const authHeader = req.headers.get('authorization')
+        const token = authHeader?.startsWith('Bearer ')
+            ? authHeader.slice(7)
+            : req.cookies.get('sp_auth_token')?.value
 
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        if (!token) {
+            return NextResponse.json({ error: 'Unauthorized – no token' }, { status: 401 })
+        }
+
+        const payload = await verifyToken(token)
+        if (!payload) {
+            return NextResponse.json({ error: 'Unauthorized – invalid token' }, { status: 401 })
         }
 
         const formData = await req.formData()
@@ -36,6 +59,9 @@ export async function POST(req: NextRequest) {
 
         const arrayBuffer = await file.arrayBuffer()
         const buffer = new Uint8Array(arrayBuffer)
+
+        // Use admin client (service role) to bypass storage RLS
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase.storage
             .from('media')

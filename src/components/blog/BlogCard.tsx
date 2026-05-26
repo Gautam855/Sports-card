@@ -90,7 +90,7 @@ export function BlogCard({ blog, className }: BlogCardProps) {
                                 <User className="w-3 h-3 text-primary" />
                             </div>
                             <span className="text-[11px] font-semibold text-foreground/80">
-                                {blog.author?.display_name || 'SportsPulse'}
+                                {blog.author?.display_name || 'SportsLNV'}
                             </span>
                         </div>
                         <div className="flex items-center gap-3">

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sportspulse.com'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sportslnv.com'
 
 function url(path: string, lastmod?: string, priority = 0.7, changefreq = 'weekly') {
     return `

@@ -6,10 +6,10 @@ import { PenTool, Search, Sparkles, Filter } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-    title: 'Blog — Expert Sports Analysis & Opinions | SportsPulse',
+    title: 'Blog — Expert Sports Analysis & Opinions | SportsLNV',
     description: 'Read in-depth sports analysis, expert opinions, match previews, and behind-the-scenes stories from the world of cricket, football, basketball, and more.',
     openGraph: {
-        title: 'SportsPulse Blog — Expert Sports Analysis',
+        title: 'SportsLNV Blog — Expert Sports Analysis',
         description: 'In-depth sports analysis, expert opinions, and the latest stories from the sports world.',
     },
 }
@@ -32,12 +32,12 @@ export default async function BlogListingPage() {
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Blog',
-        name: 'SportsPulse Blog',
+        name: 'SportsLNV Blog',
         description: 'Expert sports analysis, opinions, and stories.',
-        url: 'https://sportspulse.com/blog',
+        url: 'https://sportslnv.com/blog',
         publisher: {
             '@type': 'Organization',
-            name: 'SportsPulse',
+            name: 'SportsLNV',
         },
     }
 
@@ -58,7 +58,7 @@ export default async function BlogListingPage() {
                             <span>Expert Analysis & Opinions</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white mb-4">
-                            Sports<span className="text-primary">Pulse</span> Blog
+                            Sports<span className="text-primary">LNV</span> Blog
                         </h1>
                         <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
                             In-depth analysis, expert opinions, match previews, and behind-the-scenes stories from the world of sports.

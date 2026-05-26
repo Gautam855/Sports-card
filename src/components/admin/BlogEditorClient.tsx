@@ -91,7 +91,13 @@ export function BlogEditorClient({ article, categories, categoryId }: BlogEditor
             formData.append('file', file)
             formData.append('folder', 'blog-covers')
 
-            const res = await fetch('/api/upload', { method: 'POST', body: formData })
+            // Send the custom JWT token so the server can verify us
+            const token = localStorage.getItem('sp_auth_token')
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            })
             const json = await res.json()
 
             if (!res.ok) {
@@ -351,7 +357,7 @@ export function BlogEditorClient({ article, categories, categoryId }: BlogEditor
                                 <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Google Preview</p>
                                 <div className="space-y-1">
                                     <p className="text-blue-600 text-base font-medium line-clamp-1">{metaTitleValue || titleValue || 'Blog Post Title'}</p>
-                                    <p className="text-green-700 text-xs font-mono">sportspulse.com/blog/{slugValue || 'your-post-slug'}</p>
+                                    <p className="text-green-700 text-xs font-mono">sportslnv.com/blog/{slugValue || 'your-post-slug'}</p>
                                     <p className="text-xs text-muted-foreground line-clamp-2">{metaDescValue || form.watch('excerpt') || 'Your meta description will appear here...'}</p>
                                 </div>
                             </div>

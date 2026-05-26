@@ -40,17 +40,17 @@ export function Footer() {
                             <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
                                 <Zap className="w-5 h-5 text-white" fill="white" />
                             </div>
-                            <span className="font-display font-bold text-lg">SportsPulse</span>
+                            <span className="font-display font-bold text-lg">SportsLNV</span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-[200px]">
                             Your go-to destination for live scores, predictions and fantasy sports.
                         </p>
                         <div className="flex items-center gap-3 mt-4">
                             {[
-                                { Icon: Twitter, href: 'https://twitter.com/sportspulse' },
-                                { Icon: Youtube, href: 'https://youtube.com/sportspulse' },
-                                { Icon: Instagram, href: 'https://instagram.com/sportspulse' },
-                                { Icon: Facebook, href: 'https://facebook.com/sportspulse' },
+                                { Icon: Twitter, href: 'https://twitter.com/sportslnv' },
+                                { Icon: Youtube, href: 'https://youtube.com/sportslnv' },
+                                { Icon: Instagram, href: 'https://instagram.com/sportslnv' },
+                                { Icon: Facebook, href: 'https://facebook.com/sportslnv' },
                             ].map(({ Icon, href }) => (
                                 <a
                                     key={href}
@@ -110,7 +110,7 @@ export function Footer() {
 
                 <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <p className="text-xs text-muted-foreground">
-                        © {new Date().getFullYear()} SportsPulse. All rights reserved.
+                        © {new Date().getFullYear()} SportsLNV. All rights reserved.
                     </p>
                     <p className="text-xs text-muted-foreground">
                         Live scores, predictions & fantasy sports

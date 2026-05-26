@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import type { News, NewsFilters, PaginationParams, PaginatedResponse } from '@/lib/types'
 import { recordAPISuccess, recordAPIError } from './api-status'
+import { getActiveKey, handleRateLimit } from './key-manager'
 
 
 export async function getNews(
@@ -151,11 +152,15 @@ export async function searchNews(query: string, limit = 20): Promise<News[]> {
     return (data ?? []) as unknown as News[]
 }
 
-/** Fetch real-time news from SerpApi (Google News) */
+/** Fetch real-time news from SerpApi (Google News) with auto key rotation */
 export async function getRealTimeNews(query: string = "international sports news", limit: number = 10): Promise<News[]> {
-    const apiKey = process.env.SERPAPI_KEY
+    return _fetchSerpApi(query, limit, false)
+}
+
+async function _fetchSerpApi(query: string, limit: number, _retried: boolean): Promise<News[]> {
+    const apiKey = await getActiveKey('serpapi')
     if (!apiKey) {
-        console.warn("[getRealTimeNews] SERPAPI_KEY is not configured")
+        console.warn("[getRealTimeNews] No SERPAPI_KEY configured (SERPAPI_KEY_1, SERPAPI_KEY_2, ...)")
         return []
     }
 
@@ -164,8 +169,17 @@ export async function getRealTimeNews(query: string = "international sports news
         const searchTerms = `${query} US UK international`
         const url = `https://serpapi.com/search.json?engine=google_news&q=${encodeURIComponent(searchTerms)}&api_key=${apiKey}&gl=us&hl=en`
 
-
         const res = await fetch(url, { next: { revalidate: 3600 } }) // Cache for 1 hour
+
+        // ── Auto-rotate on rate limit or quota exhaustion ──
+        if ((res.status === 429 || res.status === 403) && !_retried) {
+            console.warn(`[SerpApi] Rate limited (${res.status}), rotating key...`)
+            const rotated = await handleRateLimit('serpapi')
+            if (rotated) {
+                return _fetchSerpApi(query, limit, true)
+            }
+        }
+
         if (!res.ok) {
             recordAPIError('SerpApi', 'serpapi.com', 'Real-time News', res.status, `SerpApi responded with ${res.status}`)
             return []

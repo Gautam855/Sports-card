@@ -73,7 +73,7 @@ export default async function PredictionPage({ params }: Props) {
         headline: p.title,
         author: p.author ? { '@type': 'Person', name: p.author.display_name ?? p.author.username } : undefined,
         datePublished: p.published_at,
-        publisher: { '@type': 'Organization', name: 'SportsPulse' },
+        publisher: { '@type': 'Organization', name: 'SportsLNV' },
     }
 
     return (

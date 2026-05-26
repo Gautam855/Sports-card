@@ -58,7 +58,7 @@ export function Header() {
                             </div>
                         </div>
                         <span className="font-display font-bold text-xl hidden sm:block">
-                            Sports<span className="text-brand-400">Pulse</span>
+                            Sports<span className="text-brand-400">LNV</span>
                         </span>
                     </Link>
 

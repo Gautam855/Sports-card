@@ -51,7 +51,7 @@ function RegisterForm() {
                 </Link>
                 <h1 className="text-2xl font-bold font-display">Create Account</h1>
                 <p className="text-sm text-muted-foreground">
-                    Join SportsPulse and get in the game
+                    Join SportsLNV and get in the game
                 </p>
             </div>
 

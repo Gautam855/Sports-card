@@ -52,6 +52,7 @@ const PROVIDERS = {
     tennis: { label: 'Tennis (API-Sports)', envPrefix: 'TENNIS_KEY' },
     cricket: { label: 'Cricket (Cricbuzz)', envPrefix: 'CRICKET_KEY' },
     rugby: { label: 'Rugby (RugbyAPI2)', envPrefix: 'RUGBY_KEY' },
+    serpapi: { label: 'SerpApi (Google News)', envPrefix: 'SERPAPI_KEY' },
 } as const
 
 export type ProviderName = keyof typeof PROVIDERS

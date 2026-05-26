@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export function GET() {
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sportspulse.com'
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sportslnv.com'
     const content = `User-agent: *
 Allow: /
 Disallow: /admin/

@@ -4,7 +4,7 @@ import { TrendingUp, Clock, Zap, Percent, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-    title: 'Betting Arbitrage — SportsPulse',
+    title: 'Betting Arbitrage — SportsLNV',
     description: 'Find real-time sports betting arbitrage opportunities across multiple bookmakers.',
 }
 

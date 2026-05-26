@@ -25,13 +25,14 @@ interface HealthCheckTarget {
 
 async function getTargets(): Promise<HealthCheckTarget[]> {
     // Fetch active keys from key-manager (uses DB-persisted active slot)
-    const [football536Key, cricketKey, basketballKey, baseballKey, tennisKey, rugbyKey] = await Promise.all([
+    const [football536Key, cricketKey, basketballKey, baseballKey, tennisKey, rugbyKey, serpApiKey] = await Promise.all([
         getActiveKey('football536'),
         getActiveKey('cricket'),
         getActiveKey('basketball'),
         getActiveKey('baseball'),
         getActiveKey('tennis'),
         getActiveKey('rugby'),
+        getActiveKey('serpapi'),
     ])
 
     return [
@@ -93,7 +94,7 @@ async function getTargets(): Promise<HealthCheckTarget[]> {
             name: 'SerpApi',
             host: 'serpapi.com',
             sport: 'Real-time News',
-            url: `https://serpapi.com/account?api_key=${process.env.SERPAPI_KEY}`,
+            url: `https://serpapi.com/account?api_key=${serpApiKey}`,
             headers: {},
         },
     ]

@@ -15,7 +15,7 @@ import { getComments } from '@/lib/api/comments'
 
 interface Props { params: Promise<{ slug: string }> }
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://sportspulse.com'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://sportslnv.com'
 
 /** Dynamic SEO metadata */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const url = `${SITE_URL}/blog/${slug}`
 
     return {
-        title: `${title} | SportsPulse Blog`,
+        title: `${title} | SportsLNV Blog`,
         description,
         keywords: [article.category?.name, 'sports blog', 'analysis'].filter(Boolean).join(', '),
         authors: article.author ? [{ name: article.author.display_name || article.author.username }] : undefined,
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             publishedTime: article.published_at,
             authors: article.author?.display_name ? [article.author.display_name] : undefined,
             images: image ? [{ url: image, width: 1200, height: 630, alt: article.cover_alt || article.title }] : undefined,
-            siteName: 'SportsPulse',
+            siteName: 'SportsLNV',
         },
         twitter: {
             card: 'summary_large_image',
@@ -80,11 +80,11 @@ export default async function BlogDetailPage({ params }: Props) {
         dateModified: article.published_at,
         author: {
             '@type': 'Person',
-            name: article.author?.display_name || article.author?.username || 'SportsPulse',
+            name: article.author?.display_name || article.author?.username || 'SportsLNV',
         },
         publisher: {
             '@type': 'Organization',
-            name: 'SportsPulse',
+            name: 'SportsLNV',
             logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
         },
         mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
@@ -176,7 +176,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                         )}
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold">{article.author?.display_name || article.author?.username || 'SportsPulse Expert'}</p>
+                                        <p className="text-sm font-bold">{article.author?.display_name || article.author?.username || 'SportsLNV Expert'}</p>
                                         {article.author?.bio && (
                                             <p className="text-[10px] text-muted-foreground line-clamp-1">{article.author.bio}</p>
                                         )}

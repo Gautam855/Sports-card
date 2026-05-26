@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose'
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'sportspulse-super-secret-key-2025-change-in-production'
+  process.env.JWT_SECRET || 'sportslnv-super-secret-key-2025-change-in-production'
 )
 
 export interface JWTPayload {
