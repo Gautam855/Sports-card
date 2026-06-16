@@ -231,10 +231,13 @@ export default async function BlogDetailPage({ params }: Props) {
                                     prose-strong:text-foreground
                                 "
                                 dangerouslySetInnerHTML={{ 
-                                    __html: (article.content || '').replace(/<(h[23])>(.*?)<\/h[23]>/g, (match, tag, text, offset) => {
-                                        const id = `heading-${offset}`
-                                        return `<${tag} id="${id}">${text}</${tag}>`
-                                    })
+                                    __html: (article.content || '')
+                                        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                                        .replace(/<link[^>]*rel="stylesheet"[^>]*>/gi, '')
+                                        .replace(/<(h[23])>(.*?)<\/h[23]>/g, (match, tag, text, offset) => {
+                                            const id = `heading-${offset}`
+                                            return `<${tag} id="${id}">${text}</${tag}>`
+                                        })
                                 }}
                             />
                         </div>

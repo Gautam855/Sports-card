@@ -35,9 +35,14 @@ export default async function NewsDetailPage({ params }: Props) {
           </div>
         )}
 
-        <div className="prose prose-slate dark:prose-invert max-w-none mb-16">
-          {article.content}
-        </div>
+        <div 
+          className="prose prose-slate dark:prose-invert max-w-none mb-16"
+          dangerouslySetInnerHTML={{ 
+            __html: (article.content || '')
+              .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+              .replace(/<link[^>]*rel="stylesheet"[^>]*>/gi, '')
+          }}
+        />
 
         <div className="border-t border-border pt-10 mb-16">
             <MerchandiseShowcase 
