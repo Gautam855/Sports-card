@@ -65,15 +65,16 @@ export function DynamicScripts() {
                         )
 
                     case 'script-inline':
+                        // Strip <script> and </script> tags in case the user accidentally pasted them in the dashboard
+                        const safeContent = s.content.replace(/<\/?script[^>]*>/gi, '')
                         return (
                             <Script
                                 key={s.id}
                                 id={`site-script-${s.slug}`}
                                 strategy={s.loading_strategy}
                                 {...(s.attributes || {})}
-                            >
-                                {s.content}
-                            </Script>
+                                dangerouslySetInnerHTML={{ __html: safeContent }}
+                            />
                         )
 
                     case 'meta':

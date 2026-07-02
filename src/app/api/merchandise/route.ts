@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { verifyAdmin } from '@/lib/api/admin-auth'
+
+function createAdminClient() {
+    return createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+}
 
 async function getSupabase() {
     const cookieStore = await cookies()
@@ -70,8 +79,13 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
     try {
+        const auth = await verifyAdmin(req)
+        if ('error' in auth) {
+            return NextResponse.json({ error: auth.error }, { status: auth.status })
+        }
+
         const body = await req.json()
-        const supabase = await getSupabase()
+        const supabase = createAdminClient()
 
         const item = {
             name: body.name,
@@ -112,6 +126,11 @@ export async function POST(req: NextRequest) {
  */
 export async function PUT(req: NextRequest) {
     try {
+        const auth = await verifyAdmin(req)
+        if ('error' in auth) {
+            return NextResponse.json({ error: auth.error }, { status: auth.status })
+        }
+
         const body = await req.json()
         const { id, ...updates } = body
 
@@ -119,7 +138,7 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ error: 'Missing item id' }, { status: 400 })
         }
 
-        const supabase = await getSupabase()
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('merchandise')
             .update({ ...updates, updated_at: new Date().toISOString() })
@@ -142,6 +161,11 @@ export async function PUT(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
     try {
+        const auth = await verifyAdmin(req)
+        if ('error' in auth) {
+            return NextResponse.json({ error: auth.error }, { status: auth.status })
+        }
+
         const { searchParams } = new URL(req.url)
         const id = searchParams.get('id')
 
@@ -149,7 +173,7 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ error: 'Missing item id' }, { status: 400 })
         }
 
-        const supabase = await getSupabase()
+        const supabase = createAdminClient()
         const { error } = await supabase
             .from('merchandise')
             .delete()

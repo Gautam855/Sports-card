@@ -93,9 +93,13 @@ export default function AdminMerchandisePage() {
             const res = await fetch(`/api/merchandise?id=${id}`, { method: 'DELETE' })
             if (res.ok) {
                 fetchItems()
+            } else {
+                const data = await res.json()
+                alert(data.error || 'Failed to delete merchandise')
             }
         } catch (error) {
             console.error('Failed to delete merchandise', error)
+            alert('An error occurred while deleting merchandise')
         }
     }
 

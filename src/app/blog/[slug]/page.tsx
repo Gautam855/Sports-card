@@ -11,6 +11,7 @@ import { TableOfContents } from '@/components/blog/TableOfContents'
 import { Calendar, Clock, Eye, User, ArrowLeft, Tag, ChevronRight } from 'lucide-react'
 import { BlogInteraction } from '@/components/blog/BlogInteraction'
 import { CommentSection } from '@/components/blog/CommentSection'
+import { BlogContent } from '@/components/blog/BlogContent'
 import { getComments } from '@/lib/api/comments'
 
 interface Props { params: Promise<{ slug: string }> }
@@ -218,28 +219,7 @@ export default async function BlogDetailPage({ params }: Props) {
                             <div className="md:hidden">
                                 <TableOfContents content={article.content || ''} />
                             </div>
-                            <div
-                                className="prose prose-lg prose-slate dark:prose-invert max-w-none
-                                    prose-headings:font-display prose-headings:tracking-tight
-                                    prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-border/50 prose-h2:pb-3
-                                    prose-h3:text-xl prose-h3:mt-8
-                                    prose-p:leading-relaxed prose-p:text-foreground/85
-                                    prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                                    prose-img:rounded-xl prose-img:shadow-lg
-                                    prose-blockquote:border-l-primary prose-blockquote:bg-muted/30 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
-                                    prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                                    prose-strong:text-foreground
-                                "
-                                dangerouslySetInnerHTML={{ 
-                                    __html: (article.content || '')
-                                        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-                                        .replace(/<link[^>]*rel="stylesheet"[^>]*>/gi, '')
-                                        .replace(/<(h[23])>(.*?)<\/h[23]>/g, (match, tag, text, offset) => {
-                                            const id = `heading-${offset}`
-                                            return `<${tag} id="${id}">${text}</${tag}>`
-                                        })
-                                }}
-                            />
+                            <BlogContent content={article.content || ''} />
                         </div>
                     </div>
 

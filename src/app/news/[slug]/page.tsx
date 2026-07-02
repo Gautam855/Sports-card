@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { formatDate } from '@/lib/utils'
 import { NewsCard } from '@/components/news/NewsCard'
 import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
+import { BlogContent } from '@/components/blog/BlogContent'
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -35,14 +36,9 @@ export default async function NewsDetailPage({ params }: Props) {
           </div>
         )}
 
-        <div 
-          className="prose prose-slate dark:prose-invert max-w-none mb-16"
-          dangerouslySetInnerHTML={{ 
-            __html: (article.content || '')
-              .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-              .replace(/<link[^>]*rel="stylesheet"[^>]*>/gi, '')
-          }}
-        />
+        <div className="mb-16">
+          <BlogContent content={article.content || ''} />
+        </div>
 
         <div className="border-t border-border pt-10 mb-16">
             <MerchandiseShowcase 
