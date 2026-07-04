@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { LiveScoresClient } from './LiveScoresClient'
 import { getAllLiveMatches } from '@/lib/api/rapid'
-import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
+
 
 export const metadata: Metadata = {
     title: 'Live Scores — Football, Cricket, Basketball & More',
@@ -34,15 +34,7 @@ export default async function LivePage() {
 
             <LiveScoresClient initialMatches={initialMatches} />
 
-            <div className="mt-16 pt-12 border-t border-border/50">
-                <MerchandiseShowcase 
-                    placement="live_page" 
-                    layout="grid" 
-                    limit={4} 
-                    title="Trending Gear"
-                    subtitle="Get the official gear for your favorite teams while you watch them live"
-                />
-            </div>
+
         </div>
     )
 }

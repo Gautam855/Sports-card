@@ -15,7 +15,7 @@ import { TrendingSection } from '@/components/news/TrendingSection'
 import { MatchCardSkeleton } from '@/components/sports/MatchCard'
 import { NewsCardSkeleton } from '@/components/news/NewsCard'
 import { AdBanner } from '@/components/AdBanner'
-import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
+
 
 export const metadata: Metadata = {
     title: 'SportsLNV — Live Scores, News & Expert Blogs',
@@ -95,16 +95,7 @@ export default async function HomePage() {
                 </div>
             </section>
 
-            {/* Merchandise Store Showcase (Homepage) */}
-            <section className="container-wide py-8 border-t border-border/50">
-                <MerchandiseShowcase 
-                    placement="homepage" 
-                    layout="carousel" 
-                    limit={5} 
-                    title="Official Store"
-                    subtitle="Gear up with top-selling merchandise and signature athlete gear"
-                />
-            </section>
+
 
             {/* 4. Blog Section */}
             <Suspense fallback={<SectionSkeleton />}>

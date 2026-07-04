@@ -6,7 +6,7 @@ import {
     getBaseballMatchDetail, getRugbyMatchDetail,
     getTennisMatchDetail, getCricketMatchDetail
 } from '@/lib/api/rapid'
-import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
+
 
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -569,16 +569,7 @@ export default async function ScorePage({ params }: { params: Promise<{ slug: st
                         </div>
                     )}
 
-                    {/* Merchandise Sidebar Widget */}
-                    <div className="mt-6">
-                        <MerchandiseShowcase 
-                            placement="match_sidebar" 
-                            sport={match.sport_type}
-                            layout="sidebar" 
-                            limit={3} 
-                            title="Official Team Gear"
-                        />
-                    </div>
+
                 </div>
             </div>
         </div>

@@ -13,7 +13,7 @@ import { MatchCard } from '@/components/sports/MatchCard'
 import { Suspense } from 'react'
 import { MatchCardSkeleton } from '@/components/sports/MatchCard'
 import { SportMatchBoard } from '@/components/sports/SportMatchBoard'
-import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
+
 
 // ── Sport definitions ────────────────────────────────────────────
 
@@ -240,15 +240,7 @@ export default async function SportPage({ params }: { params: Promise<{ slug: st
                     sportEmoji={sport.emoji}
                 />
 
-                {/* Sport-specific Merchandise */}
-                <MerchandiseShowcase 
-                    placement="sport_page" 
-                    layout="grid" 
-                    limit={4} 
-                    sport={slug}
-                    title={`${sport.name} Essentials`}
-                    subtitle={`Gear up with official ${sport.name} merchandise and fan favorites`}
-                />
+
             </div>
         </div>
     )

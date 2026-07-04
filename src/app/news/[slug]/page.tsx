@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { formatDate } from '@/lib/utils'
 import { NewsCard } from '@/components/news/NewsCard'
-import { MerchandiseShowcase } from '@/components/merchandise/MerchandiseShowcase'
+
 import { BlogContent } from '@/components/blog/BlogContent'
 
 interface Props { params: Promise<{ slug: string }> }
@@ -40,15 +40,7 @@ export default async function NewsDetailPage({ params }: Props) {
           <BlogContent content={article.content || ''} />
         </div>
 
-        <div className="border-t border-border pt-10 mb-16">
-            <MerchandiseShowcase 
-                placement="article_bottom" 
-                layout="grid" 
-                limit={4} 
-                title="Trending Sports Gear"
-                subtitle="Support your favorite teams and athletes"
-            />
-        </div>
+
 
         {related.length > 0 && (
           <div className="border-t border-border pt-10">

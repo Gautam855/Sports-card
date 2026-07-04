@@ -30,7 +30,7 @@ const MAIN_NAV = [
     { label: 'Live', href: '/live', icon: Activity, badge: 'LIVE', badgeColor: 'bg-red-500' },
     { label: 'Scores', href: '/matches', icon: Trophy },
     { label: 'Highlights', href: '/highlights', icon: Play },
-    { label: 'Store', href: '/store', icon: ShoppingBag },
+    // { label: 'Store', href: '/store', icon: ShoppingBag },
     // { label: 'Arbitrage', href: '/arbitrage', icon: Zap },
     { label: 'News', href: '/news', icon: Globe },
     // { label: 'Blog', href: '/blog', icon: Zap },
