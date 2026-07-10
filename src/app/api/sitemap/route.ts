@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sportslnv.com'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.sportslnv.com'
 
 function url(path: string, lastmod?: string, priority = 0.7, changefreq = 'weekly') {
     return `
@@ -30,16 +30,23 @@ export async function GET() {
         url('/', undefined, 1.0, 'daily'),
         url('/live', undefined, 1.0, 'always'),
         url('/news', undefined, 0.9, 'hourly'),
+        url('/blog', undefined, 0.9, 'hourly'),
         url('/predictions', undefined, 0.9, 'daily'),
         url('/fantasy', undefined, 0.9, 'daily'),
+        url('/matches', undefined, 0.8, 'daily'),
+        url('/highlights', undefined, 0.8, 'daily'),
+        url('/arbitrage', undefined, 0.8, 'daily'),
         url('/sport/football', undefined, 0.8, 'daily'),
         url('/sport/cricket', undefined, 0.8, 'daily'),
         url('/sport/basketball', undefined, 0.8, 'daily'),
         url('/sport/tennis', undefined, 0.8, 'daily'),
+        url('/sport/rugby', undefined, 0.8, 'daily'),
+        url('/sport/baseball', undefined, 0.8, 'daily'),
         url('/sport/f1', undefined, 0.8, 'daily'),
     ]
 
     const newsUrls = (news ?? []).map(n => url(`/news/${n.slug}`, n.updated_at, 0.8, 'weekly'))
+    const blogUrls = (news ?? []).map(n => url(`/blog/${n.slug}`, n.updated_at, 0.8, 'weekly'))
     const predUrls = (predictions ?? []).map(p => url(`/predictions/${p.slug}`, p.updated_at, 0.8, 'weekly'))
     const fantasyUrls = (fantasyTips ?? []).map(f => url(`/fantasy/${f.slug}`, f.updated_at, 0.8, 'weekly'))
 
@@ -47,7 +54,7 @@ export async function GET() {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  ${[...staticPages, ...newsUrls, ...predUrls, ...fantasyUrls].join('\n')}
+  ${[...staticPages, ...newsUrls, ...blogUrls, ...predUrls, ...fantasyUrls].join('\n')}
 </urlset>`
 
     return new NextResponse(sitemap, {

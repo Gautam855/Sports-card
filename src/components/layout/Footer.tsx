@@ -13,20 +13,14 @@ const SPORTS_LINKS = [
 const CONTENT_LINKS = [
     { label: 'Live Scores', href: '/live' },
     { label: 'Football Highlights', href: '/highlights' },
-    { label: 'Match Predictions', href: '/predictions' },
-    { label: 'Betting Arbitrage', href: '/arbitrage' },
-    { label: 'Fantasy Tips', href: '/fantasy' },
     { label: 'Sports News', href: '/news' },
     { label: 'Match Schedule', href: '/matches' },
+    { label: 'Blog', href: '/blog' },
 ]
 
 const COMPANY_LINKS = [
-    { label: 'About Us', href: '/about' },
-    { label: 'Contact', href: '/contact' },
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Service', href: '/terms' },
-    { label: 'Advertise', href: '/advertise' },
-    { label: 'Sitemap', href: '/sitemap.xml' },
 ]
 
 export function Footer() {

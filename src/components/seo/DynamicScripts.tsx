@@ -65,15 +65,12 @@ export function DynamicScripts() {
                         )
 
                     case 'script-inline':
-                        // Strip <script> and </script> tags in case the user accidentally pasted them in the dashboard
-                        const safeContent = s.content.replace(/<\/?script[^>]*>/gi, '')
                         return (
-                            <Script
+                            <InlineScript
                                 key={s.id}
-                                id={`site-script-${s.slug}`}
-                                strategy={s.loading_strategy}
-                                {...(s.attributes || {})}
-                                dangerouslySetInnerHTML={{ __html: safeContent }}
+                                slug={s.slug}
+                                content={s.content}
+                                attributes={s.attributes}
                             />
                         )
 
@@ -89,14 +86,11 @@ export function DynamicScripts() {
 
                     case 'json-ld':
                         return (
-                            <Script
+                            <JsonLdScript
                                 key={s.id}
-                                id={`site-script-${s.slug}`}
-                                type="application/ld+json"
-                                strategy={s.loading_strategy}
-                            >
-                                {s.content}
-                            </Script>
+                                slug={s.slug}
+                                content={s.content}
+                            />
                         )
 
                     case 'noscript':
@@ -132,6 +126,73 @@ export function DynamicScripts() {
             })}
         </>
     )
+}
+
+/**
+ * Inject inline <script> via DOM to avoid React client-side rendering issues
+ */
+function InlineScript({ slug, content, attributes }: { slug: string; content: string; attributes: Record<string, any> }) {
+    useEffect(() => {
+        const id = `site-script-${slug}`
+        // Remove existing script if any
+        const existing = document.getElementById(id)
+        if (existing) existing.remove()
+
+        // Strip <script> tags in case user accidentally pasted them
+        const cleanContent = content.replace(/<\/?script[^>]*>/gi, '').trim()
+
+        // Skip if content contains HTML tags — it's not valid JavaScript
+        if (!cleanContent || /<[a-z][\s\S]*>/i.test(cleanContent)) {
+            return
+        }
+
+        try {
+            const el = document.createElement('script')
+            el.id = id
+            el.textContent = cleanContent
+
+            // Apply attributes
+            Object.entries(attributes || {}).forEach(([key, val]) => {
+                if (key !== 'dangerouslySetInnerHTML') {
+                    el.setAttribute(key, String(val))
+                }
+            })
+
+            document.body.appendChild(el)
+
+            return () => {
+                el.remove()
+            }
+        } catch (e) {
+            console.warn(`[DynamicScripts] Failed to inject inline script "${slug}":`, e)
+        }
+    }, [slug, content, attributes])
+
+    return null
+}
+
+/**
+ * Inject JSON-LD <script> via DOM
+ */
+function JsonLdScript({ slug, content }: { slug: string; content: string }) {
+    useEffect(() => {
+        const id = `site-script-${slug}`
+        const existing = document.getElementById(id)
+        if (existing) existing.remove()
+
+        const el = document.createElement('script')
+        el.id = id
+        el.type = 'application/ld+json'
+        el.textContent = content
+
+        document.head.appendChild(el)
+
+        return () => {
+            el.remove()
+        }
+    }, [slug, content])
+
+    return null
 }
 
 /**
