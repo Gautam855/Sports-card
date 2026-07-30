@@ -18,12 +18,12 @@ import { AdBanner } from '@/components/AdBanner'
 
 
 export const metadata: Metadata = {
-    title: 'SportsLNV — Live Scores, News & Expert Blogs',
+    title: 'Live Score, Sports News and Popular Sports Blogs',
     description:
-        'Follow live cricket, football, basketball scores. Get expert analysis, in-depth blogs, and breaking sports news.',
+        'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
     openGraph: {
-        title: 'SportsLNV — Your #1 Live Sports Destination',
-        description: 'Live scores, expert blogs, and breaking sports news all in one place.',
+        title: 'Live Score, Sports News and Popular Sports Blogs',
+        description: 'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
     },
 }
 
