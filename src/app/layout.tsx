@@ -164,8 +164,7 @@ fbq('track', 'PageView');`
                     }}
                 />
                 {/* End Meta Pixel Code */}
-            </head>
-            <body className="min-h-screen bg-background font-sans antialiased">
+
                 {/* Google Tag Manager (noscript) */}
                 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZG52CQZ"
                 height="0" width="0" style={{display:"none", visibility:"hidden"}}></iframe></noscript>
@@ -173,6 +172,8 @@ fbq('track', 'PageView');`
                 {/* Meta Pixel Code (noscript) */}
                 <noscript><img height="1" width="1" style={{ display: 'none' }} src="https://www.facebook.com/tr?id=3296516970531633&ev=PageView&noscript=1" alt="" /></noscript>
                 {/* End Meta Pixel Code (noscript) */}
+            </head>
+            <body className="min-h-screen bg-background font-sans antialiased">
                 <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
                     <QueryProvider>
                         <AuthProvider>
