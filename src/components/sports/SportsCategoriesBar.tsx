@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const categories = [
-  { name: 'All Sports', icon: Activity, href: '/matches', slug: 'all' },
   { name: 'Football', icon: Trophy, href: '/sport/football', slug: 'football' },
   { name: 'Cricket', icon: Target, href: '/sport/cricket', slug: 'cricket' },
   { name: 'Basketball', icon: Tv, href: '/sport/basketball', slug: 'basketball' },
@@ -22,7 +21,7 @@ export function SportsCategoriesBar() {
       <div className="container-wide">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-3">
           {categories.map((cat) => {
-            const isActive = pathname === cat.href || (cat.slug === 'all' && pathname === '/matches')
+            const isActive = pathname === cat.href
             
             return (
               <Link key={cat.name} href={cat.href}>

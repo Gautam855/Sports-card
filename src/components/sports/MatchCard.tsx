@@ -33,9 +33,8 @@ export function MatchCard({ match, className }: MatchCardProps) {
           {match.league?.name || (typeof match.sport === 'object' ? match.sport?.name : match.sport)}
         </span>
         {isLive ? (
-          <span className="live-badge">
-            <span className="live-dot" />
-            LIVE {match.score?.current_minute ? `${match.score.current_minute}'` : ''}
+          <span className="text-xs font-medium text-primary">
+            {match.score?.current_minute ? `${match.score.current_minute}'` : 'Playing'}
           </span>
         ) : isCompleted ? (
           <span className="text-xs text-muted-foreground font-medium">FT</span>

@@ -3,15 +3,13 @@
 import { motion } from 'framer-motion'
 import { MatchCard } from './MatchCard'
 import type { Match } from '@/lib/types'
-import Link from 'next/link'
 
 interface HeroSectionProps {
-  liveMatches: Match[]
   featuredMatches: Match[]
 }
 
-export function HeroSection({ liveMatches, featuredMatches }: HeroSectionProps) {
-  const displayMatches = liveMatches.length > 0 ? liveMatches.slice(0, 3) : featuredMatches.slice(0, 3)
+export function HeroSection({ featuredMatches }: HeroSectionProps) {
+  const displayMatches = featuredMatches.slice(0, 3)
 
   return (
     <section className="relative w-full py-12 md:py-20 overflow-hidden bg-slate-950">
@@ -32,7 +30,7 @@ export function HeroSection({ liveMatches, featuredMatches }: HeroSectionProps) 
               #1 Sports Destination
             </span>
             <h1 className="text-4xl md:text-6xl font-display font-extrabold text-white leading-tight mb-6">
-              Every Score. <br />
+              Every Match. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
                 Every Prediction.
               </span>
@@ -40,18 +38,7 @@ export function HeroSection({ liveMatches, featuredMatches }: HeroSectionProps) 
             <p className="text-slate-400 text-lg md:text-xl max-w-lg mb-8 leading-relaxed">
               Real-time updates, expert insights, and fantasy tips for every major sport. Never miss a moment with SportsLNV.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/live">
-                <button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-bold transition-all shadow-lg shadow-primary/25">
-                  Go Live
-                </button>
-              </Link>
-              <Link href="/matches">
-                <button className="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full font-bold transition-all border border-white/10 backdrop-blur-sm">
-                  View Scores
-                </button>
-              </Link>
-            </div>
+
           </motion.div>
 
           <motion.div

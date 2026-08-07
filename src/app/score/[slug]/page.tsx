@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (!match) return { title: 'Match Not Found' }
     return {
         title: `${match.home_team.short_name} vs ${match.away_team.short_name} — ${match.match_format} | ${match.league.name}`,
-        description: `${match.status_text}. Live scores, match info and commentary for ${match.home_team.name} vs ${match.away_team.name}.`,
+        description: `${match.status_text}. Match scores, match info and commentary for ${match.home_team.name} vs ${match.away_team.name}.`,
     }
 }
 
@@ -104,7 +104,7 @@ export default async function ScorePage({ params }: { params: Promise<{ slug: st
                         </div>
                         {isLive ? (
                             <span className="flex items-center gap-2 text-sm font-bold text-red-500 bg-red-500/10 px-4 py-1.5 rounded-full border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)] animate-pulse">
-                                <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" /> LIVE
+                                <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" /> PLAYING
                             </span>
                         ) : (
                             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-3 py-1 bg-foreground/5 rounded-full border border-border/50">
@@ -452,7 +452,7 @@ export default async function ScorePage({ params }: { params: Promise<{ slug: st
                                             <h3 className="font-bold text-lg mb-2">Rugby Match Insights</h3>
                                             <p className="text-muted-foreground text-sm">
                                                 This match is part of the <strong>{match.league.name}</strong>. 
-                                                Live score updates and phase details for {match.home_team.name} vs {match.away_team.name} will be updated in real-time.
+                                                Match score updates and phase details for {match.home_team.name} vs {match.away_team.name} will be updated in real-time.
                                             </p>
                                         </div>
                                     ) : match.sport_type === 'tennis' ? (
@@ -462,7 +462,7 @@ export default async function ScorePage({ params }: { params: Promise<{ slug: st
                                             </div>
                                             <h3 className="font-bold text-lg mb-2">Tennis Match Info</h3>
                                             <p className="text-muted-foreground text-sm">
-                                                Live point-by-point scoring and set details for <strong>{match.home_team.name} vs {match.away_team.name}</strong> will be updated as the match progresses.
+                                                Point-by-point scoring and set details for <strong>{match.home_team.name} vs {match.away_team.name}</strong> will be updated as the match progresses.
                                             </p>
                                         </div>
                                     ) : (

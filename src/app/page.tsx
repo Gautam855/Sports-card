@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { getAllLiveMatches, getAllTodayMatches, getFootballHighlights } from '@/lib/api/rapid'
+import { getAllTodayMatches, getFootballHighlights } from '@/lib/api/rapid'
 import { getFeaturedNews, getTrendingNews, getRealTimeNews, getNews } from '@/lib/api/news'
 
 import { HeroSection } from '@/components/sports/HeroSection'
-import { LiveMatchesSection } from '@/components/sports/LiveMatchesSection'
 import { HighlightsSection } from '@/components/sports/HighlightsSection'
 import { LatestNewsSection } from '@/components/news/LatestNewsSection'
 import { BlogSection } from '@/components/blog/BlogSection'
@@ -18,11 +17,11 @@ import { AdBanner } from '@/components/AdBanner'
 
 
 export const metadata: Metadata = {
-    title: 'Live Score, Sports News and Popular Sports Blogs',
+    title: 'Sports News and Popular Sports Blogs',
     description:
         'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
     openGraph: {
-        title: 'Live Score, Sports News and Popular Sports Blogs',
+        title: 'Sports News and Popular Sports Blogs',
         description: 'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
     },
 }
@@ -31,8 +30,7 @@ export const revalidate = 60 // ISR - revalidate every 60 seconds
 
 export default async function HomePage() {
     // Fetch live data from RapidAPI + news from Supabase (all graceful)
-    const [liveResult, todayResult, newsResult, trendingResult, serpNewsResult, blogsResult, highlightsResult] = await Promise.allSettled([
-        getAllLiveMatches(),
+    const [todayResult, newsResult, trendingResult, serpNewsResult, blogsResult, highlightsResult] = await Promise.allSettled([
         getAllTodayMatches(),
         getFeaturedNews(3),
         getTrendingNews(8),
@@ -42,7 +40,6 @@ export default async function HomePage() {
     ])
 
 
-    const live = (liveResult.status === 'fulfilled' ? liveResult.value : []) as any[]
     const featured = (todayResult.status === 'fulfilled' ? todayResult.value.slice(0, 6) : []) as any[]
     const trending = (trendingResult.status === 'fulfilled' ? trendingResult.value : []) as any[]
     
@@ -59,17 +56,10 @@ export default async function HomePage() {
     return (
         <>
             {/* 1. Hero Section */}
-            <HeroSection liveMatches={live} featuredMatches={featured} />
+            <HeroSection featuredMatches={featured} />
 
             {/* Sports categories quick nav */}
             <SportsCategoriesBar />
-
-            {/* 2. Live Matches */}
-            {live.length > 0 && (
-                <Suspense fallback={<SectionSkeleton />}>
-                    <LiveMatchesSection matches={live} />
-                </Suspense>
-            )}
 
             {/* Ad Banner */}
             <div className="container-wide py-4">

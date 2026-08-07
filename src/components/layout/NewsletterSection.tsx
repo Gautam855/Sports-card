@@ -11,7 +11,7 @@ export function NewsletterSection() {
           <Mail className="w-12 h-12 mx-auto mb-6 opacity-80" />
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Never miss a match update.</h2>
           <p className="text-primary-foreground/80 text-lg mb-8">
-            Get the latest scores, predictions and fantasy tips delivered straight to your inbox every week.
+            Get the latest predictions and fantasy tips delivered straight to your inbox every week.
           </p>
           <form className="flex flex-col sm:flex-row gap-3">
             <input 

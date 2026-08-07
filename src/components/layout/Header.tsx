@@ -27,8 +27,6 @@ const SPORTS_NAV = [
 
 const MAIN_NAV = [
     { label: 'Home', href: '/', icon: Globe },
-    { label: 'Live', href: '/live', icon: Activity, badge: 'LIVE', badgeColor: 'bg-red-500' },
-    { label: 'Scores', href: '/matches', icon: Trophy },
     { label: 'Highlights', href: '/highlights', icon: Play },
     // { label: 'Store', href: '/store', icon: ShoppingBag },
     // { label: 'Arbitrage', href: '/arbitrage', icon: Zap },
@@ -75,11 +73,6 @@ export function Header() {
                                         : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                                 )}
                             >
-                                {item.badge && (
-                                    <span className={cn('px-1.5 py-0.5 text-[10px] font-bold text-white rounded', item.badgeColor)}>
-                                        {item.badge}
-                                    </span>
-                                )}
                                 {item.label}
                             </Link>
                         ))}
@@ -247,11 +240,6 @@ export function Header() {
                                 >
                                     <item.icon className="w-4 h-4" />
                                     {item.label}
-                                    {item.badge && (
-                                        <span className={cn('ml-auto px-1.5 py-0.5 text-[10px] font-bold text-white rounded', item.badgeColor)}>
-                                            {item.badge}
-                                        </span>
-                                    )}
                                 </Link>
                             ))}
 

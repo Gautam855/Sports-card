@@ -68,7 +68,7 @@ export default function MatchesPage() {
                         <Trophy className="w-10 h-10 text-brand-500" />
                         Today's <span className="text-brand-500">Matches</span>
                     </h1>
-                    <p className="text-muted-foreground">Follow live scores and upcoming fixtures across all sports</p>
+                    <p className="text-muted-foreground">Follow match scores and upcoming fixtures across all sports</p>
                 </div>
                 
                 {/* Search Bar */}
@@ -99,7 +99,7 @@ export default function MatchesPage() {
                         className={cn("px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2", statusFilter === 'live' ? "bg-background shadow-sm border border-border text-red-500" : "text-muted-foreground hover:text-foreground")}
                     >
                         {statusFilter === 'live' && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />}
-                        Live Now
+                        Playing Now
                     </button>
                     <button 
                         onClick={() => setStatusFilter('finished')}

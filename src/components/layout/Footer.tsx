@@ -11,10 +11,8 @@ const SPORTS_LINKS = [
 ]
 
 const CONTENT_LINKS = [
-    { label: 'Live Scores', href: '/live' },
     { label: 'Football Highlights', href: '/highlights' },
     { label: 'Sports News', href: '/news' },
-    { label: 'Match Schedule', href: '/matches' },
     { label: 'Blog', href: '/blog' },
 ]
 
@@ -37,7 +35,7 @@ export function Footer() {
                             <span className="font-display font-bold text-lg">SportsLNV</span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-[200px]">
-                            Your go-to destination for live scores, predictions and fantasy sports.
+                            Your go-to destination for predictions and fantasy sports.
                         </p>
                         <div className="flex items-center gap-3 mt-4">
                             {[
@@ -107,7 +105,7 @@ export function Footer() {
                         © {new Date().getFullYear()} SportsLNV. All rights reserved.
                     </p>
                     <p className="text-xs text-muted-foreground">
-                        Live scores, predictions & fantasy sports
+                        Predictions & fantasy sports
                     </p>
                 </div>
             </div>

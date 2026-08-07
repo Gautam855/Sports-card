@@ -152,11 +152,7 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean, onClose: () 
                                     </div>
                                     <div className="px-2">
                                         <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Quick Navigation</h3>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Link href="/matches" onClick={onClose} className="p-3 rounded-xl hover:bg-muted border border-transparent hover:border-border transition-all flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500"><Trophy className="w-4 h-4" /></div>
-                                                <span className="text-sm font-bold">Latest Scores</span>
-                                            </Link>
+                                        <div className="grid grid-cols-1 gap-2">
                                             <Link href="/news" onClick={onClose} className="p-3 rounded-xl hover:bg-muted border border-transparent hover:border-border transition-all flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500"><Newspaper className="w-4 h-4" /></div>
                                                 <span className="text-sm font-bold">Top News</span>

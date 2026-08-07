@@ -54,14 +54,14 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
         title: {
-            default: 'SportsLNV — Live Scores, Predictions & Fantasy Tips',
+            default: 'SportsLNV — Match Predictions & Fantasy Tips',
             template: '%s | SportsLNV',
         },
         description:
-            'Get live sports scores, expert match predictions, fantasy team tips, breaking news and player stats for Football, Cricket, Basketball, Tennis and more.',
+            'Get expert match predictions, fantasy team tips, breaking news and player stats for Football, Cricket, Basketball, Tennis and more.',
         keywords: [
-            'live scores', 'cricket live score', 'football live score', 'match prediction',
-            'fantasy cricket', 'dream11 prediction', 'ipl 2025', 'premier league scores',
+            'match prediction',
+            'fantasy cricket', 'dream11 prediction', 'ipl 2025',
             'today match', 'playing 11', 'sports news',
         ],
         authors: [{ name: 'SportsLNV' }],
@@ -77,9 +77,9 @@ export async function generateMetadata(): Promise<Metadata> {
             locale: 'en_US',
             url: process.env.NEXT_PUBLIC_SITE_URL,
             siteName: 'SportsLNV',
-            title: 'SportsLNV — Live Scores, Predictions & Fantasy Tips',
+            title: 'SportsLNV — Match Predictions & Fantasy Tips',
             description:
-                'Live scores, expert predictions, fantasy tips, and breaking sports news.',
+                'Expert predictions, fantasy tips, and breaking sports news.',
             images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'SportsLNV' }],
         },
         twitter: {

@@ -149,7 +149,7 @@ export function SportMatchBoard({
                     )}
                 >
                     {activeTab === 'live' && <span className="w-2 h-2 rounded-full bg-white animate-pulse" />}
-                    Live Now ({filteredLive.length})
+                    Playing Now ({filteredLive.length})
                 </button>
                 <button
                     onClick={() => setActiveTab('upcoming')}
@@ -398,7 +398,7 @@ export function SportMatchBoard({
                         {sportEmoji}
                     </div>
                     <h3 className="text-lg font-bold">
-                        No {activeTab === 'live' ? 'Live' : activeTab === 'upcoming' ? 'Upcoming' : 'Completed'} {sportName} Matches Found
+                        No {activeTab === 'live' ? 'Playing' : activeTab === 'upcoming' ? 'Upcoming' : 'Completed'} {sportName} Matches Found
                     </h3>
                     <p className="text-muted-foreground max-w-sm mt-1">
                         {(filterType !== 'All' || filterCountry !== 'All' || filterLeague !== 'All' || searchQuery || selectedDate !== 'all') 

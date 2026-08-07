@@ -2,12 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Activity, Newspaper, Zap, FileText, Play } from 'lucide-react'
+import { Home, Activity, Newspaper, Zap, FileText, Play, LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const NAV_ITEMS = [
+type NavItem = {
+    label: string
+    href: string
+    icon: LucideIcon
+    live?: boolean
+}
+
+const NAV_ITEMS: NavItem[] = [
     { label: 'Home', href: '/', icon: Home },
-    { label: 'Live', href: '/live', icon: Activity, live: true },
     { label: 'Video', href: '/highlights', icon: Play },
     { label: 'News', href: '/news', icon: Newspaper },
 ]

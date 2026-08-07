@@ -27,44 +27,44 @@ const SPORTS: Record<string, {
     cricket: {
         name: 'Cricket',
         emoji: '🏏',
-        description: 'Live cricket scores, ball-by-ball updates, match schedules and results from international, domestic and T20 leagues.',
+        description: 'Cricket match scores, ball-by-ball updates, match schedules and results from international, domestic and T20 leagues.',
         color: 'text-sport-cricket',
-        keywords: ['cricket live score', 'cricket match today', 'ipl live score', 'test match score'],
+        keywords: ['cricket score', 'cricket match today', 'ipl score', 'test match score'],
     },
     football: {
         name: 'Football',
         emoji: '⚽',
-        description: 'Live football scores, Premier League, La Liga, Champions League fixtures and results updated in real-time.',
+        description: 'Football match scores, Premier League, La Liga, Champions League fixtures and results updated in real-time.',
         color: 'text-sport-football',
-        keywords: ['football live score', 'premier league scores', 'champions league', 'la liga results'],
+        keywords: ['football score', 'premier league scores', 'champions league', 'la liga results'],
     },
     basketball: {
         name: 'Basketball',
         emoji: '🏀',
-        description: 'NBA, EuroLeague and international basketball live scores, standings and schedules.',
+        description: 'NBA, EuroLeague and international basketball match scores, standings and schedules.',
         color: 'text-sport-basketball',
-        keywords: ['nba live score', 'basketball score today', 'euroleague'],
+        keywords: ['nba score', 'basketball score today', 'euroleague'],
     },
     baseball: {
         name: 'Baseball',
         emoji: '⚾',
-        description: 'MLB, NPB and international baseball live scores, standings and game results.',
+        description: 'MLB, NPB and international baseball match scores, standings and game results.',
         color: 'text-blue-600',
-        keywords: ['mlb live score', 'baseball score today', 'mlb standings', 'npb results'],
+        keywords: ['mlb score', 'baseball score today', 'mlb standings', 'npb results'],
     },
     rugby: {
         name: 'Rugby',
         emoji: '🏉',
-        description: 'Live rugby scores, Six Nations, Rugby Championship, and Premiership fixtures and results.',
+        description: 'Rugby match scores, Six Nations, Rugby Championship, and Premiership fixtures and results.',
         color: 'text-orange-600',
-        keywords: ['rugby live score', 'rugby match today', 'six nations results'],
+        keywords: ['rugby score', 'rugby match today', 'six nations results'],
     },
     tennis: {
         name: 'Tennis',
         emoji: '🎾',
-        description: 'ATP, WTA and Grand Slam live scores, tournament draws and match statistics.',
+        description: 'ATP, WTA and Grand Slam match scores, tournament draws and match statistics.',
         color: 'text-lime-500',
-        keywords: ['tennis live score', 'atp rankings', 'wta results', 'wimbledon scores'],
+        keywords: ['tennis score', 'atp rankings', 'wta results', 'wimbledon scores'],
     },
 
 }
@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (!sport) return { title: 'Sport Not Found' }
 
     return {
-        title: `${sport.name} Live Scores & Fixtures`,
+        title: `${sport.name} Match Scores & Fixtures`,
         description: sport.description,
         keywords: sport.keywords,
     }
