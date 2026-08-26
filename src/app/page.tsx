@@ -72,7 +72,7 @@ export default async function HomePage() {
     const heroArticles = dedupeArticles([...featured, ...serpNews, ...latest]).slice(0, 5)
     const breakingNews = [...breaking, ...serpNews.slice(0, 5)].slice(0, 5)
     const latestNewsGrid = dedupeArticles([...serpNews, ...latest]).slice(0, 5)
-    const trendingSidebar = trending.slice(0, 5)
+    const trendingSidebar = dedupeArticles([...trending, ...latest, ...serpNews]).slice(0, 10)
     const popularArticles = trending.slice(0, 10)
 
     return (

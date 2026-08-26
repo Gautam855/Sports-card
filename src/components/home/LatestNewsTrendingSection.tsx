@@ -52,7 +52,7 @@ export function LatestNewsTrendingSection({
     trending?: News[]
 }) {
     const items = news?.slice(0, 5) ?? []
-    const trendingItems = trending?.slice(0, 5) ?? []
+    const trendingItems = trending?.slice(0, 10) ?? []
 
     if (!items.length && !trendingItems.length) return null
 
@@ -61,7 +61,7 @@ export function LatestNewsTrendingSection({
 
     return (
         <section className="home-section py-10 md:py-12 bg-white border-y border-slate-100">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
                 {items.length > 0 && (
                     <div className="lg:col-span-8 min-w-0">
                         <div className="flex items-center justify-between mb-6">
@@ -153,25 +153,25 @@ export function LatestNewsTrendingSection({
 
                 {trendingItems.length > 0 && (
                     <div className={`min-w-0 ${items.length > 0 ? 'lg:col-span-4' : 'lg:col-span-12 max-w-md mx-auto w-full'}`}>
-                        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 md:p-6 h-full">
-                            <div className="flex items-center gap-2 mb-5 pb-4 border-b border-slate-200">
-                                <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center">
+                        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 md:p-6 shadow-sm">
+                            <div className="flex items-center gap-2 mb-4 pb-3.5 border-b border-slate-200">
+                                <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center shadow-sm">
                                     <TrendingUp className="w-4 h-4 text-white" />
                                 </div>
                                 <h3 className="text-sm font-black uppercase tracking-wide text-slate-900">
                                     Trending Now
                                 </h3>
                             </div>
-                            <div className="flex flex-col divide-y divide-slate-200">
+                            <div className="flex flex-col divide-y divide-slate-200/80">
                                 {trendingItems.map((item, index) => {
                                     const coverImage = getCoverImage(item)
                                     return (
                                         <Link
                                             key={item.id}
                                             {...getArticleLinkProps(item)}
-                                            className="group flex gap-3 py-4 first:pt-0 last:pb-0"
+                                            className="group flex gap-3 py-3 first:pt-0 last:pb-0"
                                         >
-                                            <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-slate-200 border border-slate-200">
+                                            <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-slate-200 border border-slate-200">
                                                 {coverImage ? (
                                                     <img
                                                         src={coverImage}
@@ -179,22 +179,22 @@ export function LatestNewsTrendingSection({
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-lg">
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-base">
                                                         {item.title[0]}
                                                     </div>
                                                 )}
-                                                <span className="absolute top-1 left-1 w-5 h-5 rounded bg-red-600 text-white text-[9px] font-bold flex items-center justify-center">
+                                                <span className="absolute top-1 left-1 w-4.5 h-4.5 rounded bg-red-600 text-white text-[8px] font-bold flex items-center justify-center shadow-sm">
                                                     {index + 1}
                                                 </span>
                                             </div>
-                                            <div className="flex flex-col min-w-0 flex-1">
-                                                <span className="home-category mb-1">
+                                            <div className="flex flex-col min-w-0 flex-1 justify-center">
+                                                <span className="home-category !text-[9px] mb-0.5">
                                                     {getCategoryName(item.category)}
                                                 </span>
-                                                <h4 className="font-bold text-sm text-slate-900 leading-snug line-clamp-2 group-hover:text-red-600 transition-colors mb-1">
+                                                <h4 className="font-bold text-xs md:text-sm text-slate-900 leading-snug line-clamp-2 group-hover:text-red-600 transition-colors">
                                                     {item.title}
                                                 </h4>
-                                                <span className="text-[11px] text-slate-400 mt-auto">
+                                                <span className="text-[10px] text-slate-400 mt-1">
                                                     {formatRelativeTime(item) || formatArticleDate(item)}
                                                 </span>
                                             </div>
