@@ -9,9 +9,10 @@ import { useRouter } from 'next/navigation'
 interface Props {
     id: string
     title: string
+    onDeleted?: () => void
 }
 
-export function DeleteBlogButton({ id, title }: Props) {
+export function DeleteBlogButton({ id, title, onDeleted }: Props) {
     const [isDeleting, setIsDeleting] = useState(false)
     const router = useRouter()
 
@@ -27,6 +28,7 @@ export function DeleteBlogButton({ id, title }: Props) {
                 toast.error(error.message)
             } else {
                 toast.success('Blog deleted successfully')
+                onDeleted?.()
                 router.refresh()
             }
         } catch (err: any) {
