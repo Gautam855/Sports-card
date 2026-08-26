@@ -4,9 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import {
-    LayoutDashboard, Newspaper, Calendar, BookOpen, Trophy,
-    Users, Megaphone, Bell, Settings, Zap, ChevronRight, LogOut,
-    PenTool, ShoppingBag, Code2
+    LayoutDashboard, Users, Bell, Zap, ChevronRight, LogOut,
+    PenTool, ShoppingBag, Code2, Key, Activity,
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -19,6 +18,8 @@ const NAV_ITEMS = [
     { label: 'Merchandise', href: '/admin/merchandise', icon: ShoppingBag },
     { label: 'Users', href: '/admin/users', icon: Users },
     { label: 'SEO & Scripts', href: '/admin/seo-scripts', icon: Code2 },
+    { label: 'API Keys', href: '/admin/api-keys', icon: Key },
+    { label: 'API Status', href: '/admin/api-status', icon: Activity },
     { label: 'Notifications', href: '/admin/notifications', icon: Bell },
 ]
 

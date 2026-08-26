@@ -8,11 +8,7 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             { protocol: 'https', hostname: '**.supabase.co' },
             { protocol: 'https', hostname: 'images.unsplash.com' },
-            { protocol: 'https', hostname: 'media.api-sports.io' },
-            { protocol: 'https', hostname: 'cricapi.com' },
-            { protocol: 'https', hostname: 'www.thesportsdb.com' },
             { protocol: 'https', hostname: '**.hscicdn.com' },
-            { protocol: 'https', hostname: '**.cricbuzz.com' },
             { protocol: 'https', hostname: '**.skysports.com' },
             { protocol: 'https', hostname: '**.google.com' },
             { protocol: 'https', hostname: '**.gstatic.com' },

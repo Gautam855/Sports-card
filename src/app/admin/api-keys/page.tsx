@@ -29,7 +29,7 @@ interface ProviderStatus {
 interface APILiveStatus {
     name: string
     host: string
-    sport: string
+    category: string
     status: 'ok' | 'rate_limited' | 'error' | 'unknown'
     statusCode: number | null
     lastChecked: string
@@ -91,7 +91,7 @@ export default function APIKeysPage() {
         } finally {
             setLoading(false)
         }
-    }, [])
+    }, [getToken])
 
     useEffect(() => {
         fetchKeys()
@@ -181,7 +181,7 @@ export default function APIKeysPage() {
                         API Key Manager
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        Manage multi-slot API keys with auto-rotation fallback
+                        Manage SerpApi keys for Google News — multi-slot rotation &amp; fallback
                     </p>
                 </div>
                 <button
