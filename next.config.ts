@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { legacyRedirects } from './src/lib/legacy-redirects'
 
 const nextConfig: NextConfig = {
     // experimental features disabled — require Next.js canary
@@ -60,6 +61,9 @@ const nextConfig: NextConfig = {
             { source: '/:filename(BingSiteAuth\\.xml)', destination: '/api/site-files/:filename' },
             { source: '/:filename(yandex_[a-z0-9]+\\.html)', destination: '/api/site-files/:filename' },
         ]
+    },
+    async redirects() {
+        return legacyRedirects
     },
 }
 

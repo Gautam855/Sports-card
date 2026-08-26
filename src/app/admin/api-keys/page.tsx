@@ -50,12 +50,7 @@ interface SwitchResult {
 
 // Map provider IDs to API status names
 const PROVIDER_TO_STATUS_NAME: Record<string, string> = {
-    football536: 'Football536',
-    basketball: 'SportScore',
-    baseball: 'Baseball Data',
-    cricket: 'Cricbuzz',
-    tennis: 'Tennis Data',
-    rugby: 'Rugby Data',
+    serpapi: 'SerpApi',
 }
 
 export default function APIKeysPage() {

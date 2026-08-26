@@ -87,8 +87,8 @@ export default function TermsOfServicePage() {
                         without our prior written consent.
                     </p>
                     <p className="text-muted-foreground leading-relaxed mt-2">
-                        Sports data, scores, statistics, and related content displayed on our Service may be
-                        sourced from third-party providers and are subject to their respective terms and
+                        Third-party news sources, statistics, and related content displayed on our Service may be
+                        sourced from external providers and are subject to their respective terms and
                         intellectual property rights.
                     </p>
                 </section>
@@ -120,7 +120,7 @@ export default function TermsOfServicePage() {
                     </p>
                     <div className="mt-3 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
                         <p className="text-sm text-yellow-200/90 font-medium">
-                            ⚠️ Sports predictions, fantasy tips, and match analyses provided on this Service are
+                            ⚠️ Sports news, analysis, and editorial content provided on this Service are
                             for informational and entertainment purposes only. They do not constitute professional
                             advice. Always exercise your own judgment and discretion.
                         </p>

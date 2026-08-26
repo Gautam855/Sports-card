@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { searchNews, getRecentArticles, getRealTimeNews } from '@/lib/api/news'
-import { getFootballHighlights } from '@/lib/api/rapid'
 import type { News } from '@/lib/types'
 
 function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
@@ -25,7 +24,6 @@ function mapArticle(a: News, hrefPrefix: 'news' | 'blog') {
 
 const BLOG_HINTS = new Set(['blog', 'blogs', 'article', 'articles', 'editorial', 'editorials'])
 const NEWS_HINTS = new Set(['news', 'latest', 'breaking', 'sport', 'sports'])
-const HIGHLIGHT_HINTS = new Set(['highlight', 'highlights', 'video', 'videos', 'goal', 'goals'])
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
@@ -56,11 +54,8 @@ export async function GET(request: Request) {
     const blogs = articles.slice(0, 6).map((a) => mapArticle(a, 'blog'))
 
     // External sources with timeout so search doesn't hang
-    const [serpNews, allHighlights] = await Promise.all([
+    const [serpNews] = await Promise.all([
         withTimeout(getRealTimeNews(q, 6), 5000, []),
-        HIGHLIGHT_HINTS.has(qLower) || q.length >= 3
-            ? withTimeout(getFootballHighlights(), 5000, [])
-            : Promise.resolve([]),
     ])
 
     const liveNews = serpNews.slice(0, 4).map((a) => ({
@@ -73,26 +68,8 @@ export async function GET(request: Request) {
         external: true,
     }))
 
-    const qWords = qLower.split(/\s+/).filter(Boolean)
-    const highlights = allHighlights
-        .filter((v) => {
-            if (HIGHLIGHT_HINTS.has(qLower)) return true
-            const title = v.title.toLowerCase()
-            return qWords.some((word) => title.includes(word))
-        })
-        .slice(0, 4)
-        .map((v, i) => ({
-            id: `highlight-${i}-${v.url}`,
-            title: v.title,
-            cover_image: v.thumbnail,
-            published_at: v.date,
-            competition: v.competition?.name,
-            href: v.url,
-            external: true,
-        }))
-
     // If still nothing at all, return recent as both news & blogs
-    if (!news.length && !blogs.length && !liveNews.length && !highlights.length) {
+    if (!news.length && !blogs.length && !liveNews.length) {
         const recent = await getRecentArticles(6)
         const fallbackNews = recent.map((a) => mapArticle(a, 'news'))
         const fallbackBlogs = recent.map((a) => mapArticle(a, 'blog'))
@@ -104,7 +81,7 @@ export async function GET(request: Request) {
         })
     }
 
-    return NextResponse.json({ news, blogs, highlights, liveNews })
+    return NextResponse.json({ news, blogs, highlights: [], liveNews })
 }
 
 function filterArticlesInMemory(articles: News[], query: string, limit: number): News[] {

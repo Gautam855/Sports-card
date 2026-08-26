@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { getFootballHighlights } from '@/lib/api/rapid'
 import { Play, Calendar, Trophy, Zap } from 'lucide-react'
 
 export const metadata: Metadata = {
@@ -10,7 +9,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600 // Cache for 1 hour
 
 export default async function HighlightsPage() {
-    const highlights = await getFootballHighlights()
+    const highlights: any[] = []
 
     return (
         <div className="container-wide py-12">

@@ -112,6 +112,14 @@
         @apply font-display text-xl md:text-2xl font-bold text-foreground flex items-center gap-2;
     }
 
+    .home-section-dark {
+        @apply bg-slate-950 text-white;
+    }
+
+    .home-section-dark-inner {
+        @apply container-wide py-10 md:py-14;
+    }
+
     .container-wide {
         @apply max-w-[1280px] mx-auto px-4 md:px-6;
     }

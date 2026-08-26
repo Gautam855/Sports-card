@@ -16,8 +16,8 @@ export function MostPopular({ articles }: { articles: News[] }) {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {articles.slice(0, 5).map((item, index) => {
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {articles.slice(0, 10).map((item, index) => {
                     const coverImage = getCoverImage(item)
                     return (
                         <Link

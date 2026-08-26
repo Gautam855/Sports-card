@@ -16,8 +16,8 @@ export function TrendingStories({ stories }: { stories: News[] }) {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {stories.slice(0, 5).map((item, index) => {
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {stories.slice(0, 10).map((item, index) => {
                     const coverImage = getCoverImage(item)
                     return (
                         <Link
@@ -26,7 +26,7 @@ export function TrendingStories({ stories }: { stories: News[] }) {
                             className="group flex flex-col gap-2.5"
                         >
                             <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                <div className="absolute top-2 left-2 z-10 w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold">
+                                <div className="absolute top-2 left-2 z-10 w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
                                     {index + 1}
                                 </div>
                                 {coverImage ? (

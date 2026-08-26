@@ -15,11 +15,10 @@ interface ActivityItem {
 interface AdminRecentActivityProps {
   title: string
   items: ActivityItem[]
-  type: string
   showViews?: boolean
 }
 
-export function AdminRecentActivity({ title, items, type, showViews }: AdminRecentActivityProps) {
+export function AdminRecentActivity({ title, items, showViews }: AdminRecentActivityProps) {
   return (
     <div className="bg-card rounded-2xl border border-border p-6">
       <h3 className="font-semibold text-lg mb-4">{title}</h3>
@@ -30,7 +29,7 @@ export function AdminRecentActivity({ title, items, type, showViews }: AdminRece
           items.map((item) => (
             <Link
               key={item.id}
-              href={`/${type}/${item.slug}`}
+              href={`/news/${item.slug}`}
               className="flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors"
             >
               <div className="min-w-0 flex-1">

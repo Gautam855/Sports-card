@@ -49,7 +49,7 @@ const TRENDING = [
 const QUICK_LINKS = [
     { label: 'Latest News', href: '/news', icon: Newspaper, desc: 'Breaking sports stories' },
     { label: 'Sports Blogs', href: '/blog', icon: PenLine, desc: 'Expert analysis & opinions' },
-    { label: 'Match Highlights', href: '/highlights', icon: Play, desc: 'Goals & video recaps' },
+    { label: 'Video Highlights', href: '/highlights', icon: Play, desc: 'Goals & video recaps' },
 ]
 
 function formatDate(date?: string) {
@@ -74,7 +74,7 @@ function ResultRow({
         news: { icon: Newspaper, color: 'bg-red-50 text-red-600', label: 'News' },
         blog: { icon: PenLine, color: 'bg-blue-50 text-blue-600', label: 'Blog' },
         highlight: { icon: Play, color: 'bg-purple-50 text-purple-600', label: 'Highlight' },
-        live: { icon: Globe, color: 'bg-green-50 text-green-600', label: 'Live' },
+        live: { icon: Globe, color: 'bg-green-50 text-green-600', label: 'Trending' },
     }[type]
 
     const Icon = config.icon
@@ -335,7 +335,7 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                                         {totalResults} result{totalResults !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;
                                     </p>
                                     <ResultSection title="News" items={results!.news} type="news" onClose={onClose} />
-                                    <ResultSection title="Live News" items={results!.liveNews} type="live" onClose={onClose} />
+                                    <ResultSection title="Trending Headlines" items={results!.liveNews} type="live" onClose={onClose} />
                                     <ResultSection title="Blogs" items={results!.blogs} type="blog" onClose={onClose} />
                                     <ResultSection title="Highlights" items={results!.highlights} type="highlight" onClose={onClose} />
                                 </div>

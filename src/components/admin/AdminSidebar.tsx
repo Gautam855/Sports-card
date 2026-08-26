@@ -6,7 +6,7 @@ import Image from 'next/image'
 import {
     LayoutDashboard, Newspaper, Calendar, BookOpen, Trophy,
     Users, Megaphone, Bell, Settings, Zap, ChevronRight, LogOut,
-    PenTool, Key, Activity, ShoppingBag, Code2
+    PenTool, ShoppingBag, Code2
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -20,8 +20,6 @@ const NAV_ITEMS = [
     { label: 'Users', href: '/admin/users', icon: Users },
     { label: 'SEO & Scripts', href: '/admin/seo-scripts', icon: Code2 },
     { label: 'Notifications', href: '/admin/notifications', icon: Bell },
-    { label: 'API Keys', href: '/admin/api-keys', icon: Key },
-    { label: 'API Status', href: '/admin/api-status', icon: Activity },
 ]
 
 

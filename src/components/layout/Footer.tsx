@@ -27,9 +27,10 @@ const TOP_SPORTS = [
 ] as const
 
 const INFO_LINKS = [
+    { label: 'Contact Us', href: '/contact' },
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Use', href: '/terms' },
-    { label: 'Sitemap', href: '/sitemap.xml' },
+    { label: 'HTML Sitemap', href: '/sitemap' },
 ] as const
 
 export function Footer() {
@@ -124,20 +125,19 @@ export function Footer() {
                                 </li>
                             ))}
                         </ul>
-                        <div className="flex items-start gap-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-                            <div className="w-8 h-8 rounded-lg bg-red-600/10 border border-red-600/20 flex items-center justify-center flex-shrink-0">
-                                <Mail className="w-4 h-4 text-red-500" />
-                            </div>
+                        <Link
+                            href="/contact"
+                            className="group flex items-center justify-between p-4 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-red-500/40 hover:bg-slate-900 transition-all duration-200"
+                        >
                             <div>
-                                <p className="text-xs font-bold text-white uppercase tracking-wide">Stay in touch</p>
-                                <a
-                                    href="mailto:hello@sportslnv.com"
-                                    className="text-sm text-slate-400 hover:text-red-400 transition-colors"
-                                >
-                                    hello@sportslnv.com
-                                </a>
+                                <p className="text-xs font-bold text-white uppercase tracking-wider group-hover:text-red-400 transition-colors">
+                                    Need Help or Feedback?
+                                </p>
+                                <p className="text-xs text-slate-400 mt-0.5">
+                                    Reach out via Contact Us →
+                                </p>
                             </div>
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>

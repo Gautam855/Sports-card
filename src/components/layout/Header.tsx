@@ -62,7 +62,7 @@ export function Header() {
                             BREAKING
                         </div>
                         <Link href="/news" className="truncate hover:text-red-400 transition-colors font-medium">
-                            Latest sports news, match updates &amp; expert analysis — SportsLNV
+                            Latest sports news, expert analysis &amp; in-depth blogs — SportsLNV
                         </Link>
                     </div>
                     <div className="flex items-center gap-3 h-full pl-4 flex-shrink-0">

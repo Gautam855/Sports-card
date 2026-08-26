@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import type { News, NewsFilters, PaginationParams, PaginatedResponse } from '@/lib/types'
-import { recordAPISuccess, recordAPIError } from './api-status'
 import { getActiveKey, handleRateLimit } from './key-manager'
 
 
@@ -141,6 +140,27 @@ export async function getEditorPicks(limit = 4): Promise<News[]> {
         .limit(limit)
 
     return (data ?? []) as unknown as News[]
+}
+
+/** Featured + editor picks + latest articles for home blog section */
+export async function getHomeBlogs(limit = 6): Promise<News[]> {
+    const [featured, editorPicks, latest] = await Promise.all([
+        getFeaturedNews(limit),
+        getEditorPicks(limit),
+        getNews({}, { limit, sort: 'published_at', order: 'desc' }),
+    ])
+
+    const seen = new Set<string>()
+    const combined: News[] = []
+
+    for (const article of [...featured, ...editorPicks, ...latest.data]) {
+        if (seen.has(article.id)) continue
+        seen.add(article.id)
+        combined.push(article)
+        if (combined.length >= limit) break
+    }
+
+    return combined
 }
 
 export async function getRelatedNews(newsId: string, categoryId?: string, limit = 4): Promise<News[]> {
@@ -302,27 +322,11 @@ async function _fetchSerpApi(query: string, limit: number, _retried: boolean): P
         }
 
         if (!res.ok) {
-            recordAPIError('SerpApi', 'serpapi.com', 'Real-time News', res.status, `SerpApi responded with ${res.status}`)
             return []
         }
 
         const json = await res.json()
         const results = json.news_results || []
-
-        // Record API Success and fetch account info for limits in background
-        fetch(`https://serpapi.com/account?api_key=${apiKey}`)
-            .then(r => r.json())
-            .then(account => {
-                if (account && !account.error) {
-                    recordAPISuccess('SerpApi', 'serpapi.com', 'Real-time News', undefined, {
-                        remaining: account.total_searches_left,
-                        limit: account.searches_per_month,
-                        resetsAt: account.next_reset_date || account.next_reset_date_at || account.plan_info?.next_reset_date
-                    })
-                }
-
-            })
-            .catch(() => recordAPISuccess('SerpApi', 'serpapi.com', 'Real-time News'))
 
 
         return results.slice(0, limit).map((n: any, i: number) => ({

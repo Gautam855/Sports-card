@@ -20,7 +20,7 @@ interface Notification {
     title: string
     message: string
     time: string
-    type: 'match' | 'system' | 'order' | 'news'
+    type: 'system' | 'order' | 'news'
     read: boolean
 }
 
@@ -101,11 +101,11 @@ export function NotificationsDropdown() {
                                             >
                                                 <div className={cn(
                                                     "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0",
-                                                    n.type === 'match' && "bg-blue-500/10 text-blue-500",
+                                                    n.type === 'news' && "bg-blue-500/10 text-blue-500",
                                                     n.type === 'order' && "bg-orange-500/10 text-orange-500",
                                                     n.type === 'system' && "bg-purple-500/10 text-purple-500",
                                                 )}>
-                                                    {n.type === 'match' && <Trophy className="w-5 h-5" />}
+                                                    {n.type === 'news' && <Trophy className="w-5 h-5" />}
                                                     {n.type === 'order' && <ShoppingBag className="w-5 h-5" />}
                                                     {n.type === 'system' && <Zap className="w-5 h-5" />}
                                                 </div>

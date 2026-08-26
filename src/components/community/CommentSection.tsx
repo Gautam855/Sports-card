@@ -13,7 +13,7 @@ import { toast } from 'sonner'
 
 interface CommentSectionProps {
     contentId: string
-    contentType: 'news' | 'prediction' | 'fantasy' | 'match'
+    contentType: 'news'
 }
 
 export function CommentSection({ contentId, contentType }: CommentSectionProps) {

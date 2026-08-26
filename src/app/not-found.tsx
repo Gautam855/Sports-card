@@ -55,7 +55,6 @@ export default function NotFound() {
                     {[
                         { href: '/sport/football', label: '⚽ Football' },
                         { href: '/sport/cricket', label: '🏏 Cricket' },
-                        { href: '/predictions', label: '🎯 Predictions' },
                         { href: '/blog', label: '📝 Blog' },
                         { href: '/highlights', label: '🎬 Highlights' },
                     ].map(link => (

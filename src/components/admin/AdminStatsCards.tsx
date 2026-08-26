@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, Newspaper, Users, MessageSquare, Radio, TrendingUp } from 'lucide-react'
+import { Newspaper, Users, MessageSquare, TrendingUp } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
 // ─── Stats Cards ──────────────────────────────────────────────────────────────
@@ -8,10 +8,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 interface StatsCardsProps {
     stats: {
         totalNews: number
-        totalMatches: number
         totalUsers: number
         totalComments: number
-        liveMatches: number
     }
 }
 
@@ -19,17 +17,11 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
     const cards = [
         { label: 'Total Users', value: stats.totalUsers.toLocaleString(), icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/10' },
         { label: 'Published Articles', value: stats.totalNews.toLocaleString(), icon: Newspaper, color: 'text-green-400', bg: 'bg-green-500/10' },
-        { label: 'Total Matches', value: stats.totalMatches.toLocaleString(), icon: Activity, color: 'text-purple-400', bg: 'bg-purple-500/10' },
         { label: 'Comments', value: stats.totalComments.toLocaleString(), icon: MessageSquare, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-        {
-            label: 'Live Matches', value: stats.liveMatches.toString(), icon: Radio,
-            color: 'text-red-400', bg: 'bg-red-500/10',
-            badge: stats.liveMatches > 0 ? 'LIVE' : undefined,
-        },
     ]
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {cards.map((card) => (
                 <div key={card.label} className="score-card p-5">
                     <div className={`inline-flex p-2 rounded-lg mb-3 ${card.bg}`}>
@@ -37,11 +29,6 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
                     </div>
                     <div className="flex items-end gap-2">
                         <span className="text-2xl font-bold tabular-nums">{card.value}</span>
-                        {card.badge && (
-                            <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded font-bold mb-0.5 animate-pulse">
-                                {card.badge}
-                            </span>
-                        )}
                     </div>
                     <p className="text-sm text-muted-foreground mt-0.5">{card.label}</p>
                 </div>
@@ -122,70 +109,6 @@ export function AdminCharts() {
                     </BarChart>
                 </ResponsiveContainer>
             </div>
-        </div>
-    )
-}
-
-// ─── Recent Activity ──────────────────────────────────────────────────────────
-
-interface ActivityItem {
-    id: string
-    title: string
-    slug: string
-    views?: number
-    published_at?: string
-    status?: string
-}
-
-interface AdminRecentActivityProps {
-    title: string
-    items: ActivityItem[]
-    type: 'news' | 'match'
-    showViews?: boolean
-}
-
-export function AdminRecentActivity({ title, items, type, showViews }: AdminRecentActivityProps) {
-    return (
-        <div className="score-card p-6">
-            <h3 className="font-display font-bold text-lg mb-4">{title}</h3>
-            {items.length === 0 ? (
-                <p className="text-muted-foreground text-sm">No items yet.</p>
-            ) : (
-                <div className="space-y-3">
-                    {items.map((item) => (
-                        <div key={item.id} className="flex items-start justify-between gap-3 py-2.5 border-b border-border/50 last:border-0">
-                            <div className="min-w-0">
-                                <a
-                                    href={`/admin/${type === 'news' ? 'news' : 'matches'}/${item.id}`}
-                                    className="text-sm font-medium hover:text-primary transition-colors line-clamp-1"
-                                >
-                                    {item.title}
-                                </a>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                    {item.status && (
-                                        <span className={`text-xs px-1.5 py-0.5 rounded capitalize ${item.status === 'published' ? 'bg-green-500/10 text-green-400' :
-                                                item.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' :
-                                                    'bg-muted text-muted-foreground'
-                                            }`}>
-                                            {item.status}
-                                        </span>
-                                    )}
-                                    {item.published_at && (
-                                        <span className="text-xs text-muted-foreground">
-                                            {new Date(item.published_at).toLocaleDateString()}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                            {showViews && item.views !== undefined && (
-                                <span className="text-sm font-semibold text-muted-foreground flex-shrink-0 tabular-nums">
-                                    {item.views.toLocaleString()}
-                                </span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
         </div>
     )
 }
