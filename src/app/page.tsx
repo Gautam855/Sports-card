@@ -1,20 +1,21 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
-import { getAllTodayMatches, getFootballHighlights } from '@/lib/api/rapid'
-import { getFeaturedNews, getTrendingNews, getRealTimeNews, getNews } from '@/lib/api/news'
-
-import { HeroSection } from '@/components/sports/HeroSection'
-import { HighlightsSection } from '@/components/sports/HighlightsSection'
-import { LatestNewsSection } from '@/components/news/LatestNewsSection'
-import { BlogSection } from '@/components/blog/BlogSection'
-import { LeagueStandingsSection } from '@/components/sports/LeagueStandingsSection'
+import {
+    getFeaturedNews,
+    getTrendingNews,
+    getRealTimeNews,
+    getNews,
+    getEditorPicks,
+    getBreakingNews,
+} from '@/lib/api/news'
+import { FeaturedHero } from '@/components/home/FeaturedHero'
+import { BreakingNewsStrip } from '@/components/home/BreakingNewsStrip'
+import { TrendingStories } from '@/components/home/TrendingStories'
+import { LatestNewsAndBlog } from '@/components/home/LatestNewsAndBlog'
+import { ExploreSports } from '@/components/home/ExploreSports'
+import { PlayerSpotlight } from '@/components/home/PlayerSpotlight'
+import { MostPopular } from '@/components/home/MostPopular'
 import { NewsletterSection } from '@/components/layout/NewsletterSection'
-import { SportsCategoriesBar } from '@/components/sports/SportsCategoriesBar'
-import { TrendingSection } from '@/components/news/TrendingSection'
-import { MatchCardSkeleton } from '@/components/sports/MatchCard'
-import { NewsCardSkeleton } from '@/components/news/NewsCard'
-import { AdBanner } from '@/components/AdBanner'
-
+import type { News } from '@/lib/types'
 
 export const metadata: Metadata = {
     title: 'Sports News and Popular Sports Blogs',
@@ -22,102 +23,63 @@ export const metadata: Metadata = {
         'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
     openGraph: {
         title: 'Sports News and Popular Sports Blogs',
-        description: 'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
+        description:
+            'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
     },
 }
 
-export const revalidate = 60 // ISR - revalidate every 60 seconds
+export const revalidate = 60
 
 export default async function HomePage() {
-    // Fetch live data from RapidAPI + news from Supabase (all graceful)
-    const [todayResult, newsResult, trendingResult, serpNewsResult, blogsResult, highlightsResult] = await Promise.allSettled([
-        getAllTodayMatches(),
-        getFeaturedNews(3),
-        getTrendingNews(8),
-        getRealTimeNews("top sports news today", 6),
-        getNews({}, { limit: 3 }), // Fetch latest blogs for homepage section
-        getFootballHighlights()
+    const [
+        featuredResult,
+        trendingResult,
+        serpNewsResult,
+        latestResult,
+        editorPicksResult,
+        breakingResult,
+        blogsResult,
+    ] = await Promise.allSettled([
+        getFeaturedNews(6),
+        getTrendingNews(10),
+        getRealTimeNews('top sports news today', 8),
+        getNews({}, { limit: 12, sort: 'published_at', order: 'desc' }),
+        getEditorPicks(4),
+        getBreakingNews(6),
+        getNews({ featured: true }, { limit: 4, sort: 'published_at', order: 'desc' }),
     ])
 
+    const featured = (featuredResult.status === 'fulfilled' ? featuredResult.value : []) as News[]
+    const trending = (trendingResult.status === 'fulfilled' ? trendingResult.value : []) as News[]
+    const serpNews = (serpNewsResult.status === 'fulfilled' ? serpNewsResult.value : []) as News[]
+    const latest = (latestResult.status === 'fulfilled' ? latestResult.value.data : []) as News[]
+    const editorPicks = (editorPicksResult.status === 'fulfilled' ? editorPicksResult.value : []) as News[]
+    const breaking = (breakingResult.status === 'fulfilled' ? breakingResult.value : []) as News[]
+    const featuredBlogs = (blogsResult.status === 'fulfilled' ? blogsResult.value.data : []) as News[]
 
-    const featured = (todayResult.status === 'fulfilled' ? todayResult.value.slice(0, 6) : []) as any[]
-    const trending = (trendingResult.status === 'fulfilled' ? trendingResult.value : []) as any[]
-    
-    // Combine local featured news with real-time news from SerpApi
-    const news = [
-        ...(serpNewsResult.status === 'fulfilled' ? serpNewsResult.value : []),
-        ...(newsResult.status === 'fulfilled' ? newsResult.value : [])
-    ]
-
-    const blogs = (blogsResult.status === 'fulfilled' ? blogsResult.value.data : []) as any[]
-    const highlights = (highlightsResult.status === 'fulfilled' ? highlightsResult.value.slice(0, 4) : []) as any[]
-
+    // Combine featured articles for the hero slider (up to 5)
+    const heroArticles = [...featured, ...serpNews, ...latest]
+        .filter((a, i, arr) => arr.findIndex((x) => x.id === a.id) === i) // deduplicate
+        .slice(0, 5)
+    const breakingNews = [...breaking, ...serpNews.slice(0, 5)].slice(0, 5)
+    const latestNews = latest.slice(0, 3)
+    const featuredBlog = featuredBlogs[0] ?? latest[0]
+    const popularArticles = trending.slice(0, 5)
 
     return (
-        <>
-            {/* 1. Hero Section */}
-            <HeroSection featuredMatches={featured} />
-
-            {/* Sports categories quick nav */}
-            <SportsCategoriesBar />
-
-            {/* Ad Banner */}
-            <div className="container-wide py-4">
-                <AdBanner placement="homepage_hero" />
-            </div>
-
-            {/* Highlights Section */}
-            {highlights.length > 0 && (
-                <Suspense fallback={<SectionSkeleton />}>
-                    <HighlightsSection highlights={highlights} />
-                </Suspense>
+        <div className="home-page flex flex-col">
+            <FeaturedHero articles={heroArticles} />
+            <BreakingNewsStrip news={breakingNews} />
+            {trending.length > 0 && <TrendingStories stories={trending.slice(0, 5)} />}
+            {(latestNews.length > 0 || featuredBlog) && (
+                <LatestNewsAndBlog news={latestNews} blog={featuredBlog} />
             )}
-
-            {/* 3. Latest News + Trending */}
-            <section className="container-wide py-10">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2">
-                        <LatestNewsSection articles={news} />
-                    </div>
-                    <div>
-                        <TrendingSection articles={trending} />
-                    </div>
-                </div>
-            </section>
-
-
-
-            {/* 4. Blog Section */}
-            <Suspense fallback={<SectionSkeleton />}>
-                <BlogSection blogs={blogs} />
-            </Suspense>
-
-            {/* Ad Sidebar Banner */}
-            <div className="container-wide py-10">
-                <AdBanner placement="article_top" />
-            </div>
-
-            {/* 5. League Standings */}
-            <Suspense fallback={<SectionSkeleton />}>
-                <LeagueStandingsSection />
-            </Suspense>
-
-            {/* 6. Newsletter */}
+            <ExploreSports />
+            {editorPicks.length > 0 && (
+                <PlayerSpotlight spotlight={editorPicks[0]} editorsPicks={editorPicks.slice(1, 4)} />
+            )}
+            {popularArticles.length > 0 && <MostPopular articles={popularArticles} />}
             <NewsletterSection />
-        </>
-    )
-}
-
-
-function SectionSkeleton() {
-    return (
-        <section className="container-wide py-10">
-            <div className="skeleton h-7 w-48 rounded mb-6" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                    <MatchCardSkeleton key={i} />
-                ))}
-            </div>
-        </section>
+        </div>
     )
 }

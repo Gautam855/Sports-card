@@ -3,7 +3,6 @@ import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { Space_Grotesk } from 'next/font/google'
-import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { AuthProvider } from '@/components/providers/AuthProvider'
 import { Toaster } from 'sonner'
@@ -103,10 +102,7 @@ export const viewport: Viewport = {
     width: 'device-width',
     initialScale: 1,
     maximumScale: 5,
-    themeColor: [
-        { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-        { media: '(prefers-color-scheme: dark)', color: '#0f172a' },
-    ],
+    themeColor: '#2563eb',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -118,7 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
             <head>
                 {/* Google Tag Manager */}
-                <script
+                <Script id="gtm-init"
                     dangerouslySetInnerHTML={{
                         __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -130,8 +126,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 {/* End Google Tag Manager */}
 
                 {/* Google tag (gtag.js) */}
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-03R981P0Y8"></script>
-                <script
+                <Script id="gtag-url" async src="https://www.googletagmanager.com/gtag/js?id=G-03R981P0Y8"></Script>
+                <Script id="gtag-init"
                     dangerouslySetInnerHTML={{
                         __html: `
   window.dataLayer = window.dataLayer || [];
@@ -149,7 +145,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     strategy="afterInteractive"
                 />
                 {/* Meta Pixel Code */}
-                <script
+                <Script id="meta-pixel"
                     dangerouslySetInnerHTML={{
                         __html: `!function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -173,30 +169,28 @@ fbq('track', 'PageView');`
                 <noscript><img height="1" width="1" style={{ display: 'none' }} src="https://www.facebook.com/tr?id=3296516970531633&ev=PageView&noscript=1" alt="" /></noscript>
                 {/* End Meta Pixel Code (noscript) */}
             </head>
-            <body className="min-h-screen bg-background font-sans antialiased">
-                <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-                    <QueryProvider>
-                        <AuthProvider>
-                            <BreakingNewsTicker />
-                            <Header />
-                            <main className="min-h-[calc(100vh-64px)] pb-16 md:pb-0">
-                                {children}
-                            </main>
-                            <Footer />
-                            <MobileNav />
-                            <Toaster
-                                position="top-right"
-                                toastOptions={{
-                                    classNames: {
-                                        toast: 'bg-card border-border text-foreground',
-                                        error: 'border-red-500/50',
-                                        success: 'border-green-500/50',
-                                    },
-                                }}
-                            />
-                        </AuthProvider>
-                    </QueryProvider>
-                </ThemeProvider>
+            <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh">
+                <QueryProvider>
+                    <AuthProvider>
+                        <BreakingNewsTicker />
+                        <Header />
+                        <main className="flex-1">
+                            {children}
+                        </main>
+                        <Footer />
+                        <MobileNav />
+                        <Toaster
+                            position="top-right"
+                            toastOptions={{
+                                classNames: {
+                                    toast: 'bg-card border-border text-foreground',
+                                    error: 'border-red-500/50',
+                                    success: 'border-green-500/50',
+                                },
+                            }}
+                        />
+                    </AuthProvider>
+                </QueryProvider>
                 <Analytics />
                 <DynamicScripts />
             </body>

@@ -1,201 +1,375 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-    Search, 
-    X, 
-    TrendingUp, 
-    Trophy, 
-    Newspaper, 
-    Command,
-    Loader2
+import {
+    Search,
+    X,
+    Newspaper,
+    PenLine,
+    Play,
+    Globe,
+    Loader2,
+    ArrowRight,
+    Clock,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
-interface SearchResult {
+interface SearchItem {
     id: string
     title: string
-    subtitle: string
-    type: 'match' | 'news' | 'league'
+    slug?: string
+    excerpt?: string
+    cover_image?: string
+    published_at?: string
+    category?: { name: string; slug?: string; color?: string }
+    competition?: string
     href: string
+    external?: boolean
 }
 
-export function SearchModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+interface SearchResponse {
+    news: SearchItem[]
+    blogs: SearchItem[]
+    highlights: SearchItem[]
+    liveNews: SearchItem[]
+}
+
+const TRENDING = [
+    'Cricket World Cup',
+    'Premier League',
+    'IPL 2026',
+    'NBA Playoffs',
+    'Champions League',
+    'Tennis Grand Slam',
+]
+
+const QUICK_LINKS = [
+    { label: 'Latest News', href: '/news', icon: Newspaper, desc: 'Breaking sports stories' },
+    { label: 'Sports Blogs', href: '/blog', icon: PenLine, desc: 'Expert analysis & opinions' },
+    { label: 'Match Highlights', href: '/highlights', icon: Play, desc: 'Goals & video recaps' },
+]
+
+function formatDate(date?: string) {
+    if (!date) return ''
+    try {
+        return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    } catch {
+        return ''
+    }
+}
+
+function ResultRow({
+    item,
+    type,
+    onClose,
+}: {
+    item: SearchItem
+    type: 'news' | 'blog' | 'highlight' | 'live'
+    onClose: () => void
+}) {
+    const config = {
+        news: { icon: Newspaper, color: 'bg-red-50 text-red-600', label: 'News' },
+        blog: { icon: PenLine, color: 'bg-blue-50 text-blue-600', label: 'Blog' },
+        highlight: { icon: Play, color: 'bg-purple-50 text-purple-600', label: 'Highlight' },
+        live: { icon: Globe, color: 'bg-green-50 text-green-600', label: 'Live' },
+    }[type]
+
+    const Icon = config.icon
+    const inner = (
+        <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all group cursor-pointer">
+            <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 border border-slate-200">
+                {item.cover_image ? (
+                    <img src={item.cover_image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                    <div className={cn('w-full h-full flex items-center justify-center', config.color)}>
+                        <Icon className="w-5 h-5" />
+                    </div>
+                )}
+            </div>
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                    <span className={cn('text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded', config.color)}>
+                        {config.label}
+                    </span>
+                    {item.category?.name && (
+                        <span className="text-[9px] font-bold text-slate-400 uppercase">{item.category.name}</span>
+                    )}
+                    {item.competition && (
+                        <span className="text-[9px] font-bold text-slate-400 uppercase">{item.competition}</span>
+                    )}
+                </div>
+                <h4 className="font-bold text-sm text-slate-900 group-hover:text-red-600 transition-colors line-clamp-1">
+                    {item.title}
+                </h4>
+                {item.excerpt && (
+                    <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{item.excerpt}</p>
+                )}
+                {item.published_at && (
+                    <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {formatDate(item.published_at)}
+                    </p>
+                )}
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-red-500 transition-colors flex-shrink-0" />
+        </div>
+    )
+
+    if (item.external) {
+        return (
+            <a href={item.href} target="_blank" rel="noopener noreferrer" onClick={onClose}>
+                {inner}
+            </a>
+        )
+    }
+
+    return (
+        <Link href={item.href} onClick={onClose}>
+            {inner}
+        </Link>
+    )
+}
+
+function ResultSection({
+    title,
+    items,
+    type,
+    onClose,
+}: {
+    title: string
+    items: SearchItem[]
+    type: 'news' | 'blog' | 'highlight' | 'live'
+    onClose: () => void
+}) {
+    if (!items.length) return null
+    return (
+        <div className="mb-4">
+            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 mb-2">{title}</h3>
+            <div className="space-y-0.5">
+                {items.map((item) => (
+                    <ResultRow key={item.id} item={item} type={type} onClose={onClose} />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const [query, setQuery] = useState('')
-    const [results, setResults] = useState<SearchResult[]>([])
+    const [results, setResults] = useState<SearchResponse | null>(null)
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
+    const searchIdRef = useRef(0)
 
     const handleSearch = useCallback(async (q: string) => {
-        if (!q.trim()) {
-            setResults([])
+        const trimmed = q.trim()
+
+        if (trimmed.length < 2) {
+            setResults(null)
+            setLoading(false)
+            setError(false)
             return
         }
 
+        const requestId = ++searchIdRef.current
         setLoading(true)
+        setError(false)
+
         try {
-            const res = await fetch('/api/matches')
-            const data = await res.json()
-            
-            const allMatches = data.matches || []
-            
-            // Client-side filter for now since the API is today-only
-            const filtered = allMatches.filter((m: any) => {
-                const homeName = (m.home_team?.name || m.homeTeam?.name || '').toLowerCase()
-                const awayName = (m.away_team?.name || m.awayTeam?.name || '').toLowerCase()
-                const leagueName = (m.league?.name || '').toLowerCase()
-                const searchLower = q.toLowerCase()
-                
-                return homeName.includes(searchLower) || 
-                       awayName.includes(searchLower) || 
-                       leagueName.includes(searchLower)
-            })
+            const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
 
-            const matchResults = filtered.slice(0, 10).map((m: any) => ({
-                id: m.id,
-                title: `${m.home_team?.name || m.homeTeam?.name || 'TBD'} vs ${m.away_team?.name || m.awayTeam?.name || 'TBD'}`,
-                subtitle: m.league?.name || 'Unknown League',
-                type: 'match',
-                href: `/score/${m.id}`
-            }))
+            if (requestId !== searchIdRef.current) return
 
-            setResults(matchResults)
+            if (!res.ok) {
+                throw new Error(`Search failed: ${res.status}`)
+            }
+
+            const data: SearchResponse = await res.json()
+            setResults(data)
         } catch (err) {
+            if (requestId !== searchIdRef.current) return
             console.error('Search failed', err)
+            setError(true)
+            setResults({ news: [], blogs: [], highlights: [], liveNews: [] })
         } finally {
-            setLoading(false)
+            if (requestId === searchIdRef.current) {
+                setLoading(false)
+            }
         }
     }, [])
 
     useEffect(() => {
-        const timeoutId = setTimeout(() => handleSearch(query), 300)
+        const timeoutId = setTimeout(() => handleSearch(query), 350)
         return () => clearTimeout(timeoutId)
     }, [query, handleSearch])
 
-    // Shortcut to close on Escape
+    useEffect(() => {
+        if (!isOpen) {
+            setQuery('')
+            setResults(null)
+            setLoading(false)
+            setError(false)
+            searchIdRef.current++
+        }
+    }, [isOpen])
+
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
-            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                // Toggle functionality could be added if we had the state here
-            }
             if (e.key === 'Escape') onClose()
         }
         document.addEventListener('keydown', down)
         return () => document.removeEventListener('keydown', down)
     }, [onClose])
 
+    const totalResults = results
+        ? results.news.length + results.blogs.length + results.highlights.length + results.liveNews.length
+        : 0
+
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[10vh] px-4">
+                <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[8vh] px-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-background/80 backdrop-blur-sm"
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
                         onClick={onClose}
                     />
 
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                        initial={{ opacity: 0, scale: 0.96, y: -16 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                        className="relative w-full max-w-2xl bg-card border border-border shadow-2xl rounded-3xl overflow-hidden"
+                        exit={{ opacity: 0, scale: 0.96, y: -16 }}
+                        transition={{ duration: 0.2 }}
+                        className="relative w-full max-w-2xl bg-white border border-slate-200 shadow-2xl rounded-2xl overflow-hidden"
                     >
-                        {/* Search Bar */}
-                        <div className="p-4 flex items-center gap-3 border-b border-border bg-muted/30">
-                            <Search className="w-5 h-5 text-muted-foreground" />
-                            <Input 
+                        {/* Search input */}
+                        <div className="p-4 flex items-center gap-3 border-b border-slate-100 bg-slate-50">
+                            <div className="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center flex-shrink-0">
+                                <Search className="w-4 h-4 text-white" />
+                            </div>
+                            <input
                                 autoFocus
-                                placeholder="Search matches, leagues, teams..."
-                                className="flex-1 bg-transparent border-none focus-visible:ring-0 text-lg p-0 h-auto"
+                                placeholder="Search news, blogs, highlights..."
+                                className="flex-1 bg-transparent border-none outline-none text-base text-slate-900 placeholder:text-slate-400 font-medium"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
                             />
-                            <div className="flex items-center gap-2">
-                                <kbd className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded border border-border bg-background text-[10px] font-bold text-muted-foreground">
-                                    <Command className="w-2.5 h-2.5" /> ESC
-                                </kbd>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
-                                    <X className="w-4 h-4" />
-                                </Button>
-                            </div>
+                            {loading && <Loader2 className="w-4 h-4 text-red-500 animate-spin flex-shrink-0" />}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-slate-400 hover:text-slate-700 flex-shrink-0"
+                                onClick={onClose}
+                            >
+                                <X className="w-4 h-4" />
+                            </Button>
                         </div>
 
-                        {/* Results Area */}
-                        <div className="max-h-[60vh] overflow-y-auto p-4">
-                            {loading ? (
-                                <div className="py-20 text-center flex flex-col items-center gap-3">
-                                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                                    <p className="text-sm text-muted-foreground">Searching sports universe...</p>
+                        {/* Body */}
+                        <div className="max-h-[62vh] overflow-y-auto p-4">
+                            {loading && query.length >= 2 ? (
+                                <div className="py-16 text-center">
+                                    <Loader2 className="w-7 h-7 text-red-500 animate-spin mx-auto mb-3" />
+                                    <p className="text-sm text-slate-500">Searching news, blogs &amp; highlights...</p>
                                 </div>
-                            ) : query === '' ? (
-                                <div className="space-y-6 py-4">
+                            ) : query.length < 2 ? (
+                                <div className="space-y-6 py-2">
                                     <div>
-                                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2 mb-3">Trending Searches</h3>
-                                        <div className="flex flex-wrap gap-2 px-2">
-                                            {['Premier League', 'IPL 2026', 'Six Nations', 'Champions League'].map(tag => (
-                                                <button 
+                                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                                            Trending Searches
+                                        </h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            {TRENDING.map((tag) => (
+                                                <button
                                                     key={tag}
                                                     onClick={() => setQuery(tag)}
-                                                    className="px-3 py-1.5 rounded-full bg-muted hover:bg-primary/10 hover:text-primary border border-border transition-all text-sm font-medium flex items-center gap-2 group"
+                                                    className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-red-50 hover:text-red-600 border border-slate-200 hover:border-red-200 transition-all text-sm font-semibold text-slate-700"
                                                 >
-                                                    <TrendingUp className="w-3 h-3 text-muted-foreground group-hover:text-primary" />
                                                     {tag}
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="px-2">
-                                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Quick Navigation</h3>
-                                        <div className="grid grid-cols-1 gap-2">
-                                            <Link href="/news" onClick={onClose} className="p-3 rounded-xl hover:bg-muted border border-transparent hover:border-border transition-all flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500"><Newspaper className="w-4 h-4" /></div>
-                                                <span className="text-sm font-bold">Top News</span>
-                                            </Link>
+
+                                    <div>
+                                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                                            Browse
+                                        </h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            {QUICK_LINKS.map((link) => (
+                                                <Link
+                                                    key={link.href}
+                                                    href={link.href}
+                                                    onClick={onClose}
+                                                    className="p-3 rounded-xl border border-slate-200 hover:border-red-200 hover:bg-red-50/50 transition-all group"
+                                                >
+                                                    <link.icon className="w-5 h-5 text-red-600 mb-2" />
+                                                    <p className="font-bold text-sm text-slate-900 group-hover:text-red-600 transition-colors">
+                                                        {link.label}
+                                                    </p>
+                                                    <p className="text-[11px] text-slate-500 mt-0.5">{link.desc}</p>
+                                                </Link>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
-                            ) : results.length > 0 ? (
-                                <div className="space-y-1">
-                                    {results.map((res) => (
-                                        <Link 
-                                            key={res.id} 
-                                            href={res.href}
-                                            onClick={onClose}
-                                            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 border border-transparent hover:border-primary/20 transition-all group"
-                                        >
-                                            <div className={cn(
-                                                "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform",
-                                                res.type === 'match' ? "bg-orange-500/10 text-orange-500" : "bg-blue-500/10 text-blue-500"
-                                            )}>
-                                                {res.type === 'match' ? <Trophy className="w-5 h-5" /> : <Newspaper className="w-5 h-5" />}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-foreground group-hover:text-primary transition-colors">{res.title}</h4>
-                                                <p className="text-xs text-muted-foreground truncate">{res.subtitle}</p>
-                                            </div>
-                                            <div className="text-[10px] font-black uppercase text-muted-foreground bg-muted px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {res.type}
-                                            </div>
-                                        </Link>
-                                    ))}
+                            ) : error ? (
+                                <div className="py-16 text-center">
+                                    <p className="font-bold text-slate-900 mb-1">Search unavailable</p>
+                                    <p className="text-sm text-slate-500 mb-4">Please try again in a moment.</p>
+                                    <button
+                                        onClick={() => handleSearch(query)}
+                                        className="text-sm font-bold text-red-600 hover:underline"
+                                    >
+                                        Retry search
+                                    </button>
+                                </div>
+                            ) : totalResults > 0 ? (
+                                <div>
+                                    <p className="text-xs text-slate-400 mb-4 px-1">
+                                        {totalResults} result{totalResults !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;
+                                    </p>
+                                    <ResultSection title="News" items={results!.news} type="news" onClose={onClose} />
+                                    <ResultSection title="Live News" items={results!.liveNews} type="live" onClose={onClose} />
+                                    <ResultSection title="Blogs" items={results!.blogs} type="blog" onClose={onClose} />
+                                    <ResultSection title="Highlights" items={results!.highlights} type="highlight" onClose={onClose} />
                                 </div>
                             ) : (
-                                <div className="py-20 text-center text-muted-foreground">
-                                    <Search className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                                    <p>No results found for "<span className="text-foreground font-bold">{query}</span>"</p>
-                                    <p className="text-xs mt-1">Try searching for teams, leagues or matches.</p>
+                                <div className="py-16 text-center">
+                                    <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                                        <Search className="w-6 h-6 text-slate-300" />
+                                    </div>
+                                    <p className="font-bold text-slate-900 mb-1">No results found</p>
+                                    <p className="text-sm text-slate-500">
+                                        Try &ldquo;football&rdquo;, &ldquo;cricket&rdquo;, or &ldquo;NBA highlights&rdquo;
+                                    </p>
+                                    <div className="flex justify-center gap-2 mt-5">
+                                        <Link href="/news" onClick={onClose} className="text-xs font-bold text-red-600 hover:underline">
+                                            Browse News
+                                        </Link>
+                                        <span className="text-slate-300">·</span>
+                                        <Link href="/blog" onClick={onClose} className="text-xs font-bold text-red-600 hover:underline">
+                                            Browse Blogs
+                                        </Link>
+                                        <span className="text-slate-300">·</span>
+                                        <Link href="/highlights" onClick={onClose} className="text-xs font-bold text-red-600 hover:underline">
+                                            Highlights
+                                        </Link>
+                                    </div>
                                 </div>
                             )}
                         </div>
 
-                        <div className="p-3 border-t border-border bg-muted/30 text-center text-[10px] text-muted-foreground">
-                            Press <kbd className="px-1 rounded bg-background border border-border">ESC</kbd> to close • Start typing to search
+                        <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-[10px] text-slate-400">
+                            <span>Search news · blogs · highlights</span>
+                            <span>
+                                Press <kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-bold">ESC</kbd> to close
+                            </span>
                         </div>
                     </motion.div>
                 </div>

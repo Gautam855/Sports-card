@@ -5,47 +5,25 @@
 @layer base {
     :root {
         --background: 0 0% 100%;
-        --foreground: 222.2 84% 4.9%;
+        --foreground: 222 47% 11%;
         --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
+        --card-foreground: 222 47% 11%;
         --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
-        --primary: 221.2 83.2% 53.3%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 221.2 83.2% 53.3%;
-        --radius: 0.75rem;
-    }
-
-    .dark {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-        --card: 222.2 64% 8%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222.2 64% 8%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 217.2 91.2% 59.8%;
-        --primary-foreground: 222.2 47.4% 11.2%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 62.8% 50%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 224.3 76.3% 48%;
+        --popover-foreground: 222 47% 11%;
+        --primary: 0 72% 51%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 210 20% 96%;
+        --secondary-foreground: 222 47% 11%;
+        --muted: 210 20% 96%;
+        --muted-foreground: 215 16% 47%;
+        --accent: 210 20% 96%;
+        --accent-foreground: 222 47% 11%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 214 20% 90%;
+        --input: 214 20% 90%;
+        --ring: 0 72% 51%;
+        --radius: 0.5rem;
     }
 }
 
@@ -55,15 +33,16 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-white text-foreground overflow-x-hidden;
+        min-height: 100%;
     }
 
-    /* Smooth scrolling */
     html {
         scroll-behavior: smooth;
+        overflow-x: hidden;
+        height: 100%;
     }
 
-    /* Custom scrollbar */
     ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -76,133 +55,69 @@
     ::-webkit-scrollbar-thumb {
         @apply bg-muted-foreground/30 rounded-full;
     }
-
-    ::-webkit-scrollbar-thumb:hover {
-        @apply bg-muted-foreground/50;
-    }
 }
 
 @layer components {
-
-    /* Live badge */
     .live-badge {
         @apply inline-flex items-center gap-1.5 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full;
         animation: live-pulse 2s ease-in-out infinite;
     }
 
-    .live-dot {
-        @apply w-1.5 h-1.5 bg-white rounded-full;
-        animation: live-pulse 1s ease-in-out infinite;
-    }
-
-    /* Score card */
     .score-card {
         @apply relative overflow-hidden rounded-xl border border-border bg-card;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-        backdrop-filter: blur(10px);
     }
 
-    .score-card:hover {
-        @apply shadow-card-hover border-primary/30;
-        transform: translateY(-2px);
-        transition: all 0.3s ease;
-    }
-
-    /* Glass morphism */
-    .glass {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .glass-dark {
-        background: rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    /* Skeleton loader */
-    .skeleton {
-        @apply relative overflow-hidden bg-muted rounded-lg;
-    }
-
-    .skeleton::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg,
-                transparent 0%,
-                rgba(255, 255, 255, 0.06) 50%,
-                transparent 100%);
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-    }
-
-    /* News card */
     .news-card {
         @apply relative overflow-hidden rounded-xl border border-border bg-card transition-all duration-300;
     }
 
     .news-card:hover {
-        @apply shadow-card-hover -translate-y-0.5 border-primary/20;
+        @apply shadow-lg -translate-y-0.5 border-red-200;
     }
 
-    /* Sport gradient pill */
-    .sport-pill-football {
-        @apply bg-sport-football/10 text-sport-football border border-sport-football/20;
+    /* ── Home mockup design system ── */
+    .home-page {
+        @apply bg-white;
     }
 
-    .sport-pill-cricket {
-        @apply bg-sport-cricket/10 text-sport-cricket border border-sport-cricket/20;
+    .home-section {
+        @apply container-wide py-8 md:py-10;
     }
 
-    .sport-pill-basketball {
-        @apply bg-sport-basketball/10 text-sport-basketball border border-sport-basketball/20;
+    .home-section-title {
+        @apply text-base md:text-lg font-black uppercase tracking-wide text-slate-900;
     }
 
-    .sport-pill-tennis {
-        @apply bg-sport-tennis/10 text-sport-tennis border border-sport-tennis/20;
+    .home-view-all {
+        @apply text-xs font-bold text-slate-600 hover:text-red-600 transition-colors flex items-center gap-1 uppercase tracking-wide;
     }
 
-    .sport-pill-f1 {
-        @apply bg-sport-f1/10 text-sport-f1 border border-sport-f1/20;
+    .home-category {
+        @apply text-red-600 text-[10px] font-bold tracking-[0.15em] uppercase;
     }
 
-    /* Section header */
+    .home-btn-dark {
+        @apply inline-flex items-center justify-center bg-slate-900 text-white px-6 py-3 rounded-lg font-bold text-xs hover:bg-slate-800 transition-colors uppercase tracking-widest;
+    }
+
+    .home-card {
+        @apply bg-white rounded-xl border border-slate-200 overflow-hidden transition-all duration-200 hover:shadow-md;
+    }
+
     .section-header {
-        @apply flex items-center justify-between mb-6;
+        @apply flex items-center justify-between mb-5;
     }
 
     .section-title {
         @apply font-display text-xl md:text-2xl font-bold text-foreground flex items-center gap-2;
     }
 
-    .section-accent {
-        @apply w-1 h-6 bg-primary rounded-full inline-block;
+    .container-wide {
+        @apply max-w-[1280px] mx-auto px-4 md:px-6;
     }
 }
 
 @layer utilities {
-
-    /* Truncate multiline */
-    .line-clamp-2 {
-        -webkit-line-clamp: 2;
-    }
-
-    .line-clamp-3 {
-        -webkit-line-clamp: 3;
-    }
-
-    /* Text gradient */
-    .text-gradient {
-        @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-neon-blue;
-    }
-
-    .text-gradient-fire {
-        @apply bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500;
-    }
-
-    /* No scrollbar */
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
@@ -212,25 +127,14 @@
         scrollbar-width: none;
     }
 
-    /* Ticker animation */
     .animate-ticker {
         animation: ticker 30s linear infinite;
     }
-
-    /* Content width */
-    .container-wide {
-        @apply max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8;
-    }
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
 }
 
 @keyframes live-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(0.95); }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 @keyframes ticker {
@@ -238,25 +142,6 @@
     100% { transform: translateX(-50%); }
 }
 
-@keyframes bounce-slow {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.animate-bounce-slow {
-    animation: bounce-slow 3s ease-in-out infinite;
-}
-
-/* Glass Morphism Improvements */
-.glass-panel {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl;
-}
-
-.dark .glass-panel {
-    @apply bg-black/20 backdrop-blur-md border border-white/5 shadow-2xl;
-}
-
-/* Admin form input field */
 .input-field {
     @apply w-full px-3 py-2 rounded-lg bg-muted/50 border border-border text-sm text-foreground
            focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-colors;

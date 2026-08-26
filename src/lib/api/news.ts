@@ -73,7 +73,11 @@ export async function getBreakingNews(limit = 5): Promise<News[]> {
 
     const { data } = await supabase
         .from('news')
-        .select('id,title,slug,published_at')
+        .select(`
+      id, title, slug, excerpt, cover_image, cover_alt,
+      published_at,
+      category:news_categories(name,slug,color)
+    `)
         .eq('status', 'published')
         .eq('is_breaking', true)
         .order('published_at', { ascending: false })
@@ -120,6 +124,25 @@ export async function getTrendingNews(limit = 8): Promise<News[]> {
     return (data ?? []) as unknown as News[]
 }
 
+export async function getEditorPicks(limit = 4): Promise<News[]> {
+    const supabase = await createClient()
+
+    const { data } = await supabase
+        .from('news')
+        .select(`
+      id, title, slug, excerpt, cover_image, cover_alt,
+      views, read_time_mins, published_at,
+      author:profiles(username,display_name,avatar_url),
+      category:news_categories(name,slug,color)
+    `)
+        .eq('status', 'published')
+        .eq('is_editor_pick', true)
+        .order('published_at', { ascending: false })
+        .limit(limit)
+
+    return (data ?? []) as unknown as News[]
+}
+
 export async function getRelatedNews(newsId: string, categoryId?: string, limit = 4): Promise<News[]> {
     const supabase = await createClient()
 
@@ -138,18 +161,116 @@ export async function getRelatedNews(newsId: string, categoryId?: string, limit 
     return (data ?? []) as unknown as News[]
 }
 
-export async function searchNews(query: string, limit = 20): Promise<News[]> {
-    const supabase = await createClient()
+const ARTICLE_SELECT = `
+      id, title, slug, excerpt, cover_image, published_at, is_featured,
+      category:news_categories(name,slug,color)
+    `
 
+function buildIlikePattern(query: string): string {
+    return `%${query.replace(/"/g, '""')}%`
+}
+
+function filterArticlesInMemory(articles: News[], query: string, limit: number): News[] {
+    const words = query.toLowerCase().split(/\s+/).filter(Boolean)
+    if (!words.length) return articles.slice(0, limit)
+
+    return articles
+        .filter((a) => {
+            const categoryName =
+                typeof a.category === 'object' && a.category !== null && 'name' in a.category
+                    ? (a.category as { name: string }).name
+                    : ''
+            const haystack = `${a.title} ${a.excerpt ?? ''} ${categoryName}`.toLowerCase()
+            return words.every((word) => haystack.includes(word))
+        })
+        .slice(0, limit)
+}
+
+async function fetchRecentArticles(supabase: Awaited<ReturnType<typeof createClient>>, limit: number): Promise<News[]> {
     const { data } = await supabase
         .from('news')
-        .select('id, title, slug, excerpt, cover_image, published_at, category:news_categories(name,slug)')
+        .select(ARTICLE_SELECT)
         .eq('status', 'published')
-        .textSearch('title', query, { type: 'websearch' })
+        .order('published_at', { ascending: false })
+        .limit(Math.max(limit, 40))
+
+    return (data ?? []) as unknown as News[]
+}
+
+export async function searchNews(query: string, limit = 20): Promise<News[]> {
+    const supabase = await createClient()
+    const trimmed = query.trim()
+    if (!trimmed) return []
+
+    const pattern = buildIlikePattern(trimmed)
+
+    const { data, error } = await supabase
+        .from('news')
+        .select(ARTICLE_SELECT)
+        .eq('status', 'published')
+        .or(`title.ilike."${pattern}",excerpt.ilike."${pattern}"`)
         .order('published_at', { ascending: false })
         .limit(limit)
 
-    return (data ?? []) as unknown as News[]
+    if (!error && data && data.length > 0) {
+        return data as unknown as News[]
+    }
+
+    const { data: titleOnly } = await supabase
+        .from('news')
+        .select(ARTICLE_SELECT)
+        .eq('status', 'published')
+        .ilike('title', pattern)
+        .order('published_at', { ascending: false })
+        .limit(limit)
+
+    if (titleOnly && titleOnly.length > 0) {
+        return titleOnly as unknown as News[]
+    }
+
+    const recent = await fetchRecentArticles(supabase, limit)
+    const inMemory = filterArticlesInMemory(recent, trimmed, limit)
+    if (inMemory.length > 0) return inMemory
+
+    return recent.slice(0, limit)
+}
+
+export async function searchFeaturedBlogs(query: string, limit = 4): Promise<News[]> {
+    const supabase = await createClient()
+    const trimmed = query.trim()
+    if (!trimmed) return []
+
+    const pattern = buildIlikePattern(trimmed)
+
+    const { data } = await supabase
+        .from('news')
+        .select(ARTICLE_SELECT)
+        .eq('status', 'published')
+        .eq('is_featured', true)
+        .or(`title.ilike."${pattern}",excerpt.ilike."${pattern}"`)
+        .order('published_at', { ascending: false })
+        .limit(limit)
+
+    if (data && data.length > 0) {
+        return data as unknown as News[]
+    }
+
+    const { data: featuredRecent } = await supabase
+        .from('news')
+        .select(ARTICLE_SELECT)
+        .eq('status', 'published')
+        .eq('is_featured', true)
+        .order('published_at', { ascending: false })
+        .limit(limit)
+
+    if (!featuredRecent?.length) return []
+
+    return filterArticlesInMemory(featuredRecent as unknown as News[], trimmed, limit)
+}
+
+export async function getRecentArticles(limit = 8): Promise<News[]> {
+    const supabase = await createClient()
+    return fetchRecentArticles(supabase, limit)
 }
 
 /** Fetch real-time news from SerpApi (Google News) with auto key rotation */

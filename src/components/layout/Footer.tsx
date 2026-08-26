@@ -1,55 +1,67 @@
 import Link from 'next/link'
-import { Zap, Twitter, Youtube, Instagram, Facebook } from 'lucide-react'
+import { Twitter, Youtube, Instagram, Facebook, Mail } from 'lucide-react'
 
-const SPORTS_LINKS = [
+const SOCIAL_LINKS = [
+    { Icon: Facebook, href: 'https://facebook.com/sportslnv', label: 'Facebook' },
+    { Icon: Twitter, href: 'https://twitter.com/sportslnv', label: 'Twitter' },
+    { Icon: Instagram, href: 'https://instagram.com/sportslnv', label: 'Instagram' },
+    { Icon: Youtube, href: 'https://youtube.com/sportslnv', label: 'YouTube' },
+] as const
+
+const QUICK_LINKS = [
+    { label: 'Home', href: '/' },
+    { label: 'News', href: '/news' },
+    { label: 'Blogs', href: '/blog' },
+    { label: 'Highlights', href: '/highlights' },
+] as const
+
+const TOP_SPORTS = [
     { label: 'Football', href: '/sport/football' },
-    { label: 'Cricket', href: '/sport/cricket' },
     { label: 'Basketball', href: '/sport/basketball' },
+    { label: 'Cricket', href: '/sport/cricket' },
     { label: 'Tennis', href: '/sport/tennis' },
-    { label: 'Baseball', href: '/sport/baseball' },
-    { label: 'Rugby', href: '/sport/rugby' },
-]
+    { label: 'Formula 1', href: '/sport/f1' },
+    { label: 'NFL', href: '/sport/nfl' },
+    { label: 'NBA', href: '/sport/nba' },
+    { label: 'Olympics', href: '/sport/olympics' },
+] as const
 
-const CONTENT_LINKS = [
-    { label: 'Football Highlights', href: '/highlights' },
-    { label: 'Sports News', href: '/news' },
-    { label: 'Blog', href: '/blog' },
-]
-
-const COMPANY_LINKS = [
+const INFO_LINKS = [
     { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
-]
+    { label: 'Terms of Use', href: '/terms' },
+    { label: 'Sitemap', href: '/sitemap.xml' },
+] as const
 
 export function Footer() {
     return (
-        <footer className="border-t border-border bg-card/50 mt-16">
-            <div className="container-wide py-12">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+        <footer className="relative bg-slate-950 text-white shrink-0">
+            {/* Red accent line */}
+            <div className="h-1 bg-red-600" aria-hidden="true" />
+
+            <div className="container-wide py-10 md:py-14">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
                     {/* Brand */}
-                    <div className="col-span-2 md:col-span-1">
-                        <Link href="/" className="flex items-center gap-2 mb-3">
-                            <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
-                                <Zap className="w-5 h-5 text-white" fill="white" />
-                            </div>
-                            <span className="font-display font-bold text-lg">SportsLNV</span>
+                    <div className="lg:col-span-4">
+                        <Link href="/" className="inline-block group">
+                            <span className="font-display font-black text-2xl tracking-tight text-white">
+                                Sports<span className="text-red-500">LNV</span>
+                            </span>
+                            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-1 group-hover:text-slate-400 transition-colors">
+                                Sports News &amp; Blogs
+                            </p>
                         </Link>
-                        <p className="text-sm text-muted-foreground leading-relaxed max-w-[200px]">
-                            Your go-to destination for predictions and fantasy sports.
+                        <p className="text-sm text-slate-400 leading-relaxed mt-5 max-w-xs">
+                            Your trusted source for sports news, expert analysis, player stories, match reports and premium sports blogs.
                         </p>
-                        <div className="flex items-center gap-3 mt-4">
-                            {[
-                                { Icon: Twitter, href: 'https://twitter.com/sportslnv' },
-                                { Icon: Youtube, href: 'https://youtube.com/sportslnv' },
-                                { Icon: Instagram, href: 'https://instagram.com/sportslnv' },
-                                { Icon: Facebook, href: 'https://facebook.com/sportslnv' },
-                            ].map(({ Icon, href }) => (
+                        <div className="flex items-center gap-2.5 mt-6">
+                            {SOCIAL_LINKS.map(({ Icon, href, label }) => (
                                 <a
                                     key={href}
                                     href={href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                                    aria-label={label}
+                                    className="w-9 h-9 rounded-full bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-400 hover:bg-red-600 hover:border-red-600 hover:text-white transition-all duration-200"
                                 >
                                     <Icon className="w-4 h-4" />
                                 </a>
@@ -57,56 +69,93 @@ export function Footer() {
                         </div>
                     </div>
 
-                    {/* Sports */}
-                    <div>
-                        <h3 className="font-semibold text-sm mb-3">Sports</h3>
-                        <ul className="space-y-2">
-                            {SPORTS_LINKS.map(l => (
-                                <li key={l.href}>
-                                    <Link href={l.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        {l.label}
+                    {/* Quick Links */}
+                    <div className="lg:col-span-2">
+                        <h3 className="font-bold text-xs tracking-[0.2em] uppercase mb-5 text-white">
+                            Quick Links
+                        </h3>
+                        <ul className="space-y-2.5">
+                            {QUICK_LINKS.map(({ label, href }) => (
+                                <li key={href}>
+                                    <Link
+                                        href={href}
+                                        className="text-sm text-slate-400 hover:text-white hover:translate-x-0.5 inline-block transition-all duration-150"
+                                    >
+                                        {label}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Content */}
-                    <div>
-                        <h3 className="font-semibold text-sm mb-3">Content</h3>
-                        <ul className="space-y-2">
-                            {CONTENT_LINKS.map(l => (
-                                <li key={l.href}>
-                                    <Link href={l.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        {l.label}
+                    {/* Top Sports */}
+                    <div className="lg:col-span-3">
+                        <h3 className="font-bold text-xs tracking-[0.2em] uppercase mb-5 text-white">
+                            Top Sports
+                        </h3>
+                        <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+                            {TOP_SPORTS.map(({ label, href }) => (
+                                <li key={href}>
+                                    <Link
+                                        href={href}
+                                        className="text-sm text-slate-400 hover:text-white transition-colors duration-150"
+                                    >
+                                        {label}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Company */}
-                    <div>
-                        <h3 className="font-semibold text-sm mb-3">Company</h3>
-                        <ul className="space-y-2">
-                            {COMPANY_LINKS.map(l => (
-                                <li key={l.href}>
-                                    <Link href={l.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        {l.label}
+                    {/* Information + Contact */}
+                    <div className="lg:col-span-3">
+                        <h3 className="font-bold text-xs tracking-[0.2em] uppercase mb-5 text-white">
+                            Information
+                        </h3>
+                        <ul className="space-y-2.5 mb-6">
+                            {INFO_LINKS.map(({ label, href }) => (
+                                <li key={href}>
+                                    <Link
+                                        href={href}
+                                        className="text-sm text-slate-400 hover:text-white transition-colors duration-150"
+                                    >
+                                        {label}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
+                        <div className="flex items-start gap-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <div className="w-8 h-8 rounded-lg bg-red-600/10 border border-red-600/20 flex items-center justify-center flex-shrink-0">
+                                <Mail className="w-4 h-4 text-red-500" />
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold text-white uppercase tracking-wide">Stay in touch</p>
+                                <a
+                                    href="mailto:hello@sportslnv.com"
+                                    className="text-sm text-slate-400 hover:text-red-400 transition-colors"
+                                >
+                                    hello@sportslnv.com
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <p className="text-xs text-muted-foreground">
-                        © {new Date().getFullYear()} SportsLNV. All rights reserved.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                        Predictions & fantasy sports
-                    </p>
+            {/* Copyright — dark bar, flush with page bottom */}
+            <div className="border-t border-slate-800 bg-slate-950 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+                <div className="container-wide py-5 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
+                    <p>© {new Date().getFullYear()} SportsLNV. All Rights Reserved.</p>
+                    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                        {INFO_LINKS.map(({ label, href }, i) => (
+                            <span key={href} className="flex items-center gap-4">
+                                {i > 0 && <span className="text-slate-700 hidden sm:inline" aria-hidden="true">|</span>}
+                                <Link href={href} className="hover:text-slate-300 transition-colors">
+                                    {label}
+                                </Link>
+                            </span>
+                        ))}
+                    </div>
                 </div>
             </div>
         </footer>
