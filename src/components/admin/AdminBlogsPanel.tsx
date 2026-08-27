@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {
     PenTool, Plus, Eye, Calendar, Edit, FileText, Search, Filter,
     Loader2, MessageSquare, Heart, Star, Trophy, Zap, ArrowUpDown, User,
+    ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
@@ -88,6 +89,8 @@ export function AdminBlogsPanel() {
     const [editorPickFilter, setEditorPickFilter] = useState<TriFilter>('all')
     const [breakingFilter, setBreakingFilter] = useState<TriFilter>('all')
     const [dateFilter, setDateFilter] = useState<DateFilter>('all')
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize, setPageSize] = useState(15)
 
     const fetchBlogs = useCallback(async () => {
         try {
@@ -198,6 +201,16 @@ export function AdminBlogsPanel() {
         sort !== 'recent',
     ].filter(Boolean).length
 
+    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+    const paginatedBlogs = useMemo(() => {
+        const start = (currentPage - 1) * pageSize
+        return filtered.slice(start, start + pageSize)
+    }, [filtered, currentPage, pageSize])
+
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [search, sort, statusFilter, categoryFilter, authorFilter, featuredFilter, editorPickFilter, breakingFilter, dateFilter, pageSize])
+
     function resetFilters() {
         setSearch('')
         setSort('recent')
@@ -208,6 +221,7 @@ export function AdminBlogsPanel() {
         setEditorPickFilter('all')
         setBreakingFilter('all')
         setDateFilter('all')
+        setCurrentPage(1)
     }
 
     return (
@@ -416,7 +430,7 @@ export function AdminBlogsPanel() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
-                                {filtered.map((blog) => (
+                                {paginatedBlogs.map((blog) => (
                                     <tr key={blog.id} className="hover:bg-accent/40 transition-colors">
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-3 min-w-0">
@@ -524,6 +538,72 @@ export function AdminBlogsPanel() {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+
+                {/* Admin Table Pagination Footer */}
+                {filtered.length > 0 && (
+                    <div className="p-4 border-t border-border bg-muted/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-3">
+                            <span>
+                                Showing <strong className="text-foreground">{(currentPage - 1) * pageSize + 1}</strong> to{' '}
+                                <strong className="text-foreground">{Math.min(currentPage * pageSize, filtered.length)}</strong> of{' '}
+                                <strong className="text-foreground">{filtered.length}</strong>
+                            </span>
+                            <div className="flex items-center gap-1.5 border-l border-border pl-3">
+                                <span>Per page:</span>
+                                <select
+                                    value={pageSize}
+                                    onChange={(e) => setPageSize(Number(e.target.value))}
+                                    className="bg-background border border-border rounded-md px-1.5 py-0.5 text-xs font-semibold focus:outline-none"
+                                >
+                                    <option value={10}>10</option>
+                                    <option value={15}>15</option>
+                                    <option value={25}>25</option>
+                                    <option value={50}>50</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {totalPages > 1 && (
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => setCurrentPage(1)}
+                                    disabled={currentPage <= 1}
+                                    aria-label="First page"
+                                    className="p-1.5 rounded-lg hover:bg-muted disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                >
+                                    <ChevronsLeft className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                    disabled={currentPage <= 1}
+                                    aria-label="Previous page"
+                                    className="p-1.5 rounded-lg hover:bg-muted disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </button>
+                                <span className="px-2 font-medium">
+                                    Page <strong className="text-foreground">{currentPage}</strong> of <strong className="text-foreground">{totalPages}</strong>
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage >= totalPages}
+                                    aria-label="Next page"
+                                    className="p-1.5 rounded-lg hover:bg-muted disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => setCurrentPage(totalPages)}
+                                    disabled={currentPage >= totalPages}
+                                    aria-label="Last page"
+                                    className="p-1.5 rounded-lg hover:bg-muted disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                >
+                                    <ChevronsRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
