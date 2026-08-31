@@ -33,12 +33,12 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
         title: page.meta_title || page.title,
         description: page.meta_description || `${page.title} — SportsLNV`,
         alternates: {
-            canonical: `${siteUrl}/p/${page.slug}`,
+            canonical: `${siteUrl}/${page.slug}`,
         },
         openGraph: {
             title: page.meta_title || page.title,
             description: page.meta_description || `${page.title} — SportsLNV`,
-            url: `${siteUrl}/p/${page.slug}`,
+            url: `${siteUrl}/${page.slug}`,
             type: 'website',
         },
     }

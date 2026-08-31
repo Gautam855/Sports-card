@@ -248,7 +248,7 @@ export function PageEditorClient({ page }: PageEditorProps) {
                     </span>
                     {watchStatus === 'published' && (
                         <Link
-                            href={`/p/${watchSlug}`}
+                            href={`/${watchSlug}`}
                             target="_blank"
                             className="ml-auto text-xs font-semibold hover:underline flex items-center gap-1"
                         >
@@ -281,7 +281,7 @@ export function PageEditorClient({ page }: PageEditorProps) {
                         <div className="space-y-2">
                             <Label htmlFor="slug">URL Slug *</Label>
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground whitespace-nowrap">/p/</span>
+                                <span className="text-sm text-muted-foreground whitespace-nowrap">/</span>
                                 <Input
                                     id="slug"
                                     placeholder="ipl-2024-schedule"
@@ -372,7 +372,7 @@ export function PageEditorClient({ page }: PageEditorProps) {
                                 {watchMetaTitle || watchTitle || 'Page Title'}
                             </p>
                             <p className="text-emerald-700 text-xs truncate">
-                                {typeof window !== 'undefined' ? window.location.origin : 'https://sportslnv.com'}/p/{watchSlug || 'page-slug'}
+                                {typeof window !== 'undefined' ? window.location.origin : 'https://sportslnv.com'}/{watchSlug || 'page-slug'}
                             </p>
                             <p className="text-sm text-muted-foreground line-clamp-2">
                                 {watchMetaDesc || 'Add a meta description to improve your search engine visibility...'}

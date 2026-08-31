@@ -236,7 +236,7 @@ export function CustomPagesPanel() {
                                         </td>
                                         <td className="px-4 py-3 hidden md:table-cell">
                                             <code className="text-xs bg-muted px-2 py-1 rounded-md text-muted-foreground">
-                                                /p/{page.slug}
+                                                /{page.slug}
                                             </code>
                                         </td>
                                         <td className="px-4 py-3">
@@ -265,7 +265,7 @@ export function CustomPagesPanel() {
                                             <div className="flex items-center justify-end gap-1">
                                                 {page.status === 'published' && (
                                                     <Link
-                                                        href={`/p/${page.slug}`}
+                                                        href={`/${page.slug}`}
                                                         target="_blank"
                                                         className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                                                         title="View live page"
