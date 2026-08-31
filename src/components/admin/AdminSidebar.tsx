@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import {
     LayoutDashboard, Users, Bell, Zap, ChevronRight, LogOut,
-    PenTool, ShoppingBag, Code2, Key, Activity,
+    PenTool, ShoppingBag, Code2, Key, Activity, FileText,
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 const NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { label: 'Blogs', href: '/admin/blogs', icon: PenTool },
+    { label: 'Pages', href: '/admin/pages', icon: FileText },
     { label: 'Merchandise', href: '/admin/merchandise', icon: ShoppingBag },
     { label: 'Users', href: '/admin/users', icon: Users },
     { label: 'SEO & Scripts', href: '/admin/seo-scripts', icon: Code2 },
