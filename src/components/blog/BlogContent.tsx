@@ -1,5 +1,5 @@
 import React from 'react'
-import { AdSenseSlot } from '@/components/ads/AdSenseSlot'
+import { InArticleAd } from '@/components/ads/AdSenseSlot'
 
 interface Props {
     content: string
@@ -51,7 +51,7 @@ export function BlogContent({ content }: Props) {
                 if (part.type === 'html') {
                     return <div key={i} dangerouslySetInnerHTML={{ __html: part.content }} style={{ display: 'contents' }} />
                 } else {
-                    return <AdSenseSlot key={i} slotId={part.slot} />
+                    return <InArticleAd key={i} />
                 }
             })}
         </div>

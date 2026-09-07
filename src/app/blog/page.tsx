@@ -6,6 +6,7 @@ import { Pagination } from '@/components/ui/Pagination'
 import { PenTool, Sparkles, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { InFeedAd, DisplayAd } from '@/components/ads/AdSenseSlot'
 
 export const metadata: Metadata = {
     title: 'Blog — Expert Sports Analysis & Opinions | SportsLNV',
@@ -140,10 +141,21 @@ export default async function BlogListingPage({ searchParams }: BlogListingPageP
                 {blogs.length > 0 ? (
                     <div className="space-y-12">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {blogs.map((blog) => (
-                                <BlogCard key={blog.id} blog={blog} />
+                            {blogs.map((blog, index) => (
+                                <>
+                                    <BlogCard key={blog.id} blog={blog} />
+                                    {/* In-Feed Ad after every 6th card */}
+                                    {(index + 1) % 6 === 0 && index < blogs.length - 1 && (
+                                        <div key={`ad-${index}`} className="col-span-1 md:col-span-2 lg:col-span-3">
+                                            <InFeedAd />
+                                        </div>
+                                    )}
+                                </>
                             ))}
                         </div>
+
+                        {/* Display Ad after blog grid */}
+                        <DisplayAd />
 
                         {/* Pagination Component */}
                         <Pagination

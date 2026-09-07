@@ -169,6 +169,21 @@ fbq('track', 'PageView');`
                 {/* Meta Pixel Code (noscript) */}
                 <noscript><img height="1" width="1" style={{ display: 'none' }} src="https://www.facebook.com/tr?id=3296516970531633&ev=PageView&noscript=1" alt="" /></noscript>
                 {/* End Meta Pixel Code (noscript) */}
+
+                {/* LaraPush Push Notification Integration */}
+                <Script
+                    id="larapush-sdk"
+                    src="https://cdn.larapush.com/scripts/popup-4.0.0.min.js"
+                    strategy="afterInteractive"
+                />
+                <Script
+                    id="larapush-init"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `function LoadLaraPush(){ if (typeof LaraPush === "function") {new LaraPush(JSON.parse(atob('eyJmaXJlYmFzZUNvbmZpZyI6eyJwcm9qZWN0SWQiOiJzcG9ydHNsbnYiLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjQyODY3NTkxNDczNCIsImFwcElkIjoiMTo0Mjg2NzU5MTQ3MzQ6d2ViOmVjOTFhNWRkY2I2NGY4MTUyZTRjZmYiLCJhcGlLZXkiOiJBSXphU3lDN0pfMVJfWk9BMlV0RFBTMVkxeFdOcm03TjIyd2plU3MifSwiZG9tYWluIjoic3BvcnRzbG52LmNvbSIsInNpdGVfdXJsIjoiaHR0cHM6XC9cL3Nwb3J0c2xudi5jb21cLyIsImFwaV91cmwiOiJodHRwczpcL1wvc3RvY2tzdGJpdC5sYXJhcHUuc2hcL2FwaVwvdG9rZW4iLCJzZXJ2aWNlV29ya2VyIjoiaHR0cHM6XC9cL3Nwb3J0c2xudi5jb21cL2ZpcmViYXNlLW1lc3NhZ2luZy1zdy5qcyIsInZhcGlkX3B1YmxpY19rZXkiOiJCSHdWaThLVHI3ZlNoX0lBWWN4YVpXVm00OVpPYUNPNVFlcjRxcnBXTW5CRzF6Q0V5YUhjYWtySTRjWE9KQTFWM2V1V2g0bXBIWTdjMkliR1k1cTh1OE0iLCJyZWZlcnJhbENvZGUiOiJFQllTTUIifQ==')), JSON.parse(atob('eyJsb2dvIjpudWxsLCJoZWFkaW5nIjpudWxsLCJzdWJoZWFkaW5nIjpudWxsLCJ0aGVtZUNvbG9yIjoiIzAwMDAwMCIsImFsbG93VGV4dCI6bnVsbCwiZGVueVRleHQiOm51bGwsImRlc2t0b3AiOiJkaXNhYmxlIiwibW9iaWxlIjoiZGlzYWJsZSIsIm1vYmlsZUxvY2F0aW9uIjoiYm90dG9tIiwiZGVsYXkiOiIwIiwicmVhcHBlYXIiOiIwIiwiYm90dG9tQnV0dG9uIjoiZGlzYWJsZSIsImJ1dHRvblRvVW5zdWJzY3JpYmUiOiJkaXNhYmxlIiwibG9ja1BhZ2VDb250ZW50IjoiZGlzYWJsZSIsImJhY2tkcm9wIjoiZW5hYmxlIiwicG9wdXBfdHlwZSI6ImRlZmF1bHQtcHJvbXB0In0=')));}}LoadLaraPush();`
+                    }}
+                />
+                {/* End LaraPush */}
             </head>
             <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh">
                 <QueryProvider>

@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { formatDate } from '@/lib/utils'
 import { NewsCard } from '@/components/news/NewsCard'
-
 import { BlogContent } from '@/components/blog/BlogContent'
+import { DisplayAd, InArticleAd, MultiplexAd } from '@/components/ads/AdSenseSlot'
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -16,7 +16,6 @@ export default async function NewsDetailPage({ params }: Props) {
     // If it's a real-time news slug that no longer exists or is stale, redirect to news page
     redirect('/news')
   }
-
 
   const related = await getRelatedNews(article.id, article.category_id)
 
@@ -36,11 +35,20 @@ export default async function NewsDetailPage({ params }: Props) {
           </div>
         )}
 
+        {/* Display Ad — before content */}
+        <DisplayAd />
+
         <div className="mb-16">
           <BlogContent content={article.content || ''} />
         </div>
 
+        {/* In-Article Ad — after content */}
+        <InArticleAd />
 
+        {/* Multiplex Ad — before related news */}
+        <div className="flex justify-center">
+          <MultiplexAd />
+        </div>
 
         {related.length > 0 && (
           <div className="border-t border-border pt-10">

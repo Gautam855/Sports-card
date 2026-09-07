@@ -13,6 +13,7 @@ import { BlogInteraction } from '@/components/blog/BlogInteraction'
 import { CommentSection } from '@/components/blog/CommentSection'
 import { BlogContent } from '@/components/blog/BlogContent'
 import { getComments } from '@/lib/api/comments'
+import { DisplayAd, InArticleAd, MultiplexAd } from '@/components/ads/AdSenseSlot'
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -219,7 +220,14 @@ export default async function BlogDetailPage({ params }: Props) {
                             <div className="md:hidden">
                                 <TableOfContents content={article.content || ''} />
                             </div>
+
+                            {/* Display Ad — before content */}
+                            <DisplayAd />
+
                             <BlogContent content={article.content || ''} />
+
+                            {/* In-Article Ad — after content */}
+                            <InArticleAd />
                         </div>
                     </div>
 
@@ -250,6 +258,13 @@ export default async function BlogDetailPage({ params }: Props) {
                             </div>
                             <ShareButtons url={postUrl} title={article.title} description={article.excerpt} />
                         </div>
+                    </div>
+                </div>
+
+                {/* Multiplex Ad — before related posts */}
+                <div className="container-wide">
+                    <div className="max-w-4xl mx-auto flex justify-center">
+                        <MultiplexAd />
                     </div>
                 </div>
 

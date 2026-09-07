@@ -1,5 +1,6 @@
 import { getNews, getRealTimeNews } from '@/lib/api/news'
 import { NewsCard } from '@/components/news/NewsCard'
+import { InFeedAd, DisplayAd } from '@/components/ads/AdSenseSlot'
 
 export default async function NewsPage() {
   const [{ data: localArticles }, realTimeArticles] = await Promise.all([
@@ -23,8 +24,16 @@ export default async function NewsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {allArticles.length > 0 ? (
-          allArticles.map((article) => (
-            <NewsCard key={article.id} article={article} />
+          allArticles.map((article, index) => (
+            <>
+              <NewsCard key={article.id} article={article} />
+              {/* In-Feed Ad after every 6th card */}
+              {(index + 1) % 6 === 0 && index < allArticles.length - 1 && (
+                <div key={`ad-${index}`} className="col-span-1 md:col-span-2 lg:col-span-3">
+                  <InFeedAd />
+                </div>
+              )}
+            </>
           ))
         ) : (
           <div className="col-span-full py-20 text-center">
@@ -32,6 +41,9 @@ export default async function NewsPage() {
           </div>
         )}
       </div>
+
+      {/* Display Ad after news grid */}
+      <DisplayAd className="mt-8" />
     </div>
   )
 }
