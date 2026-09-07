@@ -18,19 +18,22 @@ const MAIN_NAV = [
     { label: 'Home', href: '/' },
     { label: 'News', href: '/news' },
     { label: 'Blogs', href: '/blog' },
-    { label: 'Football', href: '/sports/football' },
-    { label: 'Basketball', href: '/sports/basketball' },
-    { label: 'Cricket', href: '/sports/cricket' },
-    { label: 'Tennis', href: '/sports/tennis' },
+]
+
+const SPORTS_DROPDOWN = [
+    { label: '⚽ Football', href: '/sports/football' },
+    { label: '🏏 Cricket', href: '/sports/cricket' },
+    { label: '🏀 Basketball', href: '/sports/basketball' },
+    { label: '🎾 Tennis', href: '/sports/tennis' },
+    { label: '🏎️ Formula 1', href: '/sports/f1' },
+    { label: '🏈 NFL', href: '/sports/nfl' },
+    { label: '🏀 NBA', href: '/sports/nba' },
+    { label: '🥇 Olympics', href: '/sports/olympics' },
 ]
 
 const MORE_NAV = [
     { label: 'All Sports', href: '/sports' },
     { label: 'Highlights', href: '/highlights' },
-    { label: 'Formula 1', href: '/sports/f1' },
-    { label: 'NFL', href: '/sports/nfl' },
-    { label: 'NBA', href: '/sports/nba' },
-    { label: 'Olympics', href: '/sports/olympics' },
 ]
 
 
@@ -121,16 +124,24 @@ export function Header() {
                             )
                         })}
 
-                        {/* More dropdown */}
+                        {/* Sports dropdown */}
                         <div
                             className="relative"
                             onMouseEnter={() => setSportsOpen(true)}
                             onMouseLeave={() => setSportsOpen(false)}
                         >
-                            <button className="flex items-center gap-1 px-3 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 hover:text-red-600 transition-colors">
-                                More
+                            <button className={cn(
+                                'flex items-center gap-1 px-3 py-2 text-xs font-bold uppercase tracking-wide transition-colors',
+                                pathname.startsWith('/sports')
+                                    ? 'text-red-600'
+                                    : 'text-slate-700 hover:text-red-600'
+                            )}>
+                                Sports
                                 <ChevronDown className={cn('w-3 h-3 transition-transform', sportsOpen && 'rotate-180')} />
                             </button>
+                            {pathname.startsWith('/sports') && (
+                                <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-red-600 rounded-full" />
+                            )}
                             <AnimatePresence>
                                 {sportsOpen && (
                                     <motion.div
@@ -138,21 +149,59 @@ export function Header() {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 8 }}
                                         transition={{ duration: 0.15 }}
-                                        className="absolute top-full right-0 mt-1 w-48 rounded-xl border border-slate-200 bg-white shadow-xl p-1.5 z-50"
+                                        className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[320px] rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden z-50"
                                     >
-                                        {MORE_NAV.map((item) => (
+                                        <div className="grid grid-cols-2 gap-0.5 p-2">
+                                            {SPORTS_DROPDOWN.map((item) => (
+                                                <Link
+                                                    key={item.href}
+                                                    href={item.href}
+                                                    className={cn(
+                                                        'block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                                                        pathname === item.href
+                                                            ? 'text-red-600 bg-red-50'
+                                                            : 'text-slate-700 hover:bg-slate-50 hover:text-red-600'
+                                                    )}
+                                                >
+                                                    {item.label}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                        <div className="border-t border-slate-100 px-2 py-1.5">
                                             <Link
-                                                key={item.href}
-                                                href={item.href}
-                                                className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-red-600 transition-colors"
+                                                href="/sports"
+                                                className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-colors uppercase tracking-wider"
                                             >
-                                                {item.label}
+                                                <Zap className="w-3 h-3" />
+                                                View All Sports
                                             </Link>
-                                        ))}
+                                        </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
                         </div>
+
+                        {/* More links */}
+                        {MORE_NAV.map((item) => {
+                            const isActive = pathname === item.href
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={cn(
+                                        'relative px-3 py-2 text-xs font-bold uppercase tracking-wide transition-colors',
+                                        isActive
+                                            ? 'text-red-600'
+                                            : 'text-slate-700 hover:text-red-600'
+                                    )}
+                                >
+                                    {item.label}
+                                    {isActive && (
+                                        <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-red-600 rounded-full" />
+                                    )}
+                                </Link>
+                            )
+                        })}
                     </nav>
 
                     {/* Actions */}
@@ -279,14 +328,35 @@ export function Header() {
                             ))}
 
                             <div className="pt-2 border-t border-slate-200">
-                                <p className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">More</p>
-                                <div className="grid grid-cols-2 gap-1">
+                                <p className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Sports Categories</p>
+                                <div className="grid grid-cols-2 gap-1 px-2">
+                                    {SPORTS_DROPDOWN.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setMobileOpen(false)}
+                                            className={cn(
+                                                'px-3 py-2 rounded-lg text-xs font-semibold transition-colors',
+                                                pathname === item.href
+                                                    ? 'text-red-600 bg-red-50'
+                                                    : 'text-slate-700 hover:bg-slate-50 hover:text-red-600'
+                                            )}
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="pt-2 border-t border-slate-200">
+                                <p className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Quick Links</p>
+                                <div className="grid grid-cols-2 gap-1 px-2">
                                     {MORE_NAV.map((item) => (
                                         <Link
                                             key={item.href}
                                             href={item.href}
                                             onClick={() => setMobileOpen(false)}
-                                            className="px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-red-600 transition-colors"
+                                            className="px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-red-600 transition-colors"
                                         >
                                             {item.label}
                                         </Link>
