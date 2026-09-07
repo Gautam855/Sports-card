@@ -72,24 +72,6 @@ export async function generateMetadata(): Promise<Metadata> {
             follow: true,
             googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
         },
-        openGraph: {
-            type: 'website',
-            locale: 'en_US',
-            url: process.env.NEXT_PUBLIC_SITE_URL,
-            siteName: 'SportsLNV',
-            title: 'SportsLNV — Sports News & Blogs',
-            description:
-                'Breaking sports news, expert analysis, and in-depth sports blogs.',
-            images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'SportsLNV' }],
-        },
-        twitter: {
-            card: 'summary_large_image',
-            site: '@SportsLNV',
-            creator: '@SportsLNV',
-        },
-        alternates: {
-            canonical: process.env.NEXT_PUBLIC_SITE_URL,
-        },
         verification: {
             google: googleVerification,
         },

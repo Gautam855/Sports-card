@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const url = `${SITE_URL}/blog/${slug}`
 
     return {
-        title: `${title} | SportsLNV Blog`,
+        title: title,
         description,
         keywords: [article.category?.name, 'sports blog', 'analysis'].filter(Boolean).join(', '),
         authors: article.author ? [{ name: article.author.display_name || article.author.username }] : undefined,

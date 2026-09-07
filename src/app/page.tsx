@@ -23,10 +23,25 @@ export const metadata: Metadata = {
     title: 'Sports News and Popular Sports Blogs',
     description:
         'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
+    alternates: {
+        canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://sportslnv.com',
+    },
     openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://sportslnv.com',
+        siteName: 'SportsLNV',
         title: 'Sports News and Popular Sports Blogs',
         description:
-            'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more. Get expert analysis, in-depth about breaking sports news.',
+            'Stay connected with sportslnv.com for most popular sports blogs on cricket, tennis, football and more.',
+        images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'SportsLNV' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        site: '@SportsLNV',
+        creator: '@SportsLNV',
+        title: 'Sports News and Popular Sports Blogs',
+        description: 'Stay connected with sportslnv.com for most popular sports blogs.',
     },
 }
 

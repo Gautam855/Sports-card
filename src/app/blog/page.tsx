@@ -9,10 +9,20 @@ import { cn } from '@/lib/utils'
 import { InFeedAd, DisplayAd } from '@/components/ads/AdSenseSlot'
 
 export const metadata: Metadata = {
-    title: 'Blog — Expert Sports Analysis & Opinions | SportsLNV',
+    title: 'Blog — Expert Sports Analysis & Opinions',
     description: 'Read in-depth sports analysis, expert opinions, match previews, and behind-the-scenes stories from the world of cricket, football, basketball, and more.',
+    alternates: {
+        canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://sportslnv.com'}/blog`,
+    },
     openGraph: {
-        title: 'SportsLNV Blog — Expert Sports Analysis',
+        title: 'Blog — Expert Sports Analysis & Opinions',
+        description: 'In-depth sports analysis, expert opinions, and the latest stories from the sports world.',
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://sportslnv.com'}/blog`,
+        siteName: 'SportsLNV',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Blog — Expert Sports Analysis & Opinions',
         description: 'In-depth sports analysis, expert opinions, and the latest stories from the sports world.',
     },
 }
