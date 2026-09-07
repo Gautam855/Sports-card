@@ -14,6 +14,7 @@ import { CommentSection } from '@/components/blog/CommentSection'
 import { BlogContent } from '@/components/blog/BlogContent'
 import { getComments } from '@/lib/api/comments'
 import { DisplayAd, InArticleAd, MultiplexAd } from '@/components/ads/AdSenseSlot'
+import { TeamPlayersSection } from '@/components/blog/TeamPlayersSection'
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -238,6 +239,15 @@ export default async function BlogDetailPage({ params }: Props) {
                             commentCount={comments.length} 
                         />
                         <CommentSection articleId={article.id} />
+
+                        {/* Team Players for this category */}
+                        {article.category_id && (
+                            <TeamPlayersSection
+                                categoryId={article.category_id}
+                                categoryName={article.category?.name}
+                                categorySlug={article.category?.slug}
+                            />
+                        )}
                     </div>
                 </div>
 

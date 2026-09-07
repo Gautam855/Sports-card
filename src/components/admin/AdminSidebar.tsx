@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import {
-    LayoutDashboard, Users, Bell, Zap, ChevronRight, LogOut,
+    LayoutDashboard, Users, Users2, Bell, Zap, ChevronRight, LogOut,
     PenTool, ShoppingBag, Code2, Key, Activity, FileText,
 } from 'lucide-react'
 
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { label: 'Blogs', href: '/admin/blogs', icon: PenTool },
     { label: 'Pages', href: '/admin/pages', icon: FileText },
+    { label: 'Team Players', href: '/admin/team-players', icon: Users2 },
     { label: 'Merchandise', href: '/admin/merchandise', icon: ShoppingBag },
     { label: 'Users', href: '/admin/users', icon: Users },
     { label: 'SEO & Scripts', href: '/admin/seo-scripts', icon: Code2 },
