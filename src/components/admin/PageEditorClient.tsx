@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import {
     Save, Eye, ArrowLeft, Globe, FileText,
     Loader2, Code2, EyeOff, Search, Sparkles,
+    ImagePlus, X, Type,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -19,6 +20,8 @@ import Link from 'next/link'
 const schema = z.object({
     title: z.string().min(2, 'Title must be at least 2 characters'),
     slug: z.string().min(2).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Lowercase letters, numbers, and hyphens only'),
+    page_title: z.string().optional().or(z.literal('')),
+    banner_image: z.string().optional().or(z.literal('')),
     html_content: z.string().min(1, 'HTML content is required'),
     meta_title: z.string().max(70, 'Max 70 characters for SEO').optional().or(z.literal('')),
     meta_description: z.string().max(160, 'Max 160 characters for SEO').optional().or(z.literal('')),
@@ -46,7 +49,10 @@ export function PageEditorClient({ page }: PageEditorProps) {
     const [saving, setSaving] = useState(false)
     const [showPreview, setShowPreview] = useState(false)
     const [slugEdited, setSlugEdited] = useState(!!page)
+    const [uploading, setUploading] = useState(false)
+    const [bannerPreview, setBannerPreview] = useState(page?.banner_image || '')
     const iframeRef = useRef<HTMLIFrameElement>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
     const isEditMode = !!page?.id
 
     const {
@@ -60,6 +66,8 @@ export function PageEditorClient({ page }: PageEditorProps) {
         defaultValues: {
             title: page?.title || '',
             slug: page?.slug || '',
+            page_title: page?.page_title || '',
+            banner_image: page?.banner_image || '',
             html_content: page?.html_content || '',
             meta_title: page?.meta_title || '',
             meta_description: page?.meta_description || '',
@@ -73,6 +81,7 @@ export function PageEditorClient({ page }: PageEditorProps) {
     const watchStatus = watch('status')
     const watchMetaTitle = watch('meta_title')
     const watchMetaDesc = watch('meta_description')
+    const watchPageTitle = watch('page_title')
 
     // Auto-generate slug from title
     useEffect(() => {
@@ -87,11 +96,65 @@ export function PageEditorClient({ page }: PageEditorProps) {
             const doc = iframeRef.current.contentDocument
             if (doc) {
                 doc.open()
-                doc.write(watchHtml || '<p style="color:#888;text-align:center;padding:40px;font-family:sans-serif;">No HTML content yet...</p>')
+                const bannerHtml = bannerPreview
+                    ? `<div style="width:100%;max-height:400px;overflow:hidden;border-radius:12px;margin-bottom:24px;">
+                         <img src="${bannerPreview}" alt="Banner" style="width:100%;height:auto;object-fit:cover;" />
+                       </div>`
+                    : ''
+                const titleHtml = watchPageTitle
+                    ? `<h1 style="font-size:2rem;font-weight:800;margin-bottom:16px;font-family:system-ui,sans-serif;">${watchPageTitle}</h1>`
+                    : ''
+                doc.write(`
+                    <div style="max-width:960px;margin:0 auto;padding:24px;font-family:system-ui,sans-serif;">
+                        ${bannerHtml}
+                        ${titleHtml}
+                        ${watchHtml || '<p style="color:#888;text-align:center;padding:40px;">No HTML content yet...</p>'}
+                    </div>
+                `)
                 doc.close()
             }
         }
-    }, [watchHtml, showPreview])
+    }, [watchHtml, showPreview, bannerPreview, watchPageTitle])
+
+    /** Upload banner image to Supabase via our API */
+    async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setUploading(true)
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('folder', 'page-banners')
+
+            const token = getToken()
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            })
+            const json = await res.json()
+
+            if (!res.ok) {
+                toast.error(json.error || 'Upload failed')
+                return
+            }
+
+            setValue('banner_image', json.url, { shouldDirty: true })
+            setBannerPreview(json.url)
+            toast.success('Banner image uploaded!')
+        } catch {
+            toast.error('Upload failed. Please try again.')
+        } finally {
+            setUploading(false)
+        }
+    }
+
+    function removeBanner() {
+        setValue('banner_image', '', { shouldDirty: true })
+        setBannerPreview('')
+        if (fileInputRef.current) fileInputRef.current.value = ''
+    }
 
     const onSubmit = useCallback(async (data: FormData) => {
         setSaving(true)
@@ -138,6 +201,8 @@ export function PageEditorClient({ page }: PageEditorProps) {
         const data = {
             title: watch('title'),
             slug: watch('slug'),
+            page_title: watch('page_title'),
+            banner_image: watch('banner_image'),
             html_content: watch('html_content'),
             meta_title: watch('meta_title'),
             meta_description: watch('meta_description'),
@@ -295,6 +360,92 @@ export function PageEditorClient({ page }: PageEditorProps) {
                             {errors.slug && (
                                 <p className="text-xs text-destructive">{errors.slug.message}</p>
                             )}
+                        </div>
+                    </div>
+
+                    {/* Page Title & Banner */}
+                    <div className="rounded-xl border border-border bg-card overflow-hidden">
+                        <div className="px-5 py-3.5 border-b border-border bg-muted/30">
+                            <h2 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground uppercase tracking-wider">
+                                <Type className="w-4 h-4" />
+                                Page Title & Banner
+                            </h2>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                This title and banner will be visible on the frontend page
+                            </p>
+                        </div>
+                        <div className="p-5 space-y-5">
+                            {/* Visible Page Title */}
+                            <div className="space-y-2">
+                                <Label htmlFor="page_title">Display Title</Label>
+                                <Input
+                                    id="page_title"
+                                    placeholder="e.g. IPL 2024 Full Schedule & Match List"
+                                    {...register('page_title')}
+                                    className="text-lg font-bold"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    यह title page पर visitors को दिखेगा। खाली छोड़ने पर admin title use होगा।
+                                </p>
+                            </div>
+
+                            {/* Banner Image Upload */}
+                            <div className="space-y-2">
+                                <Label>Banner Image</Label>
+                                {bannerPreview ? (
+                                    <div className="relative aspect-[21/9] rounded-xl overflow-hidden border border-border group">
+                                        <img
+                                            src={bannerPreview}
+                                            alt="Banner preview"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-bold backdrop-blur-sm hover:bg-white/30 transition-colors"
+                                            >
+                                                Change
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={removeBanner}
+                                                className="bg-red-500/80 text-white px-3 py-1.5 rounded-lg text-xs font-bold backdrop-blur-sm hover:bg-red-500 transition-colors"
+                                            >
+                                                <X className="w-3 h-3 inline mr-1" /> Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={uploading}
+                                        className="w-full aspect-[21/9] rounded-xl border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-3 transition-all bg-muted/20 hover:bg-muted/40"
+                                    >
+                                        {uploading ? (
+                                            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                                        ) : (
+                                            <ImagePlus className="w-8 h-8 text-muted-foreground" />
+                                        )}
+                                        <div className="text-center">
+                                            <p className="text-sm font-bold text-foreground">
+                                                {uploading ? 'Uploading & Compressing...' : 'Click to upload banner image'}
+                                            </p>
+                                            <p className="text-[10px] text-muted-foreground mt-1">
+                                                PNG, JPG, WebP up to 5MB • Recommended: 1200×514px • Auto-compressed to WebP
+                                            </p>
+                                        </div>
+                                    </button>
+                                )}
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleBannerUpload}
+                                    className="hidden"
+                                />
+                            </div>
                         </div>
                     </div>
 

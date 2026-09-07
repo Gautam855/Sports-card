@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
 
         const { id } = await params
         const body = await req.json()
-        const { title, slug, html_content, meta_title, meta_description, status } = body
+        const { title, slug, html_content, meta_title, meta_description, status, page_title, banner_image } = body
 
         if (!title || !slug) {
             return NextResponse.json({ error: 'Title and slug are required' }, { status: 400 })
@@ -79,6 +79,8 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
                 html_content: html_content || '',
                 meta_title: meta_title || null,
                 meta_description: meta_description || null,
+                page_title: page_title || null,
+                banner_image: banner_image || null,
                 status: status || 'draft',
             })
             .eq('id', id)

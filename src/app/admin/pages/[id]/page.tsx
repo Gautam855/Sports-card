@@ -53,6 +53,8 @@ export default function EditPagePage() {
                 id: page.id,
                 title: page.title,
                 slug: page.slug,
+                page_title: page.page_title || '',
+                banner_image: page.banner_image || '',
                 html_content: page.html_content || '',
                 meta_title: page.meta_title || '',
                 meta_description: page.meta_description || '',

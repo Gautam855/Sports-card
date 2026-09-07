@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { verifyToken } from '@/lib/auth'
+import sharp from 'sharp'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,6 +17,35 @@ function createAdminClient() {
         throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set in environment variables')
     }
     return createSupabaseClient(url, serviceKey)
+}
+
+/**
+ * Compress an image buffer to WebP format using Sharp.
+ * - Max width 1920px (auto height to maintain aspect ratio)
+ * - WebP quality 80%
+ * - Strips metadata (EXIF, etc.) to save bytes
+ */
+async function compressImage(inputBuffer: Buffer | Uint8Array): Promise<{ buffer: Buffer; originalSize: number; compressedSize: number }> {
+    const originalSize = inputBuffer.length
+
+    const compressedBuffer = await sharp(inputBuffer)
+        .resize({
+            width: 1920,
+            withoutEnlargement: true, // Don't upscale small images
+        })
+        .webp({
+            quality: 80,
+            effort: 4, // Balance between speed and compression
+        })
+        .toBuffer()
+
+    console.log(`[Upload] Compressed: ${(originalSize / 1024).toFixed(1)}KB → ${(compressedBuffer.length / 1024).toFixed(1)}KB (${((1 - compressedBuffer.length / originalSize) * 100).toFixed(0)}% saved)`)
+
+    return {
+        buffer: compressedBuffer,
+        originalSize,
+        compressedSize: compressedBuffer.length,
+    }
 }
 
 export async function POST(req: NextRequest) {
@@ -54,19 +84,22 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'File too large. Max 5MB.' }, { status: 400 })
         }
 
-        const ext = file.name.split('.').pop() || 'jpg'
-        const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`
-
         const arrayBuffer = await file.arrayBuffer()
-        const buffer = new Uint8Array(arrayBuffer)
+        const rawBuffer = Buffer.from(arrayBuffer)
+
+        // ── Compress image to WebP ──
+        const { buffer: compressedBuffer, originalSize, compressedSize } = await compressImage(rawBuffer)
+
+        // Always use .webp extension after compression
+        const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.webp`
 
         // Use admin client (service role) to bypass storage RLS
         const supabase = createAdminClient()
 
         const { data, error } = await supabase.storage
             .from('media')
-            .upload(fileName, buffer, {
-                contentType: file.type,
+            .upload(fileName, compressedBuffer, {
+                contentType: 'image/webp',
                 cacheControl: '31536000', // 1 year cache
                 upsert: false,
             })
@@ -82,8 +115,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             url: urlData.publicUrl,
             path: data.path,
-            size: file.size,
-            type: file.type,
+            size: compressedSize,
+            originalSize,
+            type: 'image/webp',
         })
     } catch (err: any) {
         console.error('[Upload] Error:', err)
