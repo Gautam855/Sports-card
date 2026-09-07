@@ -16,14 +16,14 @@ const QUICK_LINKS = [
 ] as const
 
 const TOP_SPORTS = [
-    { label: 'Football', href: '/sport/football' },
-    { label: 'Basketball', href: '/sport/basketball' },
-    { label: 'Cricket', href: '/sport/cricket' },
-    { label: 'Tennis', href: '/sport/tennis' },
-    { label: 'Formula 1', href: '/sport/f1' },
-    { label: 'NFL', href: '/sport/nfl' },
-    { label: 'NBA', href: '/sport/nba' },
-    { label: 'Olympics', href: '/sport/olympics' },
+    { label: 'Football', href: '/sports/football' },
+    { label: 'Basketball', href: '/sports/basketball' },
+    { label: 'Cricket', href: '/sports/cricket' },
+    { label: 'Tennis', href: '/sports/tennis' },
+    { label: 'Formula 1', href: '/sports/f1' },
+    { label: 'NFL', href: '/sports/nfl' },
+    { label: 'NBA', href: '/sports/nba' },
+    { label: 'Olympics', href: '/sports/olympics' },
 ] as const
 
 const INFO_LINKS = [

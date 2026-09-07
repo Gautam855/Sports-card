@@ -53,8 +53,8 @@ export default function NotFound() {
                 <p className="text-xs text-muted-foreground mb-4">Popular pages you might be looking for:</p>
                 <div className="flex flex-wrap justify-center gap-2">
                     {[
-                        { href: '/sport/football', label: '⚽ Football' },
-                        { href: '/sport/cricket', label: '🏏 Cricket' },
+                        { href: '/sports/football', label: '⚽ Football' },
+                        { href: '/sports/cricket', label: '🏏 Cricket' },
                         { href: '/blog', label: '📝 Blog' },
                         { href: '/highlights', label: '🎬 Highlights' },
                     ].map(link => (

@@ -2,16 +2,16 @@ import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Trophy, Tv, Target, Flame, Activity, Shield, Globe, Circle, Star, Zap } from 'lucide-react'
 
 const SPORTS = [
-    { name: 'Football', icon: Trophy, href: '/sport/football' },
-    { name: 'Basketball', icon: Tv, href: '/sport/basketball' },
-    { name: 'Cricket', icon: Target, href: '/sport/cricket' },
-    { name: 'Tennis', icon: Flame, href: '/sport/tennis' },
-    { name: 'Formula 1', icon: Activity, href: '/sport/f1' },
-    { name: 'NFL', icon: Shield, href: '/sport/nfl' },
-    { name: 'MLB', icon: Circle, href: '/sport/mlb' },
-    { name: 'Olympics', icon: Globe, href: '/sport/olympics' },
-    { name: 'FIFA World Cup', icon: Star, href: '/sport/fifa' },
-    { name: 'NBA', icon: Zap, href: '/sport/nba' },
+    { name: 'Football', icon: Trophy, href: '/sports/football' },
+    { name: 'Basketball', icon: Tv, href: '/sports/basketball' },
+    { name: 'Cricket', icon: Target, href: '/sports/cricket' },
+    { name: 'Tennis', icon: Flame, href: '/sports/tennis' },
+    { name: 'Formula 1', icon: Activity, href: '/sports/f1' },
+    { name: 'NFL', icon: Shield, href: '/sports/nfl' },
+    { name: 'MLB', icon: Circle, href: '/sports/mlb' },
+    { name: 'Olympics', icon: Globe, href: '/sports/olympics' },
+    { name: 'FIFA World Cup', icon: Star, href: '/sports/fifa' },
+    { name: 'NBA', icon: Zap, href: '/sports/nba' },
 ]
 
 export function ExploreSports() {

@@ -18,18 +18,19 @@ const MAIN_NAV = [
     { label: 'Home', href: '/' },
     { label: 'News', href: '/news' },
     { label: 'Blogs', href: '/blog' },
-    { label: 'Football', href: '/sport/football' },
-    { label: 'Basketball', href: '/sport/basketball' },
-    { label: 'Cricket', href: '/sport/cricket' },
-    { label: 'Tennis', href: '/sport/tennis' },
+    { label: 'Football', href: '/sports/football' },
+    { label: 'Basketball', href: '/sports/basketball' },
+    { label: 'Cricket', href: '/sports/cricket' },
+    { label: 'Tennis', href: '/sports/tennis' },
 ]
 
 const MORE_NAV = [
+    { label: 'All Sports', href: '/sports' },
     { label: 'Highlights', href: '/highlights' },
-    { label: 'Formula 1', href: '/sport/f1' },
-    { label: 'NFL', href: '/sport/nfl' },
-    { label: 'NBA', href: '/sport/nba' },
-    { label: 'Olympics', href: '/sport/olympics' },
+    { label: 'Formula 1', href: '/sports/f1' },
+    { label: 'NFL', href: '/sports/nfl' },
+    { label: 'NBA', href: '/sports/nba' },
+    { label: 'Olympics', href: '/sports/olympics' },
 ]
 
 
