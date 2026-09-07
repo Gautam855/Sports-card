@@ -67,12 +67,11 @@ export default async function CustomPage({ params }: PageParams) {
                         alt={displayTitle}
                         className="custom-page-banner-img"
                     />
-                    <div className="custom-page-banner-overlay" />
                 </div>
             )}
 
-            {/* Page Title */}
-            <div className={page.banner_image ? 'custom-page-header with-banner' : 'custom-page-header'}>
+            {/* Page Title — always below banner */}
+            <div className="custom-page-header">
                 <h1 className="custom-page-title">{displayTitle}</h1>
             </div>
 
@@ -92,52 +91,38 @@ export default async function CustomPage({ params }: PageParams) {
 
                         /* ── Banner ── */
                         .custom-page-banner {
-                            position: relative;
                             width: 100%;
-                            max-height: 420px;
                             overflow: hidden;
-                            border-radius: 0 0 1.5rem 1.5rem;
+                            border-radius: 0 0 1.25rem 1.25rem;
                         }
                         .custom-page-banner-img {
                             width: 100%;
-                            height: 100%;
-                            min-height: 200px;
-                            max-height: 420px;
-                            object-fit: cover;
+                            height: auto;
                             display: block;
-                        }
-                        .custom-page-banner-overlay {
-                            position: absolute;
-                            inset: 0;
-                            background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
-                            pointer-events: none;
+                            object-fit: contain;
                         }
 
-                        /* ── Page Header ── */
+                        /* ── Page Header (Title below banner) ── */
                         .custom-page-header {
                             max-width: 860px;
                             margin: 0 auto;
-                            padding: 2rem 1.5rem 0.5rem;
-                        }
-                        .custom-page-header.with-banner {
-                            margin-top: -3rem;
-                            position: relative;
-                            z-index: 1;
+                            padding: 1.75rem 1.5rem 0.75rem;
                         }
                         .custom-page-title {
-                            font-size: 2rem;
+                            font-size: 2.25rem;
                             font-weight: 800;
                             line-height: 1.2;
-                            letter-spacing: -0.02em;
-                            color: hsl(var(--foreground));
-                        }
-                        .custom-page-header.with-banner .custom-page-title {
-                            color: white;
-                            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+                            letter-spacing: -0.025em;
+                            color: #000000;
                         }
                         @media (min-width: 768px) {
                             .custom-page-title {
-                                font-size: 2.5rem;
+                                font-size: 2.75rem;
+                            }
+                        }
+                        @media (min-width: 1024px) {
+                            .custom-page-title {
+                                font-size: 3rem;
                             }
                         }
 
