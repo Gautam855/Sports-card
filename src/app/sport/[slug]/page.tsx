@@ -5,6 +5,7 @@ import { getNews, getRealTimeNews } from '@/lib/api/news'
 import { NewsCard } from '@/components/news/NewsCard'
 import { createClient } from '@/lib/supabase/server'
 import type { News } from '@/lib/types'
+import { TeamPlayersSection } from '@/components/blog/TeamPlayersSection'
 
 const SPORTS: Record<string, {
     name: string
@@ -176,6 +177,16 @@ export default async function SportPage({ params }: { params: Promise<{ slug: st
                         {sport.description}
                     </p>
                 </div>
+            </div>
+
+            {/* Team Players Section */}
+            <div className="container-wide pt-8">
+                <TeamPlayersSection
+                    categoryId={categoryId}
+                    categorySlug={slug}
+                    categoryName={sport.name}
+                    className="mt-0 mb-4"
+                />
             </div>
 
             <div className="container-wide py-10">

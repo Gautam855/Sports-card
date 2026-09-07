@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
         const { data: pages, error } = await supabase
             .from('custom_pages')
-            .select('id, title, slug, status, meta_title, meta_description, created_by, created_at, updated_at')
+            .select('id, title, slug, status, meta_title, meta_description, page_title, banner_image, created_by, created_at, updated_at')
             .order('created_at', { ascending: false })
 
         if (error) throw error

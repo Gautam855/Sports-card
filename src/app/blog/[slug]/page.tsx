@@ -241,9 +241,9 @@ export default async function BlogDetailPage({ params }: Props) {
                         <CommentSection articleId={article.id} />
 
                         {/* Team Players for this category */}
-                        {article.category_id && (
+                        {(article.category_id || article.category?.id || article.category?.slug) && (
                             <TeamPlayersSection
-                                categoryId={article.category_id}
+                                categoryId={article.category_id || article.category?.id}
                                 categoryName={article.category?.name}
                                 categorySlug={article.category?.slug}
                             />

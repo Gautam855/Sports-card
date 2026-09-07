@@ -14,10 +14,11 @@ CREATE INDEX IF NOT EXISTS idx_category_players_category ON category_players(cat
 -- Enable RLS
 ALTER TABLE category_players ENABLE ROW LEVEL SECURITY;
 
--- Allow public read
+-- Idempotent policies
+DROP POLICY IF EXISTS "Public read category_players" ON category_players;
 CREATE POLICY "Public read category_players" ON category_players
     FOR SELECT USING (true);
 
--- Allow service role / authenticated admins full access
+DROP POLICY IF EXISTS "Admin write category_players" ON category_players;
 CREATE POLICY "Admin write category_players" ON category_players
-    FOR ALL USING (true);
+    FOR ALL USING (true) WITH CHECK (true);

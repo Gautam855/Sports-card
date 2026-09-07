@@ -12,6 +12,8 @@ import {
     Trophy, Flame, Target, Tv, Activity, Shield, Globe, Circle, Star, Zap,
     Newspaper, TrendingUp, ArrowLeft,
 } from 'lucide-react'
+import { TeamPlayersSection } from '@/components/blog/TeamPlayersSection'
+import { CategoryFaqSection } from '@/components/sports/CategoryFaqSection'
 
 // Sport metadata for SEO and visuals
 const SPORTS: Record<string, {
@@ -146,7 +148,7 @@ async function getCategoryBySlug(slug: string) {
     const supabase = await createClient()
     const { data } = await supabase
         .from('news_categories')
-        .select('id, name, slug, color, description')
+        .select('id, name, slug, color, description, emoji, faqs, meta_title, meta_description')
         .eq('slug', slug)
         .maybeSingle()
     return data
@@ -270,6 +272,16 @@ export default async function SportCategoryPage({ params }: PageProps) {
                     </div>
                 </section>
 
+                {/* Team Players Section for this Category */}
+                <div className="container-wide pt-8">
+                    <TeamPlayersSection
+                        categoryId={category?.id}
+                        categorySlug={slug}
+                        categoryName={name}
+                        className="mt-0 mb-4"
+                    />
+                </div>
+
                 {/* Articles Grid */}
                 <section className="container-wide py-10">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -317,6 +329,17 @@ export default async function SportCategoryPage({ params }: PageProps) {
                     {/* Display Ad at bottom */}
                     <DisplayAd className="mt-10" />
                 </section>
+
+                {/* Category FAQ Section */}
+                {category?.faqs && Array.isArray(category.faqs) && category.faqs.length > 0 && (
+                    <div className="container-wide pb-10">
+                        <CategoryFaqSection
+                            faqs={category.faqs as { question: string; answer: string }[]}
+                            categoryName={name}
+                            className="mt-0 mb-0"
+                        />
+                    </div>
+                )}
             </div>
         </>
     )

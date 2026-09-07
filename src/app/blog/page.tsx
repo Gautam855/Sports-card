@@ -7,6 +7,7 @@ import { PenTool, Sparkles, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { InFeedAd, DisplayAd } from '@/components/ads/AdSenseSlot'
+import { TeamPlayersSection } from '@/components/blog/TeamPlayersSection'
 
 export const metadata: Metadata = {
     title: 'Blog — Expert Sports Analysis & Opinions',
@@ -145,6 +146,18 @@ export default async function BlogListingPage({ searchParams }: BlogListingPageP
                     })}
                 </div>
             </section>
+
+            {/* Team Players Section for selected category */}
+            {selectedCategory && (
+                <div className="container-wide pt-6">
+                    <TeamPlayersSection
+                        categoryId={selectedCategory.id}
+                        categoryName={selectedCategory.name}
+                        categorySlug={selectedCategory.slug}
+                        className="mt-0 mb-2"
+                    />
+                </div>
+            )}
 
             {/* Blog Grid & Pagination */}
             <section className="container-wide py-12">

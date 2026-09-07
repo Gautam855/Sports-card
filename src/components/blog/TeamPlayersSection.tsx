@@ -3,24 +3,53 @@ import { createClient } from '@/lib/supabase/server'
 import { Users, ExternalLink, Sparkles } from 'lucide-react'
 
 interface TeamPlayersSectionProps {
-    categoryId: string
+    categoryId?: string
     categoryName?: string
     categorySlug?: string
+    title?: string
+    className?: string
 }
 
-export async function TeamPlayersSection({ categoryId, categoryName, categorySlug }: TeamPlayersSectionProps) {
+export async function TeamPlayersSection({
+    categoryId,
+    categoryName,
+    categorySlug,
+    title,
+    className = 'mt-14 mb-8',
+}: TeamPlayersSectionProps) {
     const supabase = await createClient()
+
+    let targetCatId = categoryId
+    let resolvedName = categoryName
+
+    // If categoryId is not provided, look up by categorySlug
+    if (!targetCatId && categorySlug) {
+        const { data: cat } = await supabase
+            .from('news_categories')
+            .select('id, name')
+            .or(`slug.eq.${categorySlug},slug.ilike.${categorySlug}`)
+            .maybeSingle()
+
+        if (cat) {
+            targetCatId = cat.id
+            if (!resolvedName) resolvedName = cat.name
+        }
+    }
+
+    if (!targetCatId) return null
 
     const { data: players } = await supabase
         .from('category_players')
         .select('id, player_name, player_image, player_url, sort_order')
-        .eq('category_id', categoryId)
+        .eq('category_id', targetCatId)
         .order('sort_order', { ascending: true })
 
     if (!players || players.length === 0) return null
 
+    const displayTitle = title || (resolvedName ? `${resolvedName} Stars & Players` : 'Featured Players')
+
     return (
-        <section className="mt-14 mb-8">
+        <section className={className}>
             <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-b from-slate-50/80 via-white to-white shadow-sm p-6 sm:p-8">
                 {/* Decorative background accent */}
                 <div className="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 bg-red-500/5 rounded-full blur-2xl pointer-events-none" />
@@ -34,7 +63,7 @@ export async function TeamPlayersSection({ categoryId, categoryName, categorySlu
                         <div>
                             <div className="flex items-center gap-2">
                                 <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-900 font-display">
-                                    {categoryName ? `${categoryName} Stars &amp; Players` : 'Featured Players'}
+                                    {displayTitle}
                                 </h3>
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100/80 text-red-700">
                                     <Sparkles className="w-2.5 h-2.5" />
@@ -49,7 +78,7 @@ export async function TeamPlayersSection({ categoryId, categoryName, categorySlu
                             href={`/sports/${categorySlug}`}
                             className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 uppercase tracking-wider transition-colors self-start sm:self-auto"
                         >
-                            All {categoryName || 'Sport'} News &rarr;
+                            All {resolvedName || 'Sport'} News &rarr;
                         </Link>
                     )}
                 </div>
