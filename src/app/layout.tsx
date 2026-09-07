@@ -13,7 +13,8 @@ import { Footer } from '@/components/layout/Footer'
 import { Analytics } from '@/components/Analytics'
 import { DynamicScripts } from '@/components/seo/DynamicScripts'
 import '../globals.css'
-import { createClient } from '@/lib/supabase/server'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
 
 const spaceGrotesk = Space_Grotesk({
     subsets: ['latin'],
@@ -21,19 +22,31 @@ const spaceGrotesk = Space_Grotesk({
     display: 'swap',
 })
 
+const getLayoutMetaScripts = unstable_cache(
+    async () => {
+        try {
+            const supabase = getPublicClient()
+            const { data } = await supabase
+                .from('site_scripts')
+                .select('slug, script_type, content, attributes')
+                .eq('is_active', true)
+                .in('script_type', ['meta'])
+                .order('priority', { ascending: true })
+            return data ?? []
+        } catch {
+            return []
+        }
+    },
+    ['layout-meta-scripts'],
+    { revalidate: 300, tags: ['site-scripts'] }
+)
+
 export async function generateMetadata(): Promise<Metadata> {
     // Fetch dynamic meta tags from database
     let dynamicOther: Record<string, string>[] = []
     let googleVerification: string | undefined = process.env.GOOGLE_SITE_VERIFICATION
     try {
-        const supabase = await createClient()
-        const { data } = await supabase
-            .from('site_scripts')
-            .select('slug, script_type, content, attributes')
-            .eq('is_active', true)
-            .in('script_type', ['meta'])
-            .order('priority', { ascending: true })
-
+        const data = await getLayoutMetaScripts()
         if (data) {
             for (const s of data) {
                 if (s.attributes?.name === 'google-site-verification') {

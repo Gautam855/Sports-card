@@ -1,25 +1,34 @@
-import { createClient } from '@/lib/supabase/server'
+import { getPublicClient } from '@/lib/supabase/public'
 import type { News, NewsFilters, PaginationParams, PaginatedResponse } from '@/lib/types'
 import { getActiveKey, handleRateLimit } from './key-manager'
+import { unstable_cache } from 'next/cache'
+import { cache } from 'react'
 
+const ARTICLE_SELECT = `
+  id, title, slug, excerpt, cover_image, cover_alt,
+  views, likes, read_time_mins, published_at, is_featured, is_breaking, is_editor_pick,
+  author:profiles(id,username,display_name,avatar_url),
+  category:news_categories(id,name,slug,color)
+`
 
-export async function getNews(
+/** Uncached internal fetch for getNews */
+async function _fetchNews(
     filters: NewsFilters = {},
     pagination: PaginationParams = {}
 ): Promise<PaginatedResponse<News>> {
-    const supabase = await createClient()
+    const supabase = getPublicClient()
     const { page = 1, limit = 12, sort = 'published_at', order = 'desc' } = pagination
     const offset = (page - 1) * limit
 
     let query = supabase
         .from('news')
         .select(`
-      id, title, slug, excerpt, cover_image, cover_alt,
-      is_breaking, is_featured, is_editor_pick,
-      views, likes, read_time_mins, published_at, created_at,
-      author:profiles(id,username,display_name,avatar_url),
-      category:news_categories(id,name,slug,color)
-    `, { count: 'exact' })
+          id, title, slug, excerpt, cover_image, cover_alt,
+          is_breaking, is_featured, is_editor_pick,
+          views, likes, read_time_mins, published_at, created_at,
+          author:profiles(id,username,display_name,avatar_url),
+          category:news_categories(id,name,slug,color)
+        `, { count: 'exact' })
         .eq('status', 'published')
 
     if (filters.category) query = query.eq('category_id', filters.category)
@@ -45,38 +54,54 @@ export async function getNews(
     }
 }
 
-export async function getNewsBySlug(slug: string): Promise<News | null> {
-    const supabase = await createClient()
+export const getNews = (filters: NewsFilters = {}, pagination: PaginationParams = {}) => {
+    // Cache for 60 seconds across users
+    const cacheKey = `news-${JSON.stringify(filters)}-${JSON.stringify(pagination)}`
+    return unstable_cache(
+        () => _fetchNews(filters, pagination),
+        [cacheKey],
+        { revalidate: 60, tags: ['news'] }
+    )()
+}
+
+async function _fetchNewsBySlug(slug: string): Promise<News | null> {
+    const supabase = getPublicClient()
 
     const { data, error } = await supabase
         .from('news')
         .select(`
-      *,
-      author:profiles(id,username,display_name,avatar_url,bio),
-      category:news_categories(*)
-    `)
+          *,
+          author:profiles(id,username,display_name,avatar_url,bio),
+          category:news_categories(id,name,slug,color,emoji)
+        `)
         .eq('slug', slug)
         .eq('status', 'published')
         .single()
 
-    if (error) return null
-
-    // Increment views (fire-and-forget)
-    supabase.rpc('increment_views', { p_table: 'news', p_id: data.id }).then(() => { })
+    if (error || !data) return null
 
     return data as unknown as News
 }
 
-export async function getBreakingNews(limit = 5): Promise<News[]> {
-    const supabase = await createClient()
+/** React cache deduplicates between generateMetadata and BlogDetailPage in the same request */
+export const getNewsBySlug = cache(async (slug: string): Promise<News | null> => {
+    return unstable_cache(
+        () => _fetchNewsBySlug(slug),
+        [`news-slug-${slug}`],
+        { revalidate: 120, tags: ['news', `news-${slug}`] }
+    )()
+})
+
+async function _fetchBreakingNews(limit: number): Promise<News[]> {
+    const supabase = getPublicClient()
 
     const { data } = await supabase
         .from('news')
         .select(`
-      id, title, slug, excerpt, cover_image, cover_alt,
-      published_at,
-      category:news_categories(name,slug,color)
-    `)
+          id, title, slug, excerpt, cover_image, cover_alt,
+          published_at,
+          category:news_categories(name,slug,color)
+        `)
         .eq('status', 'published')
         .eq('is_breaking', true)
         .order('published_at', { ascending: false })
@@ -85,17 +110,20 @@ export async function getBreakingNews(limit = 5): Promise<News[]> {
     return (data ?? []) as unknown as News[]
 }
 
-export async function getFeaturedNews(limit = 6): Promise<News[]> {
-    const supabase = await createClient()
+export const getBreakingNews = (limit = 5): Promise<News[]> => {
+    return unstable_cache(
+        () => _fetchBreakingNews(limit),
+        [`breaking-news-${limit}`],
+        { revalidate: 60, tags: ['news'] }
+    )()
+}
+
+async function _fetchFeaturedNews(limit: number): Promise<News[]> {
+    const supabase = getPublicClient()
 
     const { data } = await supabase
         .from('news')
-        .select(`
-      id, title, slug, excerpt, cover_image, cover_alt,
-      views, likes, read_time_mins, published_at,
-      author:profiles(username,display_name,avatar_url),
-      category:news_categories(name,slug,color)
-    `)
+        .select(ARTICLE_SELECT)
         .eq('status', 'published')
         .eq('is_featured', true)
         .order('published_at', { ascending: false })
@@ -104,17 +132,25 @@ export async function getFeaturedNews(limit = 6): Promise<News[]> {
     return (data ?? []) as unknown as News[]
 }
 
-export async function getTrendingNews(limit = 8): Promise<News[]> {
-    const supabase = await createClient()
+export const getFeaturedNews = (limit = 6): Promise<News[]> => {
+    return unstable_cache(
+        () => _fetchFeaturedNews(limit),
+        [`featured-news-${limit}`],
+        { revalidate: 120, tags: ['news'] }
+    )()
+}
+
+async function _fetchTrendingNews(limit: number): Promise<News[]> {
+    const supabase = getPublicClient()
     const cutoff = new Date()
     cutoff.setDate(cutoff.getDate() - 7)
 
     const { data } = await supabase
         .from('news')
         .select(`
-      id, title, slug, cover_image, views, likes, published_at,
-      category:news_categories(name,slug,color)
-    `)
+          id, title, slug, cover_image, cover_alt, views, likes, published_at,
+          category:news_categories(name,slug,color)
+        `)
         .eq('status', 'published')
         .gte('published_at', cutoff.toISOString())
         .order('views', { ascending: false })
@@ -123,17 +159,20 @@ export async function getTrendingNews(limit = 8): Promise<News[]> {
     return (data ?? []) as unknown as News[]
 }
 
-export async function getEditorPicks(limit = 4): Promise<News[]> {
-    const supabase = await createClient()
+export const getTrendingNews = (limit = 8): Promise<News[]> => {
+    return unstable_cache(
+        () => _fetchTrendingNews(limit),
+        [`trending-news-${limit}`],
+        { revalidate: 180, tags: ['news'] }
+    )()
+}
+
+async function _fetchEditorPicks(limit: number): Promise<News[]> {
+    const supabase = getPublicClient()
 
     const { data } = await supabase
         .from('news')
-        .select(`
-      id, title, slug, excerpt, cover_image, cover_alt,
-      views, read_time_mins, published_at,
-      author:profiles(username,display_name,avatar_url),
-      category:news_categories(name,slug,color)
-    `)
+        .select(ARTICLE_SELECT)
         .eq('status', 'published')
         .eq('is_editor_pick', true)
         .order('published_at', { ascending: false })
@@ -142,18 +181,38 @@ export async function getEditorPicks(limit = 4): Promise<News[]> {
     return (data ?? []) as unknown as News[]
 }
 
+export const getEditorPicks = (limit = 4): Promise<News[]> => {
+    return unstable_cache(
+        () => _fetchEditorPicks(limit),
+        [`editor-picks-${limit}`],
+        { revalidate: 180, tags: ['news'] }
+    )()
+}
+
 /** Featured + editor picks + latest articles for home blog section */
-export async function getHomeBlogs(limit = 6): Promise<News[]> {
-    const [featured, editorPicks, latest] = await Promise.all([
-        getFeaturedNews(limit),
-        getEditorPicks(limit),
-        getNews({}, { limit, sort: 'published_at', order: 'desc' }),
-    ])
+export async function getHomeBlogs(
+    limit = 6,
+    prefetchedArticles?: { featured?: News[]; editorPicks?: News[]; latest?: News[] }
+): Promise<News[]> {
+    let featured = prefetchedArticles?.featured
+    let editorPicks = prefetchedArticles?.editorPicks
+    let latest = prefetchedArticles?.latest
+
+    if (!featured || !editorPicks || !latest) {
+        const [f, e, l] = await Promise.all([
+            featured ? Promise.resolve(featured) : getFeaturedNews(limit),
+            editorPicks ? Promise.resolve(editorPicks) : getEditorPicks(limit),
+            latest ? Promise.resolve(latest) : getNews({}, { limit, sort: 'published_at', order: 'desc' }).then(r => r.data),
+        ])
+        featured = f
+        editorPicks = e
+        latest = l
+    }
 
     const seen = new Set<string>()
     const combined: News[] = []
 
-    for (const article of [...featured, ...editorPicks, ...latest.data]) {
+    for (const article of [...featured, ...editorPicks, ...latest]) {
         if (seen.has(article.id)) continue
         seen.add(article.id)
         combined.push(article)
@@ -163,12 +222,12 @@ export async function getHomeBlogs(limit = 6): Promise<News[]> {
     return combined
 }
 
-export async function getRelatedNews(newsId: string, categoryId?: string, limit = 4): Promise<News[]> {
-    const supabase = await createClient()
+async function _fetchRelatedNews(newsId: string, categoryId?: string, limit = 4): Promise<News[]> {
+    const supabase = getPublicClient()
 
     let query = supabase
         .from('news')
-        .select('id, title, slug, cover_image, published_at, category:news_categories(name,slug)')
+        .select('id, title, slug, cover_image, cover_alt, published_at, category:news_categories(name,slug)')
         .eq('status', 'published')
         .neq('id', newsId)
 
@@ -181,10 +240,13 @@ export async function getRelatedNews(newsId: string, categoryId?: string, limit 
     return (data ?? []) as unknown as News[]
 }
 
-const ARTICLE_SELECT = `
-      id, title, slug, excerpt, cover_image, published_at, is_featured,
-      category:news_categories(name,slug,color)
-    `
+export const getRelatedNews = (newsId: string, categoryId?: string, limit = 4): Promise<News[]> => {
+    return unstable_cache(
+        () => _fetchRelatedNews(newsId, categoryId, limit),
+        [`related-news-${newsId}-${categoryId || 'none'}-${limit}`],
+        { revalidate: 300, tags: ['news'] }
+    )()
+}
 
 function buildIlikePattern(query: string): string {
     return `%${query.replace(/"/g, '""')}%`
@@ -206,7 +268,8 @@ function filterArticlesInMemory(articles: News[], query: string, limit: number):
         .slice(0, limit)
 }
 
-async function fetchRecentArticles(supabase: Awaited<ReturnType<typeof createClient>>, limit: number): Promise<News[]> {
+async function fetchRecentArticles(limit: number): Promise<News[]> {
+    const supabase = getPublicClient()
     const { data } = await supabase
         .from('news')
         .select(ARTICLE_SELECT)
@@ -218,7 +281,7 @@ async function fetchRecentArticles(supabase: Awaited<ReturnType<typeof createCli
 }
 
 export async function searchNews(query: string, limit = 20): Promise<News[]> {
-    const supabase = await createClient()
+    const supabase = getPublicClient()
     const trimmed = query.trim()
     if (!trimmed) return []
 
@@ -248,7 +311,7 @@ export async function searchNews(query: string, limit = 20): Promise<News[]> {
         return titleOnly as unknown as News[]
     }
 
-    const recent = await fetchRecentArticles(supabase, limit)
+    const recent = await fetchRecentArticles(limit)
     const inMemory = filterArticlesInMemory(recent, trimmed, limit)
     if (inMemory.length > 0) return inMemory
 
@@ -256,7 +319,7 @@ export async function searchNews(query: string, limit = 20): Promise<News[]> {
 }
 
 export async function searchFeaturedBlogs(query: string, limit = 4): Promise<News[]> {
-    const supabase = await createClient()
+    const supabase = getPublicClient()
     const trimmed = query.trim()
     if (!trimmed) return []
 
@@ -289,8 +352,7 @@ export async function searchFeaturedBlogs(query: string, limit = 4): Promise<New
 }
 
 export async function getRecentArticles(limit = 8): Promise<News[]> {
-    const supabase = await createClient()
-    return fetchRecentArticles(supabase, limit)
+    return fetchRecentArticles(limit)
 }
 
 /** Fetch real-time news from SerpApi (Google News) with auto key rotation */
@@ -306,13 +368,11 @@ async function _fetchSerpApi(query: string, limit: number, _retried: boolean): P
     }
 
     try {
-        // Force the query to be about international sports (US/UK focus)
         const searchTerms = `${query} US UK international`
         const url = `https://serpapi.com/search.json?engine=google_news&q=${encodeURIComponent(searchTerms)}&api_key=${apiKey}&gl=us&hl=en`
 
-        const res = await fetch(url, { next: { revalidate: 3600 } }) // Cache for 1 hour
+        const res = await fetch(url, { next: { revalidate: 3600 } })
 
-        // ── Auto-rotate on rate limit or quota exhaustion ──
         if ((res.status === 429 || res.status === 403) && !_retried) {
             console.warn(`[SerpApi] Rate limited (${res.status}), rotating key...`)
             const rotated = await handleRateLimit('serpapi')
@@ -328,11 +388,10 @@ async function _fetchSerpApi(query: string, limit: number, _retried: boolean): P
         const json = await res.json()
         const results = json.news_results || []
 
-
         return results.slice(0, limit).map((n: any, i: number) => ({
             id: `serp-${i}-${Math.random().toString(36).substr(2, 9)}`,
             slug: `news-${i}-${Date.now()}`,
-            url: n.link, // Store original link
+            url: n.link,
             title: n.title,
             excerpt: n.snippet || n.source?.name || '',
             cover_image: n.thumbnail || '/images/news-placeholder.jpg',
@@ -350,7 +409,6 @@ async function _fetchSerpApi(query: string, limit: number, _retried: boolean): P
             },
             category: { id: 'realtime', name: "Real-time", slug: 'real-time', color: '#3b82f6' },
         }))
-
     } catch (error) {
         console.error("[getRealTimeNews] Error:", error)
         return []

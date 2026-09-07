@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Calendar, Clock, Eye, PenLine, Sparkles } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
@@ -62,11 +63,21 @@ export function LatestFromBlogSection({ blogs }: { blogs?: News[] }) {
                                     className="relative block aspect-[16/10] overflow-hidden bg-slate-800"
                                 >
                                     {coverImage ? (
-                                        <img
-                                            src={coverImage}
-                                            alt={blog.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
+                                        blog.id.startsWith('serp-') ? (
+                                            <img
+                                                src={coverImage}
+                                                alt={blog.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        ) : (
+                                            <Image
+                                                src={coverImage}
+                                                alt={blog.title}
+                                                fill
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        )
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
                                             <PenLine className="w-12 h-12 text-slate-700" />

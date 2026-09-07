@@ -1,16 +1,21 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import Image from 'next/image'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
+import { cache } from 'react'
 
 interface PageParams {
     params: Promise<{ slug: string }>
 }
 
-async function getPage(slug: string) {
-    const supabase = await createClient()
+export const revalidate = 120
+
+async function _fetchPage(slug: string) {
+    const supabase = getPublicClient()
     const { data, error } = await supabase
         .from('custom_pages')
-        .select('*')
+        .select('id, title, slug, page_title, meta_title, meta_description, banner_image, html_content, status, created_at, updated_at')
         .eq('slug', slug)
         .eq('status', 'published')
         .single()
@@ -18,6 +23,14 @@ async function getPage(slug: string) {
     if (error || !data) return null
     return data
 }
+
+const getPage = cache(async (slug: string) => {
+    return unstable_cache(
+        () => _fetchPage(slug),
+        [`custom-page-${slug}`],
+        { revalidate: 120, tags: ['pages', `page-${slug}`] }
+    )()
+})
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
     const { slug } = await params
@@ -62,10 +75,14 @@ export default async function CustomPage({ params }: PageParams) {
             {/* Banner Image */}
             {page.banner_image && (
                 <div className="custom-page-banner">
-                    <img
+                    <Image
                         src={page.banner_image}
                         alt={displayTitle}
+                        width={1200}
+                        height={450}
+                        priority
                         className="custom-page-banner-img"
+                        style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
                     />
                 </div>
             )}

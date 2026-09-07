@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
 
-/**
- * GET /api/site-scripts — Fetch all ACTIVE scripts for frontend injection
- * Public endpoint — no auth needed. Cached for 60s.
- */
-export async function GET(req: NextRequest) {
-    try {
-        const supabase = await createClient()
+const getActiveScripts = unstable_cache(
+    async () => {
+        const supabase = getPublicClient()
         const { data, error } = await supabase
             .from('site_scripts')
             .select('id, slug, script_type, placement, content, src, attributes, pages, exclude_pages, loading_strategy, priority')
@@ -15,17 +12,29 @@ export async function GET(req: NextRequest) {
             .order('priority', { ascending: true })
 
         if (error) throw error
+        return data ?? []
+    },
+    ['active-site-scripts'],
+    { revalidate: 300, tags: ['site-scripts'] }
+)
+
+/**
+ * GET /api/site-scripts — Fetch all ACTIVE scripts for frontend injection
+ * Public endpoint — cached for 5 minutes (300s) on CDN and in-memory.
+ */
+export async function GET(req: NextRequest) {
+    try {
+        const scripts = await getActiveScripts()
 
         return NextResponse.json(
-            { scripts: data ?? [] },
+            { scripts },
             {
                 headers: {
-                    'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+                    'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600',
                 },
             }
         )
-    } catch (err: any) {
-        // Return empty scripts on error — don't break the site
+    } catch {
         return NextResponse.json({ scripts: [] })
     }
 }

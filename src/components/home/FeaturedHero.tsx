@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
@@ -80,11 +81,22 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
                                         tabIndex={index === currentIndex ? 0 : -1}
                                     >
                                         {img ? (
-                                            <img
-                                                src={img}
-                                                alt={a.title}
-                                                className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
-                                            />
+                                            a.id.startsWith('serp-') ? (
+                                                <img
+                                                    src={img}
+                                                    alt={a.title}
+                                                    className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src={img}
+                                                    alt={a.title}
+                                                    fill
+                                                    sizes="(max-width: 1024px) 100vw, 66vw"
+                                                    priority={index === 0}
+                                                    className="object-cover hover:scale-[1.02] transition-transform duration-500"
+                                                />
+                                            )
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-slate-200">
                                                 <span className="text-5xl font-black text-slate-300">

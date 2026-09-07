@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import { formatArticleDate, getCoverImage } from '@/lib/home-utils'
@@ -30,11 +31,21 @@ export function TrendingStories({ stories }: { stories: News[] }) {
                                     {index + 1}
                                 </div>
                                 {coverImage ? (
-                                    <img
-                                        src={coverImage}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                    />
+                                    item.id.startsWith('serp-') ? (
+                                        <img
+                                            src={coverImage}
+                                            alt={item.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={coverImage}
+                                            alt={item.title}
+                                            fill
+                                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                        />
+                                    )
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 font-bold text-xl">
                                         {item.title[0]}

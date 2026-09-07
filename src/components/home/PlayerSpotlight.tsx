@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
@@ -40,11 +41,21 @@ export function PlayerSpotlight({
                                 className="relative w-full sm:w-1/2 aspect-square rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 flex-shrink-0 group"
                             >
                                 {spotlightImage ? (
-                                    <img
-                                        src={spotlightImage}
-                                        alt={spotlight.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                    />
+                                    spotlight.id.startsWith('serp-') ? (
+                                        <img
+                                            src={spotlightImage}
+                                            alt={spotlight.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={spotlightImage}
+                                            alt={spotlight.title}
+                                            fill
+                                            sizes="(max-width: 640px) 100vw, 50vw"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                        />
+                                    )
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-slate-800">
                                         <span className="text-5xl font-black text-slate-600">{spotlight.title[0]}</span>
@@ -94,13 +105,23 @@ export function PlayerSpotlight({
                                         {...getArticleLinkProps(item)}
                                         className="group flex items-center gap-4"
                                     >
-                                        <div className="w-28 aspect-video rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 border border-slate-200">
+                                        <div className="relative w-28 aspect-video rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 border border-slate-200">
                                             {coverImage ? (
-                                                <img
-                                                    src={coverImage}
-                                                    alt={item.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                />
+                                                item.id.startsWith('serp-') ? (
+                                                    <img
+                                                        src={coverImage}
+                                                        alt={item.title}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    />
+                                                ) : (
+                                                    <Image
+                                                        src={coverImage}
+                                                        alt={item.title}
+                                                        fill
+                                                        sizes="112px"
+                                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    />
+                                                )
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 font-bold">
                                                     {item.title[0]}

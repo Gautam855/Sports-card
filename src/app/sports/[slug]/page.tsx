@@ -4,7 +4,9 @@ import { notFound } from 'next/navigation'
 import { getNews, getRealTimeNews } from '@/lib/api/news'
 import { NewsCard } from '@/components/news/NewsCard'
 import { BlogCard } from '@/components/blog/BlogCard'
-import { createClient } from '@/lib/supabase/server'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
+import { cache } from 'react'
 import type { News } from '@/lib/types'
 import { Pagination } from '@/components/ui/Pagination'
 import { InFeedAd, DisplayAd } from '@/components/ads/AdSenseSlot'
@@ -144,8 +146,8 @@ interface PageProps {
     params: Promise<{ slug: string }>
 }
 
-async function getCategoryBySlug(slug: string) {
-    const supabase = await createClient()
+async function _fetchCategoryBySlug(slug: string) {
+    const supabase = getPublicClient()
     const { data } = await supabase
         .from('news_categories')
         .select('id, name, slug, color, description, emoji, faqs, meta_title, meta_description')
@@ -153,6 +155,14 @@ async function getCategoryBySlug(slug: string) {
         .maybeSingle()
     return data
 }
+
+const getCategoryBySlug = cache(async (slug: string) => {
+    return unstable_cache(
+        () => _fetchCategoryBySlug(slug),
+        [`category-slug-${slug}`],
+        { revalidate: 300, tags: ['categories', `category-${slug}`] }
+    )()
+})
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params
@@ -272,16 +282,6 @@ export default async function SportCategoryPage({ params }: PageProps) {
                     </div>
                 </section>
 
-                {/* Team Players Section for this Category */}
-                <div className="container-wide pt-8">
-                    <TeamPlayersSection
-                        categoryId={category?.id}
-                        categorySlug={slug}
-                        categoryName={name}
-                        className="mt-0 mb-4"
-                    />
-                </div>
-
                 {/* Articles Grid */}
                 <section className="container-wide py-10">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -329,6 +329,16 @@ export default async function SportCategoryPage({ params }: PageProps) {
                     {/* Display Ad at bottom */}
                     <DisplayAd className="mt-10" />
                 </section>
+
+                {/* Team Players Section for this Category — placed above FAQ */}
+                <div className="container-wide pb-10">
+                    <TeamPlayersSection
+                        categoryId={category?.id}
+                        categorySlug={slug}
+                        categoryName={name}
+                        className="mt-0 mb-0"
+                    />
+                </div>
 
                 {/* Category FAQ Section */}
                 {category?.faqs && Array.isArray(category.faqs) && category.faqs.length > 0 && (

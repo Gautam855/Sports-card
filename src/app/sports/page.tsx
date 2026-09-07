@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
 import { getNews } from '@/lib/api/news'
 import {
     Trophy, Flame, Target, Tv, Activity, Shield, Globe, Circle, Star, Zap,
@@ -48,35 +49,64 @@ const DEFAULT_META = { icon: Newspaper, gradient: 'from-slate-500 to-slate-700',
 
 export const revalidate = 300
 
-export default async function SportsHubPage() {
-    const supabase = await createClient()
+interface SportCategory {
+    id: string
+    name: string
+    slug: string
+    color: string
+    description: string
+}
 
-    // Fetch all categories with article counts
+async function _fetchSportsHubData() {
+    const supabase = getPublicClient()
+
+    // Fetch all categories
     const { data: categories } = await supabase
         .from('news_categories')
         .select('id, name, slug, color, description')
         .order('sort_order', { ascending: true })
 
-    const allCategories = categories || []
+    const allCategories: SportCategory[] = (categories || []) as SportCategory[]
 
-    // Get article counts per category
-    const categoryCounts: Record<string, number> = {}
-    for (const cat of allCategories) {
-        const { count } = await supabase
+    // Get article counts per category in parallel
+    const countPromises = allCategories.map((cat: SportCategory) =>
+        supabase
             .from('news')
             .select('id', { count: 'exact', head: true })
             .eq('category_id', cat.id)
             .eq('status', 'published')
-        categoryCounts[cat.id] = count || 0
+            .then(({ count }: { count: number | null }) => ({ id: cat.id, count: count || 0 }))
+    )
+
+    const countResults = await Promise.all(countPromises)
+    const categoryCounts: Record<string, number> = {}
+    for (const res of countResults) {
+        categoryCounts[res.id] = res.count
     }
 
-    // Get latest 3 articles for top categories (first 6)
+    // Get latest 3 articles for top categories in parallel
     const topCategories = allCategories.slice(0, 6)
+    const articlePromises = topCategories.map(cat =>
+        getNews({ category: cat.id }, { limit: 3 }).then(res => ({ id: cat.id, articles: res.data }))
+    )
+
+    const articleResults = await Promise.all(articlePromises)
     const topCategoryArticles: Record<string, any[]> = {}
-    for (const cat of topCategories) {
-        const res = await getNews({ category: cat.id }, { limit: 3 })
-        topCategoryArticles[cat.id] = res.data
+    for (const res of articleResults) {
+        topCategoryArticles[res.id] = res.articles
     }
+
+    return { allCategories, categoryCounts, topCategories, topCategoryArticles }
+}
+
+const getSportsHubData = unstable_cache(
+    _fetchSportsHubData,
+    ['sports-hub-data'],
+    { revalidate: 300, tags: ['categories', 'news'] }
+)
+
+export default async function SportsHubPage() {
+    const { allCategories, categoryCounts, topCategories, topCategoryArticles } = await getSportsHubData()
 
     return (
         <div className="min-h-screen">

@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     },
 }
 
-export const revalidate = 60
+export const revalidate = 120
 
 function dedupeArticles(articles: News[]): News[] {
     const seen = new Set<string>()
@@ -65,7 +65,6 @@ export default async function HomePage() {
         latestResult,
         editorPicksResult,
         breakingResult,
-        blogsResult,
     ] = await Promise.allSettled([
         getFeaturedNews(6),
         getTrendingNews(10),
@@ -73,7 +72,6 @@ export default async function HomePage() {
         getNews({}, { limit: 12, sort: 'published_at', order: 'desc' }),
         getEditorPicks(4),
         getBreakingNews(6),
-        getHomeBlogs(10),
     ])
 
     const featured = (featuredResult.status === 'fulfilled' ? featuredResult.value : []) as News[]
@@ -82,7 +80,8 @@ export default async function HomePage() {
     const latest = (latestResult.status === 'fulfilled' ? latestResult.value.data : []) as News[]
     const editorPicks = (editorPicksResult.status === 'fulfilled' ? editorPicksResult.value : []) as News[]
     const breaking = (breakingResult.status === 'fulfilled' ? breakingResult.value : []) as News[]
-    const blogs = (blogsResult.status === 'fulfilled' ? blogsResult.value : []) as News[]
+
+    const blogs = await getHomeBlogs(10, { featured, editorPicks, latest })
 
     const heroArticles = dedupeArticles([...featured, ...serpNews, ...latest]).slice(0, 5)
     const breakingNews = [...breaking, ...serpNews.slice(0, 5)].slice(0, 5)

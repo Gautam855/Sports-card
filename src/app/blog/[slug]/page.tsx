@@ -20,6 +20,8 @@ interface Props { params: Promise<{ slug: string }> }
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://sportslnv.com'
 
+export const revalidate = 120
+
 /** Dynamic SEO metadata */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params

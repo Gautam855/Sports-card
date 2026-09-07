@@ -1,6 +1,16 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import Image from 'next/image'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
 import { Users, ExternalLink, Sparkles } from 'lucide-react'
+
+interface CategoryPlayer {
+    id: string
+    player_name: string
+    player_image: string | null
+    player_url: string | null
+    sort_order: number
+}
 
 interface TeamPlayersSectionProps {
     categoryId?: string
@@ -10,19 +20,12 @@ interface TeamPlayersSectionProps {
     className?: string
 }
 
-export async function TeamPlayersSection({
-    categoryId,
-    categoryName,
-    categorySlug,
-    title,
-    className = 'mt-14 mb-8',
-}: TeamPlayersSectionProps) {
-    const supabase = await createClient()
+async function _fetchCategoryPlayers(categoryId?: string, categorySlug?: string) {
+    const supabase = getPublicClient()
 
     let targetCatId = categoryId
-    let resolvedName = categoryName
+    let resolvedName: string | undefined
 
-    // If categoryId is not provided, look up by categorySlug
     if (!targetCatId && categorySlug) {
         const { data: cat } = await supabase
             .from('news_categories')
@@ -32,17 +35,38 @@ export async function TeamPlayersSection({
 
         if (cat) {
             targetCatId = cat.id
-            if (!resolvedName) resolvedName = cat.name
+            resolvedName = cat.name
         }
     }
 
-    if (!targetCatId) return null
+    if (!targetCatId) return { players: [] as CategoryPlayer[], resolvedName }
 
     const { data: players } = await supabase
         .from('category_players')
         .select('id, player_name, player_image, player_url, sort_order')
         .eq('category_id', targetCatId)
         .order('sort_order', { ascending: true })
+
+    return { players: (players || []) as CategoryPlayer[], resolvedName }
+}
+
+const getCategoryPlayersCached = (categoryId?: string, categorySlug?: string) => {
+    const key = `category-players-${categoryId || 'none'}-${categorySlug || 'none'}`
+    return unstable_cache(
+        () => _fetchCategoryPlayers(categoryId, categorySlug),
+        [key],
+        { revalidate: 300, tags: ['category-players', 'categories'] }
+    )()
+}
+
+export async function TeamPlayersSection({
+    categoryId,
+    categoryName,
+    categorySlug,
+    title,
+    className = 'mt-14 mb-8',
+}: TeamPlayersSectionProps) {
+    const { players, resolvedName } = await getCategoryPlayersCached(categoryId, categorySlug)
 
     if (!players || players.length === 0) return null
 
@@ -92,11 +116,12 @@ export async function TeamPlayersSection({
                                 <div className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-full p-1 bg-gradient-to-tr from-slate-200 to-slate-100 group-hover:from-red-500 group-hover:to-amber-400 transition-all duration-300 shadow-sm mb-3">
                                     <div className="w-full h-full rounded-full overflow-hidden bg-slate-100 relative">
                                         {player.player_image ? (
-                                            <img
+                                            <Image
                                                 src={player.player_image}
                                                 alt={player.player_name}
+                                                fill
+                                                sizes="88px"
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                                loading="lazy"
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">

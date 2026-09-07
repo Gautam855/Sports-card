@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getNews } from '@/lib/api/news'
-import { createClient } from '@/lib/supabase/server'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
 import { BlogCard } from '@/components/blog/BlogCard'
 import { Pagination } from '@/components/ui/Pagination'
 import { PenTool, Sparkles, Filter } from 'lucide-react'
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     },
 }
 
-export const revalidate = 60
+export const revalidate = 120
 
 const PAGE_SIZE = 12
 
@@ -39,19 +40,25 @@ interface BlogListingPageProps {
     }>
 }
 
+const getBlogCategories = unstable_cache(
+    async (): Promise<{ id: string; name: string; slug: string; color: string }[]> => {
+        const supabase = getPublicClient()
+        const res = await supabase
+            .from('news_categories')
+            .select('id, name, slug, color')
+            .order('sort_order')
+        return (res.data ?? []) as { id: string; name: string; slug: string; color: string }[]
+    },
+    ['blog-categories'],
+    { revalidate: 300, tags: ['categories'] }
+)
+
 export default async function BlogListingPage({ searchParams }: BlogListingPageProps) {
     const params = await searchParams
     const categorySlug = params.category
     const currentPage = Math.max(1, parseInt(params.page || '1', 10) || 1)
 
-    const supabase = await createClient()
-
-    // Fetch categories
-    const categoriesRes = await supabase
-        .from('news_categories')
-        .select('id, name, slug, color')
-        .order('sort_order')
-    const categories = categoriesRes.data ?? []
+    const categories = await getBlogCategories()
 
     // Match category if specified in query
     const selectedCategory = categorySlug

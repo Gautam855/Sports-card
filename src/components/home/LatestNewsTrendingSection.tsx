@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Clock, Eye, TrendingUp } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
@@ -82,11 +83,22 @@ export function LatestNewsTrendingSection({
                                 className="group block relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 mb-4 min-h-[220px] md:min-h-[260px] shadow-sm hover:shadow-lg transition-shadow"
                             >
                                 {featuredImage ? (
-                                    <img
-                                        src={featuredImage}
-                                        alt={featured.title}
-                                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                    />
+                                    featured.id.startsWith('serp-') ? (
+                                        <img
+                                            src={featuredImage}
+                                            alt={featured.title}
+                                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={featuredImage}
+                                            alt={featured.title}
+                                            fill
+                                            sizes="(max-width: 1024px) 100vw, 66vw"
+                                            priority
+                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                        />
+                                    )
                                 ) : (
                                     <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
                                 )}
@@ -118,11 +130,21 @@ export function LatestNewsTrendingSection({
                                         >
                                             <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
                                                 {coverImage ? (
-                                                    <img
-                                                        src={coverImage}
-                                                        alt={item.title}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    />
+                                                    item.id.startsWith('serp-') ? (
+                                                        <img
+                                                            src={coverImage}
+                                                            alt={item.title}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        />
+                                                    ) : (
+                                                        <Image
+                                                            src={coverImage}
+                                                            alt={item.title}
+                                                            fill
+                                                            sizes="(max-width: 640px) 100vw, 33vw"
+                                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        />
+                                                    )
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300 font-black text-3xl">
                                                         {item.title[0]}
@@ -173,11 +195,21 @@ export function LatestNewsTrendingSection({
                                         >
                                             <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-slate-200 border border-slate-200">
                                                 {coverImage ? (
-                                                    <img
-                                                        src={coverImage}
-                                                        alt={item.title}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                    />
+                                                    item.id.startsWith('serp-') ? (
+                                                        <img
+                                                            src={coverImage}
+                                                            alt={item.title}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                    ) : (
+                                                        <Image
+                                                            src={coverImage}
+                                                            alt={item.title}
+                                                            fill
+                                                            sizes="56px"
+                                                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                    )
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-base">
                                                         {item.title[0]}
