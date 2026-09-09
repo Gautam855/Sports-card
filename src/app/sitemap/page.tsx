@@ -59,6 +59,8 @@ const SITEMAP_SECTIONS: SitemapSection[] = [
         links: [
             { label: 'Privacy Policy', href: '/privacy', description: 'How we protect and manage your data' },
             { label: 'Terms of Use', href: '/terms', description: 'Rules and guidelines for using SportsLNV' },
+            { label: 'Disclaimer', href: '/disclaimer', description: 'Disclaimers regarding sports news, stats, and betting' },
+            { label: 'Correction Policy', href: '/correction-policy', description: 'Our editorial accuracy standards and corrections workflow' },
         ],
     },
 ]

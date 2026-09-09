@@ -41,6 +41,11 @@ export async function GET() {
         url('/sports/olympics', undefined, 0.8, 'daily'),
         url('/sports/fifa', undefined, 0.8, 'daily'),
         url('/sports', undefined, 0.8, 'daily'),
+        url('/contact', undefined, 0.7, 'monthly'),
+        url('/privacy', undefined, 0.5, 'monthly'),
+        url('/terms', undefined, 0.5, 'monthly'),
+        url('/disclaimer', undefined, 0.5, 'monthly'),
+        url('/correction-policy', undefined, 0.5, 'monthly'),
     ]
 
     const newsUrls = (news ?? []).map(n => url(`/news/${n.slug}`, n.updated_at, 0.8, 'weekly'))
