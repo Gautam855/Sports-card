@@ -24,8 +24,7 @@ async function _fetchNews(
         .from('news')
         .select(`
           id, title, slug, excerpt, cover_image, cover_alt,
-          is_breaking, is_featured, is_editor_pick,
-          views, likes, read_time_mins, published_at, created_at,
+          views, likes, read_time_mins, published_at,
           author:profiles(id,username,display_name,avatar_url),
           category:news_categories(id,name,slug,color)
         `, { count: 'exact' })
@@ -64,16 +63,21 @@ export const getNews = (filters: NewsFilters = {}, pagination: PaginationParams 
     )()
 }
 
+/** Explicit column select — avoids fetching unused columns and reduces Supabase egress */
+const ARTICLE_DETAIL_SELECT = `
+  id, title, slug, excerpt, content, cover_image, cover_alt, og_image,
+  views, likes, read_time_mins, published_at, is_featured, is_breaking,
+  category_id, meta_title, meta_description, canonical_url,
+  author:profiles(id,username,display_name,avatar_url,bio),
+  category:news_categories(id,name,slug,color,emoji)
+`
+
 async function _fetchNewsBySlug(slug: string): Promise<News | null> {
     const supabase = getPublicClient()
 
     const { data, error } = await supabase
         .from('news')
-        .select(`
-          *,
-          author:profiles(id,username,display_name,avatar_url,bio),
-          category:news_categories(id,name,slug,color,emoji)
-        `)
+        .select(ARTICLE_DETAIL_SELECT)
         .eq('slug', slug)
         .eq('status', 'published')
         .single()
@@ -88,7 +92,7 @@ export const getNewsBySlug = cache(async (slug: string): Promise<News | null> =>
     return unstable_cache(
         () => _fetchNewsBySlug(slug),
         [`news-slug-${slug}`],
-        { revalidate: 120, tags: ['news', `news-${slug}`] }
+        { revalidate: 600, tags: ['news', `news-${slug}`] }
     )()
 })
 
@@ -114,7 +118,7 @@ export const getBreakingNews = (limit = 5): Promise<News[]> => {
     return unstable_cache(
         () => _fetchBreakingNews(limit),
         [`breaking-news-${limit}`],
-        { revalidate: 60, tags: ['news'] }
+        { revalidate: 120, tags: ['news'] }
     )()
 }
 
@@ -355,9 +359,13 @@ export async function getRecentArticles(limit = 8): Promise<News[]> {
     return fetchRecentArticles(limit)
 }
 
-/** Fetch real-time news from SerpApi (Google News) with auto key rotation */
-export async function getRealTimeNews(query: string = "international sports news", limit: number = 10): Promise<News[]> {
-    return _fetchSerpApi(query, limit, false)
+/** Fetch real-time news from SerpApi (Google News) with auto key rotation — cached for 30 minutes */
+export const getRealTimeNews = (query: string = "international sports news", limit: number = 10): Promise<News[]> => {
+    return unstable_cache(
+        () => _fetchSerpApi(query, limit, false),
+        [`serpapi-${query}-${limit}`],
+        { revalidate: 1800, tags: ['serpapi'] }
+    )()
 }
 
 async function _fetchSerpApi(query: string, limit: number, _retried: boolean): Promise<News[]> {
@@ -388,9 +396,10 @@ async function _fetchSerpApi(query: string, limit: number, _retried: boolean): P
         const json = await res.json()
         const results = json.news_results || []
 
+        // Use deterministic IDs for cache stability (no Math.random/Date.now)
         return results.slice(0, limit).map((n: any, i: number) => ({
-            id: `serp-${i}-${Math.random().toString(36).substr(2, 9)}`,
-            slug: `news-${i}-${Date.now()}`,
+            id: `serp-${i}-${(n.link || '').slice(-12).replace(/\W/g, '')}`,
+            slug: `serp-news-${i}`,
             url: n.link,
             title: n.title,
             excerpt: n.snippet || n.source?.name || '',

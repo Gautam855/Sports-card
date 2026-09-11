@@ -20,7 +20,7 @@ interface Props { params: Promise<{ slug: string }> }
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://sportslnv.com'
 
-export const revalidate = 120
+export const revalidate = 600
 
 /** Dynamic SEO metadata */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -129,7 +129,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                 fill
                                 priority
                                 className="object-cover"
-                                sizes="100vw"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                         </div>

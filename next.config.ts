@@ -29,7 +29,9 @@ const nextConfig: NextConfig = {
 
 
         formats: ['image/avif', 'image/webp'],
-        deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+        minimumCacheTTL: 2592000, // 30 days — prevents re-optimization of unchanged images
+        deviceSizes: [640, 828, 1200, 1920], // Reduced from 6 to 4 (removed 750, 1080 as redundant)
+        imageSizes: [16, 32, 48, 64, 96, 128, 256], // Small sizes for thumbnails & avatars
     },
     headers: async () => [
         {
@@ -39,6 +41,27 @@ const nextConfig: NextConfig = {
                 { key: 'X-Frame-Options', value: 'DENY' },
                 { key: 'X-XSS-Protection', value: '1; mode=block' },
                 { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+            ],
+        },
+        {
+            // Optimized images — cache for 30 days on CDN + browser, stale for 7 days
+            source: '/_next/image(.*)',
+            headers: [
+                { key: 'Cache-Control', value: 'public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800, immutable' },
+            ],
+        },
+        {
+            // Static assets (JS/CSS bundles) — immutable, cache forever
+            source: '/_next/static/(.*)',
+            headers: [
+                { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+            ],
+        },
+        {
+            // Search API — cache for 2 minutes on CDN, stale for 5 minutes
+            source: '/api/search',
+            headers: [
+                { key: 'Cache-Control', value: 'public, max-age=60, s-maxage=120, stale-while-revalidate=300' },
             ],
         },
         {

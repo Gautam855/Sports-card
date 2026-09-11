@@ -6,7 +6,6 @@ import {
     getNews,
     getEditorPicks,
     getBreakingNews,
-    getHomeBlogs,
 } from '@/lib/api/news'
 import { FeaturedHero } from '@/components/home/FeaturedHero'
 import { BreakingNewsStrip } from '@/components/home/BreakingNewsStrip'
@@ -45,7 +44,7 @@ export const metadata: Metadata = {
     },
 }
 
-export const revalidate = 120
+export const revalidate = 300
 
 function dedupeArticles(articles: News[]): News[] {
     const seen = new Set<string>()
@@ -81,7 +80,8 @@ export default async function HomePage() {
     const editorPicks = (editorPicksResult.status === 'fulfilled' ? editorPicksResult.value : []) as News[]
     const breaking = (breakingResult.status === 'fulfilled' ? breakingResult.value : []) as News[]
 
-    const blogs = await getHomeBlogs(10, { featured, editorPicks, latest })
+    // Build blogs from already-fetched data — no extra getHomeBlogs() call needed
+    const blogs = dedupeArticles([...featured, ...editorPicks, ...latest]).slice(0, 10)
 
     const heroArticles = dedupeArticles([...featured, ...serpNews, ...latest]).slice(0, 5)
     const breakingNews = [...breaking, ...serpNews.slice(0, 5)].slice(0, 5)

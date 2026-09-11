@@ -1,23 +1,33 @@
 import { createClient } from '@/lib/supabase/server'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
 
-export async function getComments(contentId: string, contentType: string = 'news') {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('comments')
-        .select(`
-            *,
-            user:profiles(id, username, display_name, avatar_url)
-        `)
-        .eq('content_id', contentId)
-        .eq('content_type', contentType)
-        .order('created_at', { ascending: false })
+/** Read-only comment fetch — uses public client + cache to avoid breaking page-level cache */
+export const getComments = (contentId: string, contentType: string = 'news') => {
+    return unstable_cache(
+        async () => {
+            const supabase = getPublicClient()
+            const { data, error } = await supabase
+                .from('comments')
+                .select(`
+                    id, body, content_type, created_at,
+                    user:profiles(id, username, display_name, avatar_url)
+                `)
+                .eq('content_id', contentId)
+                .eq('content_type', contentType)
+                .order('created_at', { ascending: false })
 
-    if (error) {
-        console.error('Error fetching comments:', error)
-        return []
-    }
-    return data
+            if (error) {
+                console.error('Error fetching comments:', error)
+                return []
+            }
+            return data
+        },
+        [`comments-${contentId}-${contentType}`],
+        { revalidate: 60, tags: ['comments', `comments-${contentId}`] }
+    )()
 }
+
 
 export async function addComment(contentId: string, userId: string, body: string, contentType: string = 'news') {
     const supabase = await createClient()

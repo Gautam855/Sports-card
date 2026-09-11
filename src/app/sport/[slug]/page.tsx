@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getNews, getRealTimeNews } from '@/lib/api/news'
 import { NewsCard } from '@/components/news/NewsCard'
-import { createClient } from '@/lib/supabase/server'
+import { getPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
 import type { News } from '@/lib/types'
 import { TeamPlayersSection } from '@/components/blog/TeamPlayersSection'
 
@@ -116,14 +117,20 @@ export function generateStaticParams() {
     return Object.keys(SPORTS).map(slug => ({ slug }))
 }
 
-async function getCategoryIdBySlug(slug: string): Promise<string | undefined> {
-    const supabase = await createClient()
-    const { data } = await supabase
-        .from('news_categories')
-        .select('id')
-        .eq('slug', slug)
-        .maybeSingle()
-    return data?.id
+const getCategoryIdBySlug = (slug: string): Promise<string | undefined> => {
+    return unstable_cache(
+        async () => {
+            const supabase = getPublicClient()
+            const { data } = await supabase
+                .from('news_categories')
+                .select('id')
+                .eq('slug', slug)
+                .maybeSingle()
+            return data?.id
+        },
+        [`category-id-${slug}`],
+        { revalidate: 600, tags: ['categories'] }
+    )()
 }
 
 function dedupeArticles(articles: News[]): News[] {
@@ -136,7 +143,7 @@ function dedupeArticles(articles: News[]): News[] {
     })
 }
 
-export const revalidate = 60
+export const revalidate = 300
 
 export default async function SportPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params

@@ -34,9 +34,30 @@ export function DynamicScripts() {
     const pathname = usePathname()
 
     useEffect(() => {
+        const CACHE_KEY = 'slnv-site-scripts'
+        const CACHE_TTL = 600_000 // 10 minutes
+
+        // Try sessionStorage cache first to avoid redundant API calls
+        try {
+            const cached = sessionStorage.getItem(CACHE_KEY)
+            if (cached) {
+                const { data, ts } = JSON.parse(cached)
+                if (Date.now() - ts < CACHE_TTL) {
+                    setScripts(data)
+                    return
+                }
+            }
+        } catch {}
+
         fetch('/api/site-scripts')
             .then(r => r.json())
-            .then(data => setScripts(data.scripts ?? []))
+            .then(data => {
+                const scripts = data.scripts ?? []
+                setScripts(scripts)
+                try {
+                    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: scripts, ts: Date.now() }))
+                } catch {}
+            })
             .catch(() => {})
     }, [])
 

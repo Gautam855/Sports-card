@@ -9,7 +9,7 @@ interface PageParams {
     params: Promise<{ slug: string }>
 }
 
-export const revalidate = 120
+export const revalidate = 600
 
 async function _fetchPage(slug: string) {
     const supabase = getPublicClient()
