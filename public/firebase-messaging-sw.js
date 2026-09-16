@@ -12,7 +12,7 @@ const options = {
         appId: "1:428675914734:web:ec91a5ddcb64f8152e4cff",
         apiKey: "AIzaSyC7J_1R_ZOA2UtDPS1Y1xWNrm7N22wjeSs",
     },
-    domain: "sportslnv.com",
+    domain: "www.sportslnv.com",
     api_url: "https://stockstbit.larapu.sh/api/token",
     vapid_public_key: "BHwVi8KTr7fSh_IAYcxaZWVm49ZOaCO5Qer4qrpWMnBG1zCEyaHcakrI4cXOJA1V3euWh4mpHY7c2IbGY5q8u8M",
 }
