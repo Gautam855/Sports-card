@@ -42,6 +42,9 @@ export const legacyRedirects: LegacyRedirect[] = [
     { source: '/arbitrage/:path*', destination: '/', permanent: true },
     { source: '/score/:path*', destination: '/', permanent: true },
 
+    // ── /sports/sports → volleyball redirect ──
+    { source: '/sports/sports', destination: '/sports/volleyball', permanent: true },
+
     // ── Sport hub (old /sport → /sports landing) ──
     { source: '/sport', destination: '/sports', permanent: true },
 

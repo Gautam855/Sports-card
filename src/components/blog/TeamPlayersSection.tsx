@@ -70,7 +70,7 @@ export async function TeamPlayersSection({
 
     if (!players || players.length === 0) return null
 
-    const displayTitle = title || (resolvedName ? `${resolvedName} Stars & Players` : 'Featured Players')
+    const displayTitle = title || (resolvedName ? `${resolvedName} Teams` : 'Teams')
 
     return (
         <section className={className}>
@@ -94,7 +94,7 @@ export async function TeamPlayersSection({
                                     {players.length}
                                 </span>
                             </div>
-                            <p className="text-xs text-slate-500 mt-0.5">Explore player pages, stats &amp; exclusive profiles</p>
+                            <p className="text-xs text-slate-500 mt-0.5">Explore team pages &amp; exclusive profiles</p>
                         </div>
                     </div>
                     {categorySlug && (

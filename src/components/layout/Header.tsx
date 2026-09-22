@@ -71,8 +71,13 @@ export function Header() {
                     </div>
                     <div className="flex items-center gap-3 h-full pl-4 flex-shrink-0">
                         <div className="flex items-center gap-2.5">
-                            {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                                <a key={i} href="#" className="text-white/60 hover:text-white transition-colors">
+                            {[
+                                { Icon: Facebook, href: 'https://www.facebook.com/sportslnvhub/' },
+                                { Icon: Twitter, href: 'https://twitter.com/sportslnv' },
+                                { Icon: Instagram, href: 'https://www.instagram.com/sportslnvhub/' },
+                                { Icon: Youtube, href: 'https://www.youtube.com/@sportslnvhub' },
+                            ].map(({ Icon, href }) => (
+                                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">
                                     <Icon className="w-3 h-3" />
                                 </a>
                             ))}

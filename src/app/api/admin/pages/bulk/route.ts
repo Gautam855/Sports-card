@@ -3,9 +3,11 @@ import { createClient } from '@/lib/supabase/server'
 import { verifyAdmin } from '@/lib/api/admin-auth'
 
 /**
- * POST /api/admin/pages/bulk — Bulk create pages
+ * POST /api/admin/pages/bulk — Bulk create or update pages
  * Accepts a JSON array of pages (max 10 per batch to avoid overload).
  * Client should chunk large uploads into batches of 10.
+ *
+ * If a page with the same slug already exists, it is UPDATED (upsert).
  */
 export async function POST(req: NextRequest) {
     try {
@@ -62,49 +64,68 @@ export async function POST(req: NextRequest) {
         }
 
         if (validPages.length === 0) {
-            return NextResponse.json({ error: 'No valid pages to insert', details: errors }, { status: 400 })
+            return NextResponse.json({ error: 'No valid pages to process', details: errors }, { status: 400 })
         }
 
-        // Check for duplicate slugs in the database
+        // Check which slugs already exist in the database
         const slugs = validPages.map(p => p.slug)
         const { data: existing } = await supabase
             .from('custom_pages')
-            .select('slug')
+            .select('id, slug')
             .in('slug', slugs)
 
-        const existingSlugs = new Set((existing || []).map(e => e.slug))
-        const filteredPages = validPages.filter(p => {
-            if (existingSlugs.has(p.slug)) {
-                errors.push(`Slug "${p.slug}" already exists — skipped`)
-                return false
-            }
-            return true
-        })
+        const existingMap = new Map((existing || []).map(e => [e.slug, e.id]))
 
-        if (filteredPages.length === 0) {
-            return NextResponse.json({
-                inserted: 0,
-                skipped: validPages.length,
-                errors,
-            })
+        const toInsert: any[] = []
+        const toUpdate: any[] = []
+
+        for (const page of validPages) {
+            if (existingMap.has(page.slug)) {
+                toUpdate.push({ ...page, id: existingMap.get(page.slug) })
+            } else {
+                toInsert.push(page)
+            }
         }
 
-        // Bulk insert
-        const { data, error } = await supabase
-            .from('custom_pages')
-            .insert(filteredPages)
-            .select('id, title, slug, status')
+        let insertedCount = 0
+        let updatedCount = 0
 
-        if (error) {
-            console.error('[Bulk Upload] DB error:', error.message)
-            return NextResponse.json({ error: error.message }, { status: 500 })
+        // Insert new pages
+        if (toInsert.length > 0) {
+            const { data, error } = await supabase
+                .from('custom_pages')
+                .insert(toInsert)
+                .select('id, title, slug, status')
+
+            if (error) {
+                console.error('[Bulk Upload] Insert error:', error.message)
+                errors.push(`Insert error: ${error.message}`)
+            } else {
+                insertedCount = data?.length || 0
+            }
+        }
+
+        // Update existing pages (including html_content)
+        for (const page of toUpdate) {
+            const { id, created_by, ...updateData } = page
+            const { error } = await supabase
+                .from('custom_pages')
+                .update(updateData)
+                .eq('id', id)
+
+            if (error) {
+                console.error(`[Bulk Upload] Update error for slug "${page.slug}":`, error.message)
+                errors.push(`Update error for "${page.slug}": ${error.message}`)
+            } else {
+                updatedCount++
+            }
         }
 
         return NextResponse.json({
-            inserted: data?.length || 0,
-            skipped: validPages.length - (data?.length || 0),
+            inserted: insertedCount,
+            updated: updatedCount,
+            skipped: validPages.length - insertedCount - updatedCount,
             errors,
-            pages: data,
         })
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Bulk upload failed'
@@ -112,3 +133,4 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: message }, { status: 500 })
     }
 }
+

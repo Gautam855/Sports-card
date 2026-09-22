@@ -371,9 +371,7 @@ export function CategoryManagerPanel() {
                     <div className="flex border-b border-border">
                         {[
                             { key: 'details' as const, label: 'Details', icon: Edit },
-                            ...(!isCreating ? [
-                                { key: 'team' as const, label: `Team Pages (${players.length})`, icon: Users },
-                            ] : []),
+                            { key: 'team' as const, label: `Teams (${players.length})`, icon: Users },
                             { key: 'faq' as const, label: `FAQs (${formFaqs.length})`, icon: HelpCircle },
                         ].map(tab => (
                             <button
@@ -529,11 +527,19 @@ export function CategoryManagerPanel() {
                             </div>
                         )}
 
-                        {/* ── Team Pages Tab ── */}
-                        {expandedSection === 'team' && !isCreating && (
+                        {/* ── Teams Tab ── */}
+                        {expandedSection === 'team' && (
                             <div className="space-y-4">
+                                {isCreating ? (
+                                    <div className="py-10 text-center rounded-xl border border-dashed border-amber-300 bg-amber-50/50">
+                                        <Users className="w-8 h-8 text-amber-500/50 mx-auto mb-2" />
+                                        <p className="text-sm font-semibold text-amber-700">Save the category first</p>
+                                        <p className="text-xs text-amber-600/80 mt-1">Once saved, you can link team pages here.</p>
+                                    </div>
+                                ) : (
+                                    <>
                                 <p className="text-xs text-muted-foreground">
-                                    Link custom pages to this category. They show as player/team cards on category pages and blog posts.
+                                    Link custom pages to this category. They show as team cards on category pages and blog posts.
                                 </p>
 
                                 {/* Add Page Dropdown */}
@@ -646,6 +652,8 @@ export function CategoryManagerPanel() {
                                         ))}
                                     </div>
                                 )}
+                                    </>
+                                )}
                             </div>
                         )}
 
@@ -737,7 +745,7 @@ export function CategoryManagerPanel() {
                                 <tr className="border-b border-border bg-muted/30">
                                     <th className="text-left px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Category</th>
                                     <th className="text-left px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Slug</th>
-                                    <th className="text-center px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Players</th>
+                                    <th className="text-center px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Teams</th>
                                     <th className="text-center px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">FAQs</th>
                                     <th className="text-center px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Order</th>
                                     <th className="text-right px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Actions</th>
