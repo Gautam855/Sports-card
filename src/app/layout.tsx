@@ -65,7 +65,7 @@ export async function generateMetadata(): Promise<Metadata> {
     }
 
     return {
-        metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
+        metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sportslnv.com'),
         title: {
             default: 'SportsLNV — Sports News & Blogs',
             template: '%s | SportsLNV',

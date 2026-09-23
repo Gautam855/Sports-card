@@ -136,12 +136,17 @@ export function Header() {
                             onMouseEnter={() => setSportsOpen(true)}
                             onMouseLeave={() => setSportsOpen(false)}
                         >
-                            <button className={cn(
-                                'flex items-center gap-1 px-3 py-2 text-xs font-bold uppercase tracking-wide transition-colors',
-                                pathname.startsWith('/sports')
-                                    ? 'text-red-600'
-                                    : 'text-slate-700 hover:text-red-600'
-                            )}>
+                            <button
+                                aria-expanded={sportsOpen}
+                                aria-haspopup="menu"
+                                aria-label="Sports categories"
+                                className={cn(
+                                    'flex items-center gap-1 px-3 py-2 text-xs font-bold uppercase tracking-wide transition-colors',
+                                    pathname.startsWith('/sports')
+                                        ? 'text-red-600'
+                                        : 'text-slate-700 hover:text-red-600'
+                                )}
+                            >
                                 Sports
                                 <ChevronDown className={cn('w-3 h-3 transition-transform', sportsOpen && 'rotate-180')} />
                             </button>
@@ -232,7 +237,12 @@ export function Header() {
                                         onMouseEnter={() => setProfileOpen(true)}
                                         onMouseLeave={() => setProfileOpen(false)}
                                     >
-                                        <button aria-label="User account menu" className="flex items-center gap-2 p-1.5 rounded-full hover:bg-accent transition-colors border border-transparent hover:border-border">
+                                        <button
+                                            aria-label="User account menu"
+                                            aria-expanded={profileOpen}
+                                            aria-haspopup="menu"
+                                            className="flex items-center gap-2 p-1.5 rounded-full hover:bg-accent transition-colors border border-transparent hover:border-border"
+                                        >
                                             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 text-primary font-bold text-xs">
                                                 {user.avatar_url ? (
                                                     <img src={user.avatar_url} alt={user.username} className="w-full h-full object-cover rounded-full" />
@@ -299,7 +309,8 @@ export function Header() {
                             size="icon"
                             className="xl:hidden"
                             onClick={() => setMobileOpen(!mobileOpen)}
-                            aria-label="Toggle menu"
+                            aria-expanded={mobileOpen}
+                            aria-label="Toggle navigation menu"
                         >
                             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </Button>

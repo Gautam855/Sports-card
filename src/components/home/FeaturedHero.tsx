@@ -1,6 +1,9 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import dynamic from 'next/dynamic'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
     getCategoryName,
@@ -12,82 +15,127 @@ import {
 } from '@/lib/home-utils'
 import type { News } from '@/lib/types'
 
-// Interactive carousel loaded after LCP paint — not in the initial JS bundle
-const HeroCarousel = dynamic(
-    () => import('./HeroCarousel').then((m) => m.HeroCarousel),
-)
+const AUTO_SLIDE_INTERVAL = 5000 // 5 seconds
 
 export function FeaturedHero({ articles }: { articles: News[] }) {
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [isPaused, setIsPaused] = useState(false)
+
+    const totalSlides = articles?.length || 0
+
+    const goToNext = useCallback(() => {
+        if (totalSlides <= 1) return
+        setCurrentIndex((prev) => (prev + 1) % totalSlides)
+    }, [totalSlides])
+
+    const goToPrev = useCallback(() => {
+        if (totalSlides <= 1) return
+        setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides)
+    }, [totalSlides])
+
+    const goToSlide = useCallback((index: number) => {
+        setCurrentIndex(index)
+    }, [])
+
+    // Auto-slide
+    useEffect(() => {
+        if (totalSlides <= 1 || isPaused) return
+
+        const timer = setInterval(() => {
+            goToNext()
+        }, AUTO_SLIDE_INTERVAL)
+
+        return () => clearInterval(timer)
+    }, [totalSlides, isPaused, goToNext])
+
     if (!articles || articles.length === 0) return null
 
-    const article = articles[0]
+    const article = articles[currentIndex]
     if (!article) return null
-
-    const coverImage = getCoverImage(article)
 
     return (
         <section
             className="home-section pt-6 pb-2"
             data-google-auto-ad="false"
+            aria-roledescription="carousel"
+            aria-label="Featured News"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
         >
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
-                {/* Image — LCP element, server-rendered with priority */}
+                {/* Image carousel — LCP candidate on slide 0 */}
                 <div className="w-full lg:w-[58%]">
                     <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
                         <div className="relative aspect-[16/10] w-full">
-                            {/* First slide — server-rendered, LCP candidate */}
-                            <Link
-                                {...getArticleLinkProps(article)}
-                                className="hero-first-slide absolute inset-0 opacity-100 z-10 transition-opacity duration-700 ease-in-out"
-                            >
-                                {coverImage ? (
-                                    <Image
-                                        src={coverImage}
-                                        alt={article.title}
-                                        fill
-                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
-                                        priority
-                                        fetchPriority="high"
-                                        className="object-cover hover:scale-[1.02] transition-transform duration-500"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-slate-200">
-                                        <span className="text-5xl font-black text-slate-300">
-                                            {article.title[0]}
-                                        </span>
-                                    </div>
-                                )}
-                            </Link>
-
-                            {/* Client-side carousel overlay — loads after paint */}
-                            <HeroCarousel articles={articles} />
+                            {articles.map((a, index) => {
+                                const img = getCoverImage(a)
+                                const isCurrent = index === currentIndex
+                                return (
+                                    <Link
+                                        key={a.id || index}
+                                        {...getArticleLinkProps(a)}
+                                        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                                            isCurrent
+                                                ? 'opacity-100 z-10'
+                                                : 'opacity-0 z-0 pointer-events-none'
+                                        }`}
+                                        aria-hidden={!isCurrent}
+                                        tabIndex={isCurrent ? 0 : -1}
+                                    >
+                                        {img ? (
+                                            <Image
+                                                src={img}
+                                                alt={a.title}
+                                                fill
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
+                                                priority={index === 0}
+                                                fetchPriority={index === 0 ? 'high' : 'auto'}
+                                                loading={index === 0 ? 'eager' : 'lazy'}
+                                                className="object-cover hover:scale-[1.02] transition-transform duration-500"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                                                <span className="text-5xl font-black text-slate-300">
+                                                    {a.title[0]}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </Link>
+                                )
+                            })}
                         </div>
                     </div>
 
-                    {/* Static dots placeholder for single-article case */}
-                    {articles.length > 1 && (
-                        <div className="flex justify-center items-center gap-1 mt-2 hero-carousel-dots-placeholder">
+                    {/* Carousel dots */}
+                    {totalSlides > 1 && (
+                        <div className="flex justify-center items-center gap-1 mt-2">
                             {articles.map((_, index) => (
-                                <div
+                                <button
                                     key={index}
+                                    onClick={() => goToSlide(index)}
+                                    aria-label={`Go to slide ${index + 1}`}
+                                    aria-current={index === currentIndex ? 'true' : undefined}
                                     className="p-2.5 flex items-center justify-center min-w-[36px] min-h-[36px]"
                                 >
                                     <span
-                                        className={`h-2 rounded-full ${
-                                            index === 0
+                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                            index === currentIndex
                                                 ? 'w-6 bg-red-600'
-                                                : 'w-2.5 bg-slate-300'
+                                                : 'w-2.5 bg-slate-300 hover:bg-slate-400'
                                         }`}
                                     />
-                                </div>
+                                </button>
                             ))}
                         </div>
                     )}
                 </div>
 
-                {/* Content — server-rendered for first article */}
-                <div className="hero-server-content w-full lg:w-[42%] flex flex-col pt-1 lg:pt-2 min-h-[280px]">
-                    <div className="flex flex-col flex-1">
+                {/* Content with smooth transition */}
+                <div className="w-full lg:w-[42%] flex flex-col pt-1 lg:pt-2 min-h-[280px]">
+                    <div
+                        key={currentIndex}
+                        className="animate-fade-in flex flex-col flex-1"
+                    >
                         <span className="home-category mb-3">
                             {getCategoryName(article.category)}
                         </span>
@@ -123,6 +171,24 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
                         <Link {...getArticleLinkProps(article)} className="home-btn-dark">
                             Read Full Story
                         </Link>
+                        {totalSlides > 1 && (
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={goToPrev}
+                                    aria-label="Previous slide"
+                                    className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 active:scale-95 text-slate-600 transition-all"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={goToNext}
+                                    aria-label="Next slide"
+                                    className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 active:scale-95 text-slate-600 transition-all"
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
