@@ -7,17 +7,40 @@ interface AdProps {
     className?: string
 }
 
-/** Pushes adsbygoogle on mount if the slot hasn't been initialised yet */
+/** Pushes adsbygoogle on mount only when the slot has non-zero width */
 function useAdPush(ref: React.RefObject<HTMLModElement | null>) {
     const pathname = usePathname()
     useEffect(() => {
-        try {
-            if (ref.current && !ref.current.hasAttribute('data-adsbygoogle-status')) {
-                ;(window as any).adsbygoogle = (window as any).adsbygoogle || []
-                ;(window as any).adsbygoogle.push({})
+        const el = ref.current
+        if (!el) return
+
+        const pushAd = () => {
+            try {
+                if (el && el.offsetWidth > 0 && !el.hasAttribute('data-adsbygoogle-status')) {
+                    ;(window as any).adsbygoogle = (window as any).adsbygoogle || []
+                    ;(window as any).adsbygoogle.push({})
+                    return true
+                }
+            } catch {
+                // Ignore AdSense errors silently without polluting console
             }
-        } catch (err) {
-            console.error('AdSense error:', err)
+            return false
+        }
+
+        if (pushAd()) return
+
+        if (typeof ResizeObserver !== 'undefined') {
+            const ro = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    if (entry.contentRect.width > 0) {
+                        if (pushAd()) {
+                            ro.disconnect()
+                        }
+                    }
+                }
+            })
+            ro.observe(el)
+            return () => ro.disconnect()
         }
     }, [pathname, ref])
 }

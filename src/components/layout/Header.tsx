@@ -70,15 +70,22 @@ export function Header() {
                         </Link>
                     </div>
                     <div className="flex items-center gap-3 h-full pl-4 flex-shrink-0">
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-1">
                             {[
                                 { Icon: Facebook, href: 'https://www.facebook.com/sportslnvhub/', label: 'Facebook' },
                                 { Icon: Twitter, href: 'https://twitter.com/sportslnv', label: 'Twitter' },
                                 { Icon: Instagram, href: 'https://www.instagram.com/sportslnvhub/', label: 'Instagram' },
                                 { Icon: Youtube, href: 'https://www.youtube.com/@sportslnvhub', label: 'YouTube' },
                             ].map(({ Icon, href, label }) => (
-                                <a key={href} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="text-white/60 hover:text-white transition-colors">
-                                    <Icon className="w-3 h-3" />
+                                <a
+                                    key={href}
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={label}
+                                    className="w-7 h-7 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                                >
+                                    <Icon className="w-3.5 h-3.5" />
                                 </a>
                             ))}
                         </div>
@@ -102,7 +109,7 @@ export function Header() {
                         <span className="font-display font-black text-xl leading-none tracking-tight text-slate-900">
                             Sports<span className="text-red-600">LNV</span>
                         </span>
-                        <span className="text-[9px] text-slate-400 font-medium tracking-wide hidden sm:block">
+                        <span className="text-[9px] text-slate-600 font-semibold tracking-wide hidden sm:block">
                             Sports News &amp; Blogs
                         </span>
                     </Link>
@@ -224,7 +231,7 @@ export function Header() {
                         >
                             <Search className="w-3.5 h-3.5" />
                             Search news, blogs...
-                            <kbd className="hidden md:inline text-[9px] font-bold bg-slate-100 border border-slate-200 rounded px-1 py-0.5 ml-1">⌘K</kbd>
+                            <kbd className="hidden md:inline text-[9px] font-bold text-slate-700 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 ml-1">⌘K</kbd>
                         </button>
 
                         <NotificationsDropdown />

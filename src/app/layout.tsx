@@ -110,12 +110,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             className={`${GeistSans.variable} ${spaceGrotesk.variable}`}
         >
             <head>
-                {/* DNS-prefetch for third-party origins loaded later */}
-                <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-                <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+                {/* Preconnect for key third-party origins */}
+                <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+                <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
                 <link rel="dns-prefetch" href="https://connect.facebook.net" />
             </head>
-            <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh">
+            <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh" suppressHydrationWarning>
                 {/* Google Tag Manager (noscript) */}
                 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZG52CQZ"
                 height="0" width="0" style={{display:"none", visibility:"hidden"}}></iframe></noscript>
