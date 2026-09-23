@@ -87,7 +87,7 @@ export function LatestNewsTrendingSection({
                                         src={featuredImage}
                                         alt={featured.title}
                                         fill
-                                        sizes="(max-width: 1024px) 100vw, 66vw"
+                                        sizes="(max-width: 1024px) 100vw, 820px"
                                         className="object-cover group-hover:scale-105 transition-transform duration-700"
                                     />
                                 ) : (
@@ -125,7 +125,7 @@ export function LatestNewsTrendingSection({
                                                         src={coverImage}
                                                         alt={item.title}
                                                         fill
-                                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 410px"
                                                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                     />
                                                 ) : (
@@ -201,7 +201,7 @@ export function LatestNewsTrendingSection({
                                                 <h4 className="font-bold text-xs md:text-sm text-slate-900 leading-snug line-clamp-2 group-hover:text-red-600 transition-colors">
                                                     {item.title}
                                                 </h4>
-                                                <span className="text-[10px] text-slate-400 mt-1">
+                                                <span className="text-[10px] text-slate-400 mt-1" suppressHydrationWarning>
                                                     {formatRelativeTime(item) || formatArticleDate(item)}
                                                 </span>
                                             </div>

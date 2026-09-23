@@ -109,9 +109,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             className={`${GeistSans.variable} ${GeistMono.variable} ${spaceGrotesk.variable}`}
         >
             <head>
-                {/* Preconnect to critical Supabase media origin for instant image delivery */}
-                <link rel="preconnect" href="https://pymtwlzshveziodbfqhc.supabase.co" />
-                <link rel="dns-prefetch" href="https://pymtwlzshveziodbfqhc.supabase.co" />
+                {/* Preconnect to Google Fonts CDN for faster typography render */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
             <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh">
                 {/* Google Tag Manager (noscript) */}

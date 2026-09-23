@@ -67,7 +67,7 @@ export function LatestFromBlogSection({ blogs }: { blogs?: News[] }) {
                                             src={coverImage}
                                             alt={blog.title}
                                             fill
-                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : (

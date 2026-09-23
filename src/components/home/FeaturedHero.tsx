@@ -85,7 +85,7 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
                                                 src={img}
                                                 alt={a.title}
                                                 fill
-                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 58vw"
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
                                                 priority={index === 0}
                                                 loading={index === 0 ? undefined : 'lazy'}
                                                 className="object-cover hover:scale-[1.02] transition-transform duration-500"
@@ -111,10 +111,10 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
                                     key={index}
                                     onClick={() => goToSlide(index)}
                                     aria-label={`Go to slide ${index + 1}`}
-                                    className={`h-1 rounded-full transition-all duration-300 ${
+                                    className={`h-1.5 rounded-full transition-colors duration-300 ${
                                         index === currentIndex
                                             ? 'w-5 bg-red-600'
-                                            : 'w-1.5 bg-slate-300 hover:bg-slate-400'
+                                            : 'w-2 bg-slate-300 hover:bg-slate-400'
                                     }`}
                                 />
                             ))}
@@ -152,7 +152,7 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
                                 <p className="font-bold text-sm text-slate-900">
                                     {getAuthorName(article.author)}
                                 </p>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-slate-500" suppressHydrationWarning>
                                     {formatArticleDate(article)} · {getReadTime(article)}
                                 </p>
                             </div>

@@ -84,7 +84,7 @@ export function NewsCard({ article, variant = 'default', className }: NewsCardPr
                             src={article.cover_image}
                             alt={article.cover_alt ?? article.title}
                             fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
 

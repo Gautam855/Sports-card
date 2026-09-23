@@ -28,20 +28,7 @@ const nextConfig: NextConfig = {
                 { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
             ],
         },
-        {
-            // Optimized images — cache for 30 days on CDN + browser, stale for 7 days
-            source: '/_next/image(.*)',
-            headers: [
-                { key: 'Cache-Control', value: 'public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800, immutable' },
-            ],
-        },
-        {
-            // Static assets (JS/CSS bundles) — immutable, cache forever
-            source: '/_next/static/(.*)',
-            headers: [
-                { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-            ],
-        },
+
         {
             // Search API — cache for 2 minutes on CDN, stale for 5 minutes
             source: '/api/search',
