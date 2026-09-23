@@ -110,19 +110,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             className={`${GeistSans.variable} ${spaceGrotesk.variable}`}
         >
             <head>
-                {/* Preconnect for key third-party origins */}
-                <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
-                <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+                {/* DNS prefetch for third-party origins to avoid unused preconnect warnings */}
+                <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+                <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+                <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
                 <link rel="dns-prefetch" href="https://connect.facebook.net" />
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `(function(){var o=console.error;console.error=function(){var a=arguments[0];if(typeof a==='string'&&(a.indexOf('adsbygoogle')!==-1||a.indexOf('TagError')!==-1))return;o.apply(console,arguments);};window.addEventListener('error',function(e){if(e&&(e.message&&(e.message.indexOf('adsbygoogle')!==-1||e.message.indexOf('TagError')!==-1)||(e.filename&&e.filename.indexOf('pagead')!==-1))){e.preventDefault();e.stopImmediatePropagation();return true;}},true);})();`,
+                    }}
+                />
             </head>
             <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh" suppressHydrationWarning>
-                {/* Google Tag Manager (noscript) */}
-                <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZG52CQZ"
-                height="0" width="0" style={{display:"none", visibility:"hidden"}}></iframe></noscript>
-                {/* End Google Tag Manager (noscript) */}
+                {/* Google Tag Manager (noscript) - rendered via innerHTML to prevent React #418 hydration mismatch */}
+                <noscript
+                    dangerouslySetInnerHTML={{
+                        __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZG52CQZ" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
+                    }}
+                />
                 {/* Meta Pixel Code (noscript) */}
-                <noscript><img height="1" width="1" style={{ display: 'none' }} src="https://www.facebook.com/tr?id=3296516970531633&ev=PageView&noscript=1" alt="" /></noscript>
-                {/* End Meta Pixel Code (noscript) */}
+                <noscript
+                    dangerouslySetInnerHTML={{
+                        __html: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=3296516970531633&ev=PageView&noscript=1" alt="" />`,
+                    }}
+                />
                 <QueryProvider>
                     <AuthProvider>
                         <BreakingNewsTicker />

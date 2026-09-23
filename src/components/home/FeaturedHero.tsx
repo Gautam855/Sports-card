@@ -15,7 +15,7 @@ import {
 } from '@/lib/home-utils'
 import type { News } from '@/lib/types'
 
-const AUTO_SLIDE_INTERVAL = 5000 // 5 seconds
+const AUTO_SLIDE_INTERVAL = 10000 // 10 seconds — allows users to read headline and prevents LCP shifting during initial paint
 
 export function FeaturedHero({ articles }: { articles: News[] }) {
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -89,8 +89,6 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
                                                 fill
                                                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
                                                 priority={index === 0}
-                                                fetchPriority={index === 0 ? 'high' : 'auto'}
-                                                loading={index === 0 ? 'eager' : 'lazy'}
                                                 className="object-cover hover:scale-[1.02] transition-transform duration-500"
                                             />
                                         ) : (
