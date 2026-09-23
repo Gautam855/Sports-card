@@ -13,9 +13,9 @@ import { getPublicClient } from '@/lib/supabase/public'
 import { unstable_cache } from 'next/cache'
 
 // Lazy-loaded client components — not needed for initial paint
-const MobileNav = dynamic(() => import('@/components/layout/MobileNav').then(m => m.MobileNav), { ssr: false })
-const DynamicScripts = dynamic(() => import('@/components/seo/DynamicScripts').then(m => m.DynamicScripts), { ssr: false })
-const LazyToaster = dynamic(() => import('sonner').then(m => m.Toaster), { ssr: false })
+const MobileNav = dynamic(() => import('@/components/layout/MobileNav').then(m => m.MobileNav))
+const DynamicScripts = dynamic(() => import('@/components/seo/DynamicScripts').then(m => m.DynamicScripts))
+const LazyToaster = dynamic(() => import('sonner').then(m => m.Toaster))
 
 const spaceGrotesk = Space_Grotesk({
     subsets: ['latin'],
