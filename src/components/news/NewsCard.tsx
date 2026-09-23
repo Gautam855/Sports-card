@@ -37,7 +37,7 @@ export function NewsCard({ article, variant = 'default', className }: NewsCardPr
           <h3 className="text-sm font-semibold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
             {article.title}
           </h3>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-1" suppressHydrationWarning>
             {article.published_at ? formatDistanceToNow(new Date(article.published_at), { addSuffix: true }) : ''}
           </p>
         </div>
@@ -116,7 +116,7 @@ export function NewsCard({ article, variant = 'default', className }: NewsCardPr
               {article.author.display_name ?? article.author.username}
             </span>
           )}
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1" suppressHydrationWarning>
             <Clock className="w-3 h-3" />
             {article.read_time_mins ? `${article.read_time_mins}m read` : article.published_at ? formatDistanceToNow(new Date(article.published_at), { addSuffix: true }) : ''}
           </span>

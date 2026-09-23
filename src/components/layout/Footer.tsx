@@ -49,7 +49,7 @@ export function Footer() {
                             <span className="font-display font-black text-2xl tracking-tight text-white">
                                 Sports<span className="text-red-500">LNV</span>
                             </span>
-                            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-1 group-hover:text-slate-400 transition-colors">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-1 group-hover:text-slate-300 transition-colors">
                                 Sports News &amp; Blogs
                             </p>
                         </Link>
@@ -146,13 +146,13 @@ export function Footer() {
 
             {/* Copyright — dark bar, flush with page bottom */}
             <div className="border-t border-slate-800 bg-slate-950 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pb-0">
-                <div className="container-wide py-5 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
-                    <p>© {new Date().getFullYear()} SportsLNV. All Rights Reserved.</p>
-                    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                <div className="container-wide py-5 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-400">
+                    <p suppressHydrationWarning>© {new Date().getFullYear()} SportsLNV. All Rights Reserved.</p>
+                    <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
                         {INFO_LINKS.map(({ label, href }, i) => (
-                            <span key={href} className="flex items-center gap-4">
-                                {i > 0 && <span className="text-slate-700 hidden sm:inline" aria-hidden="true">|</span>}
-                                <Link href={href} className="hover:text-slate-300 transition-colors">
+                            <span key={href} className="flex items-center">
+                                {i > 0 && <span className="text-slate-700 mx-1.5 hidden sm:inline" aria-hidden="true">|</span>}
+                                <Link href={href} className="py-2 px-1.5 inline-block hover:text-slate-200 transition-colors">
                                     {label}
                                 </Link>
                             </span>

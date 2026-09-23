@@ -171,3 +171,10 @@ ins.adsbygoogle[data-adsbygoogle-status="done"][style*="display: none"] {
     contain: layout;
 }
 
+/* Suppress Google Auto Ads from inserting before top content or inside header */
+.home-page > .google-auto-placed:first-child,
+main > .google-auto-placed:first-child,
+header + .google-auto-placed {
+    display: none !important;
+}
+

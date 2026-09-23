@@ -47,7 +47,7 @@ export function TopStoriesSection({ stories }: { stories: News[] }) {
                                 <h3 className="font-bold text-sm leading-snug line-clamp-2 text-slate-900 group-hover:text-brand-700 transition-colors mb-1.5">
                                     {item.title}
                                 </h3>
-                                <span className="text-[11px] text-slate-500">{formatRelativeTime(item)}</span>
+                                <span className="text-[11px] text-slate-500" suppressHydrationWarning>{formatRelativeTime(item)}</span>
                             </div>
                         </Link>
                     )

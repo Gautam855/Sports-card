@@ -48,7 +48,7 @@ export function MostPopular({ articles }: { articles: News[] }) {
                                 <h3 className="font-bold text-xs leading-snug line-clamp-2 text-slate-900 group-hover:text-red-600 transition-colors mb-1">
                                     {item.title}
                                 </h3>
-                                <p className="text-[10px] text-slate-600 font-medium">{formatArticleDate(item)}</p>
+                                <p className="text-[10px] text-slate-600 font-medium" suppressHydrationWarning>{formatArticleDate(item)}</p>
                             </div>
                         </Link>
                     )

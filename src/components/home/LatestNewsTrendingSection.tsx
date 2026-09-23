@@ -27,8 +27,8 @@ function NewsMeta({ item, light }: { item: News; light?: boolean }) {
     const views = item.views ?? 0
 
     return (
-        <div className={`flex items-center justify-between gap-2 text-[11px] ${light ? 'text-slate-300' : 'text-slate-500'}`}>
-            <span className={`truncate font-medium ${light ? 'text-slate-200' : 'text-slate-600'}`}>{source}</span>
+        <div className={`flex items-center justify-between gap-2 text-[11px] ${light ? 'text-slate-300' : 'text-slate-600'}`}>
+            <span className={`truncate font-medium ${light ? 'text-slate-200' : 'text-slate-700'}`}>{source}</span>
             <div className="flex items-center gap-3 flex-shrink-0">
                 <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -201,7 +201,7 @@ export function LatestNewsTrendingSection({
                                                 <h4 className="font-bold text-xs md:text-sm text-slate-900 leading-snug line-clamp-2 group-hover:text-red-600 transition-colors">
                                                     {item.title}
                                                 </h4>
-                                                <span className="text-[10px] text-slate-400 mt-1" suppressHydrationWarning>
+                                                <span className="text-[10px] text-slate-600 font-medium mt-1" suppressHydrationWarning>
                                                     {formatRelativeTime(item) || formatArticleDate(item)}
                                                 </span>
                                             </div>

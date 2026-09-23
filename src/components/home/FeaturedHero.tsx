@@ -58,6 +58,7 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
     return (
         <section
             className="home-section pt-6 pb-2"
+            data-google-auto-ad="false"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
@@ -75,21 +76,32 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
                                         className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                                             index === currentIndex
                                                 ? 'opacity-100 z-10'
-                                                : 'opacity-0 z-0'
+                                                : 'opacity-0 z-0 pointer-events-none'
                                         }`}
                                         aria-hidden={index !== currentIndex}
                                         tabIndex={index === currentIndex ? 0 : -1}
                                     >
                                         {img ? (
-                                            <Image
-                                                src={img}
-                                                alt={a.title}
-                                                fill
-                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
-                                                priority={index === 0}
-                                                loading={index === 0 ? undefined : 'lazy'}
-                                                className="object-cover hover:scale-[1.02] transition-transform duration-500"
-                                            />
+                                            index === 0 ? (
+                                                <Image
+                                                    src={img}
+                                                    alt={a.title}
+                                                    fill
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
+                                                    priority
+                                                    fetchPriority="high"
+                                                    className="object-cover hover:scale-[1.02] transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src={img}
+                                                    alt={a.title}
+                                                    fill
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
+                                                    loading="lazy"
+                                                    className="object-cover hover:scale-[1.02] transition-transform duration-500"
+                                                />
+                                            )
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-slate-200">
                                                 <span className="text-5xl font-black text-slate-300">
@@ -105,18 +117,22 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
 
                     {/* Carousel dots */}
                     {totalSlides > 1 && (
-                        <div className="flex justify-center gap-1.5 mt-3">
+                        <div className="flex justify-center items-center gap-1 mt-2">
                             {articles.map((_, index) => (
                                 <button
                                     key={index}
                                     onClick={() => goToSlide(index)}
                                     aria-label={`Go to slide ${index + 1}`}
-                                    className={`h-1.5 rounded-full transition-colors duration-300 ${
-                                        index === currentIndex
-                                            ? 'w-5 bg-red-600'
-                                            : 'w-2 bg-slate-300 hover:bg-slate-400'
-                                    }`}
-                                />
+                                    className="p-2.5 flex items-center justify-center min-w-[36px] min-h-[36px]"
+                                >
+                                    <span
+                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                            index === currentIndex
+                                                ? 'w-6 bg-red-600'
+                                                : 'w-2.5 bg-slate-300 hover:bg-slate-400'
+                                        }`}
+                                    />
+                                </button>
                             ))}
                         </div>
                     )}

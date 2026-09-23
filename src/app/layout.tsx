@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
 import { Space_Grotesk } from 'next/font/google'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { AuthProvider } from '@/components/providers/AuthProvider'
@@ -106,13 +105,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html
             lang="en"
             suppressHydrationWarning
-            className={`${GeistSans.variable} ${GeistMono.variable} ${spaceGrotesk.variable}`}
+            className={`${GeistSans.variable} ${spaceGrotesk.variable}`}
         >
-            <head>
-                {/* Preconnect to Google Fonts CDN for faster typography render */}
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-            </head>
             <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh">
                 {/* Google Tag Manager (noscript) */}
                 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZG52CQZ"
@@ -125,7 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <AuthProvider>
                         <BreakingNewsTicker />
                         <Header />
-                        <main className="flex-1">
+                        <main className="flex-1" data-google-auto-ad="false">
                             {children}
                         </main>
                         <Footer />
@@ -145,10 +139,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Analytics />
                 <DynamicScripts />
 
-                {/* Google Tag Manager - loaded after interactive */}
+                {/* Google Tag Manager - lazyOnload stops main-thread competition during initial paint */}
                 <Script
                     id="gtm-init"
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                     dangerouslySetInnerHTML={{
                         __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -158,30 +152,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     }}
                 />
 
-                {/* Google tag (gtag.js) */}
-                <Script
-                    id="gtag-url"
-                    strategy="afterInteractive"
-                    src="https://www.googletagmanager.com/gtag/js?id=G-03R981P0Y8"
-                />
-                <Script
-                    id="gtag-init"
-                    strategy="afterInteractive"
-                    dangerouslySetInnerHTML={{
-                        __html: `
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-03R981P0Y8');`
-                    }}
-                />
-
-                {/* Google AdSense - lazyOnload avoids blocking FCP/LCP and CPU execution */}
+                {/* Google AdSense - lazyOnload & data-page-level-ads="false" prevents CLS from uncontrolled auto-ads */}
                 <Script
                     id="adsbygoogle-sdk"
                     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4573815949018090"
                     crossOrigin="anonymous"
                     strategy="lazyOnload"
+                    data-page-level-ads="false"
                 />
 
                 {/* Meta Pixel Code - lazyOnload eliminates CPU contention during page load */}

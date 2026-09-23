@@ -65,7 +65,7 @@ export function BlogCard({ blog, className }: BlogCardProps) {
                 {/* Content */}
                 <div className="p-5 flex flex-col flex-1">
                     <div className="flex items-center gap-3 text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-3">
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1" suppressHydrationWarning>
                             <Calendar className="w-3 h-3" />
                             {new Date(blog.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>

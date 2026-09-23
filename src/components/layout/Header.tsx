@@ -57,7 +57,7 @@ export function Header() {
     }, [])
 
     return (
-        <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200">
+        <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200" data-google-auto-ad="false">
             {/* Top Breaking Bar */}
             <div className="hidden lg:block bg-slate-900 text-white w-full h-8 text-xs">
                 <div className="container-wide h-full flex items-center justify-between">

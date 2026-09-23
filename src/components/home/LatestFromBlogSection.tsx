@@ -84,7 +84,7 @@ export function LatestFromBlogSection({ blogs }: { blogs?: News[] }) {
                                             {getCategoryName(blog.category)}
                                         </span>
                                         {blog.is_featured && (
-                                            <span className="bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded">
+                                            <span className="bg-amber-400 text-slate-950 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded shadow-sm">
                                                 Featured
                                             </span>
                                         )}
@@ -92,8 +92,8 @@ export function LatestFromBlogSection({ blogs }: { blogs?: News[] }) {
                                 </Link>
 
                                 <div className="p-5 flex flex-col flex-1 min-w-0">
-                                    <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">
-                                        <span className="flex items-center gap-1">
+                                    <div className="flex items-center gap-3 text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-3">
+                                        <span className="flex items-center gap-1" suppressHydrationWarning>
                                             <Calendar className="w-3 h-3 text-red-500/70" />
                                             {formatArticleDateUpper(blog)}
                                         </span>
@@ -134,7 +134,7 @@ export function LatestFromBlogSection({ blogs }: { blogs?: News[] }) {
                                         </div>
                                         <div className="flex items-center gap-2 flex-shrink-0">
                                             {views > 0 && (
-                                                <span className="flex items-center gap-1 text-xs text-slate-500">
+                                                <span className="flex items-center gap-1 text-xs text-slate-400">
                                                     <Eye className="w-3.5 h-3.5" />
                                                     {views.toLocaleString()}
                                                 </span>

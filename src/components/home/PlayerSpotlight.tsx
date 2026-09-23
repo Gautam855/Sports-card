@@ -116,7 +116,7 @@ export function PlayerSpotlight({
                                             <h3 className="font-bold text-sm leading-snug line-clamp-2 text-slate-900 group-hover:text-red-600 transition-colors mb-1.5">
                                                 {item.title}
                                             </h3>
-                                            <p className="text-[11px] text-slate-500 font-medium">
+                                            <p className="text-[11px] text-slate-600 font-medium" suppressHydrationWarning>
                                                 {formatArticleDate(item)} · {getReadTime(item)}
                                             </p>
                                         </div>
