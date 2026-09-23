@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { PenLine, Clock, User } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
@@ -35,10 +36,12 @@ export function FeaturedBlogSection({ featured, blogs }: { featured?: News; blog
                             className="lg:col-span-7 group relative rounded-2xl overflow-hidden min-h-[300px] lg:min-h-[380px] border border-white/10"
                         >
                             {featuredImage ? (
-                                <img
+                                <Image
                                     src={featuredImage}
                                     alt={featured.title}
-                                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    fill
+                                    sizes="(max-width: 1024px) 100vw, 58vw"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
                             ) : (
                                 <div className="absolute inset-0 bg-gradient-to-br from-brand-800 to-slate-900" />
@@ -83,12 +86,14 @@ export function FeaturedBlogSection({ featured, blogs }: { featured?: News; blog
                                     {...getArticleLinkProps(blog, 'blog')}
                                     className="group flex gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-brand-400/30 transition-all duration-300"
                                 >
-                                    <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-slate-800">
+                                    <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-slate-800">
                                         {coverImage ? (
-                                            <img
+                                            <Image
                                                 src={coverImage}
                                                 alt={blog.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                fill
+                                                sizes="80px"
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-brand-400 font-black text-lg">

@@ -23,6 +23,8 @@ export function NewsletterSection() {
                 <form className="flex w-full md:w-auto gap-2 flex-shrink-0">
                     <input
                         type="email"
+                        name="email"
+                        aria-label="Email address for newsletter"
                         placeholder="Enter your email"
                         className="flex-1 md:w-56 px-4 py-3 rounded-lg bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 placeholder:text-slate-400"
                     />
@@ -34,7 +36,7 @@ export function NewsletterSection() {
                     </button>
                 </form>
             </div>
-            <p className="text-[10px] text-slate-400 mt-2 text-center md:text-left md:ml-[84px]">
+            <p className="text-[10px] text-slate-500 font-medium mt-2 text-center md:text-left md:ml-[84px]">
                 No spam. Unsubscribe anytime.
             </p>
         </section>

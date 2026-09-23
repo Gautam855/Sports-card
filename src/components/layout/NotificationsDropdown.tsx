@@ -79,10 +79,10 @@ export function NotificationsDropdown() {
                                     <p className="text-xs text-muted-foreground">You have {unreadCount} unread messages</p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={markAllRead}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={markAllRead} aria-label="Mark all notifications as read">
                                         <Check className="w-4 h-4" />
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="More notification options">
                                         <MoreHorizontal className="w-4 h-4" />
                                     </Button>
                                 </div>
@@ -119,6 +119,7 @@ export function NotificationsDropdown() {
                                                     </p>
                                                 </div>
                                                 <button 
+                                                    aria-label="Dismiss notification"
                                                     className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded-md"
                                                     onClick={(e) => {
                                                         e.stopPropagation()

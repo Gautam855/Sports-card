@@ -109,54 +109,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             className={`${GeistSans.variable} ${GeistMono.variable} ${spaceGrotesk.variable}`}
         >
             <head>
-                {/* Google Tag Manager */}
-                <Script id="gtm-init"
-                    dangerouslySetInnerHTML={{
-                        __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NZG52CQZ');`
-                    }}
-                />
-                {/* End Google Tag Manager */}
-
-                {/* Google tag (gtag.js) */}
-                <Script id="gtag-url" async src="https://www.googletagmanager.com/gtag/js?id=G-03R981P0Y8"></Script>
-                <Script id="gtag-init"
-                    dangerouslySetInnerHTML={{
-                        __html: `
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-03R981P0Y8');`
-                    }}
-                />
-
-                <Script
-                    async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4573815949018090"
-                    crossOrigin="anonymous"
-                    strategy="afterInteractive"
-                />
-                {/* Meta Pixel Code */}
-                <Script id="meta-pixel"
-                    dangerouslySetInnerHTML={{
-                        __html: `!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '3296516970531633');
-fbq('track', 'PageView');`
-                    }}
-                />
-                {/* End Meta Pixel Code */}
-
+                {/* Preconnect to critical Supabase media origin for instant image delivery */}
+                <link rel="preconnect" href="https://pymtwlzshveziodbfqhc.supabase.co" />
+                <link rel="dns-prefetch" href="https://pymtwlzshveziodbfqhc.supabase.co" />
+            </head>
+            <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh">
                 {/* Google Tag Manager (noscript) */}
                 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZG52CQZ"
                 height="0" width="0" style={{display:"none", visibility:"hidden"}}></iframe></noscript>
@@ -164,23 +121,6 @@ fbq('track', 'PageView');`
                 {/* Meta Pixel Code (noscript) */}
                 <noscript><img height="1" width="1" style={{ display: 'none' }} src="https://www.facebook.com/tr?id=3296516970531633&ev=PageView&noscript=1" alt="" /></noscript>
                 {/* End Meta Pixel Code (noscript) */}
-
-                {/* LaraPush Push Notification Integration */}
-                <Script
-                    id="larapush-sdk"
-                    src="https://cdn.larapush.com/scripts/popup-4.0.0.min.js"
-                    strategy="afterInteractive"
-                />
-                <Script
-                    id="larapush-init"
-                    strategy="afterInteractive"
-                    dangerouslySetInnerHTML={{
-                        __html: `function LoadLaraPush(){ if (typeof LaraPush === "function") {new LaraPush(JSON.parse(atob('eyJmaXJlYmFzZUNvbmZpZyI6eyJwcm9qZWN0SWQiOiJzcG9ydHNsbnYiLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjQyODY3NTkxNDczNCIsImFwcElkIjoiMTo0Mjg2NzU5MTQ3MzQ6d2ViOmVjOTFhNWRkY2I2NGY4MTUyZTRjZmYiLCJhcGlLZXkiOiJBSXphU3lDN0pfMVJfWk9BMlV0RFBTMVkxeFdOcm03TjIyd2plU3MifSwiZG9tYWluIjoid3d3LnNwb3J0c2xudi5jb20iLCJzaXRlX3VybCI6Imh0dHBzOlwvXC93d3cuc3BvcnRzbG52LmNvbVwvIiwiYXBpX3VybCI6Imh0dHBzOlwvXC9zdG9ja3N0Yml0LmxhcmFwdS5zaFwvYXBpXC90b2tlbiIsInNlcnZpY2VXb3JrZXIiOiJodHRwczpcL1wvd3d3LnNwb3J0c2xudi5jb21cL2ZpcmViYXNlLW1lc3NhZ2luZy1zdy5qcyIsInZhcGlkX3B1YmxpY19rZXkiOiJCSHdWaThLVHI3ZlNoX0lBWWN4YVpXVm00OVpPYUNPNVFlcjRxcnBXTW5CRzF6Q0V5YUhjYWtySTRjWE9KQTFWM2V1V2g0bXBIWTdjMkliR1k1cTh1OE0iLCJyZWZlcnJhbENvZGUiOiJFQllTTUIifQ==')), JSON.parse(atob('eyJsb2dvIjpudWxsLCJoZWFkaW5nIjpudWxsLCJzdWJoZWFkaW5nIjpudWxsLCJ0aGVtZUNvbG9yIjoiIzAwMDAwMCIsImFsbG93VGV4dCI6bnVsbCwiZGVueVRleHQiOm51bGwsImRlc2t0b3AiOiJkaXNhYmxlIiwibW9iaWxlIjoiZGlzYWJsZSIsIm1vYmlsZUxvY2F0aW9uIjoiYm90dG9tIiwiZGVsYXkiOiIwIiwicmVhcHBlYXIiOiIwIiwiYm90dG9tQnV0dG9uIjoiZGlzYWJsZSIsImJ1dHRvblRvVW5zdWJzY3JpYmUiOiJkaXNhYmxlIiwibG9ja1BhZ2VDb250ZW50IjoiZGlzYWJsZSIsImJhY2tkcm9wIjoiZW5hYmxlIiwicG9wdXBfdHlwZSI6ImRlZmF1bHQtcHJvbXB0In0=')));}}LoadLaraPush();`
-                    }}
-                />
-                {/* End LaraPush */}
-            </head>
-            <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh">
                 <QueryProvider>
                     <AuthProvider>
                         <BreakingNewsTicker />
@@ -204,6 +144,77 @@ fbq('track', 'PageView');`
                 </QueryProvider>
                 <Analytics />
                 <DynamicScripts />
+
+                {/* Google Tag Manager - loaded after interactive */}
+                <Script
+                    id="gtm-init"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NZG52CQZ');`
+                    }}
+                />
+
+                {/* Google tag (gtag.js) */}
+                <Script
+                    id="gtag-url"
+                    strategy="afterInteractive"
+                    src="https://www.googletagmanager.com/gtag/js?id=G-03R981P0Y8"
+                />
+                <Script
+                    id="gtag-init"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-03R981P0Y8');`
+                    }}
+                />
+
+                {/* Google AdSense - lazyOnload avoids blocking FCP/LCP and CPU execution */}
+                <Script
+                    id="adsbygoogle-sdk"
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4573815949018090"
+                    crossOrigin="anonymous"
+                    strategy="lazyOnload"
+                />
+
+                {/* Meta Pixel Code - lazyOnload eliminates CPU contention during page load */}
+                <Script
+                    id="meta-pixel"
+                    strategy="lazyOnload"
+                    dangerouslySetInnerHTML={{
+                        __html: `!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '3296516970531633');
+fbq('track', 'PageView');`
+                    }}
+                />
+
+                {/* LaraPush Push Notifications - lazyOnload stops 869 KiB GIF download during initial paint */}
+                <Script
+                    id="larapush-sdk"
+                    src="https://cdn.larapush.com/scripts/popup-4.0.0.min.js"
+                    strategy="lazyOnload"
+                />
+                <Script
+                    id="larapush-init"
+                    strategy="lazyOnload"
+                    dangerouslySetInnerHTML={{
+                        __html: `function LoadLaraPush(){ if (typeof LaraPush === "function") {new LaraPush(JSON.parse(atob('eyJmaXJlYmFzZUNvbmZpZyI6eyJwcm9qZWN0SWQiOiJzcG9ydHNsbnYiLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjQyODY3NTkxNDczNCIsImFwcElkIjoiMTo0Mjg2NzU5MTQ3MzQ6d2ViOmVjOTFhNWRkY2I2NGY4MTUyZTRjZmYiLCJhcGlLZXkiOiJBSXphU3lDN0pfMVJfWk9BMlV0RFBTMVkxeFdOcm03TjIyd2plU3MifSwiZG9tYWluIjoid3d3LnNwb3J0c2xudi5jb20iLCJzaXRlX3VybCI6Imh0dHBzOlwvXC93d3cuc3BvcnRzbG52LmNvbVwvIiwiYXBpX3VybCI6Imh0dHBzOlwvXC9zdG9ja3N0Yml0LmxhcmFwdS5zaFwvYXBpXC90b2tlbiIsInNlcnZpY2VXb3JrZXIiOiJodHRwczpcL1wvd3d3LnNwb3J0c2xudi5jb21cL2ZpcmViYXNlLW1lc3NhZ2luZy1zdy5qcyIsInZhcGlkX3B1YmxpY19rZXkiOiJCSHdWaThLVHI3ZlNoX0lBWWN4YVpXVm00OVpPYUNPNVFlcjRxcnBXTW5CRzF6Q0V5YUhjYWtySTRjWE9KQTFWM2V1V2g0bXBIWTdjMkliR1k1cTh1OE0iLCJyZWZlcnJhbENvZGUiOiJFQllTTUIifQ==')), JSON.parse(atob('eyJsb2dvIjpudWxsLCJoZWFkaW5nIjpudWxsLCJzdWJoZWFkaW5nIjpudWxsLCJ0aGVtZUNvbG9yIjoiIzAwMDAwMCIsImFsbG93VGV4dCI6bnVsbCwiZGVueVRleHQiOm51bGwsImRlc2t0b3AiOiJkaXNhYmxlIiwibW9iaWxlIjoiZGlzYWJsZSIsIm1vYmlsZUxvY2F0aW9uIjoiYm90dG9tIiwiZGVsYXkiOiIwIiwicmVhcHBlYXIiOiIwIiwiYm90dG9tQnV0dG9uIjoiZGlzYWJsZSIsImJ1dHRvblRvVW5zdWJzY3JpYmUiOiJkaXNhYmxlIiwibG9ja1BhZ2VDb250ZW50IjoiZGlzYWJsZSIsImJhY2tkcm9wIjoiZW5hYmxlIiwicG9wdXBfdHlwZSI6ImRlZmF1bHQtcHJvbXB0In0=')));}}LoadLaraPush();`
+                    }}
+                />
             </body>
         </html>
     )

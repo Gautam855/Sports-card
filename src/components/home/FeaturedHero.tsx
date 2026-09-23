@@ -81,22 +81,15 @@ export function FeaturedHero({ articles }: { articles: News[] }) {
                                         tabIndex={index === currentIndex ? 0 : -1}
                                     >
                                         {img ? (
-                                            a.id.startsWith('serp-') ? (
-                                                <img
-                                                    src={img}
-                                                    alt={a.title}
-                                                    className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <Image
-                                                    src={img}
-                                                    alt={a.title}
-                                                    fill
-                                                    sizes="(max-width: 1024px) 100vw, 66vw"
-                                                    priority={index === 0}
-                                                    className="object-cover hover:scale-[1.02] transition-transform duration-500"
-                                                />
-                                            )
+                                            <Image
+                                                src={img}
+                                                alt={a.title}
+                                                fill
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 58vw"
+                                                priority={index === 0}
+                                                loading={index === 0 ? undefined : 'lazy'}
+                                                className="object-cover hover:scale-[1.02] transition-transform duration-500"
+                                            />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-slate-200">
                                                 <span className="text-5xl font-black text-slate-300">

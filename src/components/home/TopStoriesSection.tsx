@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Globe } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import { formatRelativeTime, getCoverImage } from '@/lib/home-utils'
@@ -27,12 +28,14 @@ export function TopStoriesSection({ stories }: { stories: News[] }) {
                             {...getArticleLinkProps(item)}
                             className="group flex gap-4 p-4 rounded-xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:border-brand-200 transition-all duration-300"
                         >
-                            <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
+                            <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
                                 {coverImage ? (
-                                    <img
+                                    <Image
                                         src={coverImage}
                                         alt={item.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        fill
+                                        sizes="80px"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-brand-100 text-brand-600 font-bold">

@@ -6,32 +6,17 @@ const nextConfig: NextConfig = {
     // experimental: { ppr: true, reactCompiler: true },
     images: {
         remotePatterns: [
+            { protocol: 'https', hostname: '**' },
+            { protocol: 'http', hostname: '**' },
             { protocol: 'https', hostname: '**.supabase.co' },
             { protocol: 'https', hostname: 'images.unsplash.com' },
-            { protocol: 'https', hostname: '**.hscicdn.com' },
-            { protocol: 'https', hostname: '**.skysports.com' },
-            { protocol: 'https', hostname: '**.google.com' },
-            { protocol: 'https', hostname: '**.gstatic.com' },
-            { protocol: 'https', hostname: '**.googleusercontent.com' },
-            { protocol: 'https', hostname: '**.bing.com' },
-            { protocol: 'https', hostname: '**.yimg.com' },
-            { protocol: 'https', hostname: '**.tosshub.com' },
-            { protocol: 'https', hostname: '**.indiatoday.in' },
-            { protocol: 'https', hostname: '**.ndtvimg.com' },
-            { protocol: 'https', hostname: '**.hindustantimes.com' },
-            { protocol: 'https', hostname: '**.news18.com' },
-            { protocol: 'https', hostname: '**.jagranimages.com' },
-            { protocol: 'https', hostname: '**.espncdn.com' },
-            { protocol: 'https', hostname: '**.reuters.com' },
-            { protocol: 'https', hostname: '**.bbc.co.uk' },
-            { protocol: 'https', hostname: '**.bbci.co.uk' },
         ],
 
 
         formats: ['image/avif', 'image/webp'],
         minimumCacheTTL: 2592000, // 30 days — prevents re-optimization of unchanged images
-        deviceSizes: [640, 828, 1200, 1920], // Reduced from 6 to 4 (removed 750, 1080 as redundant)
-        imageSizes: [16, 32, 48, 64, 96, 128, 256], // Small sizes for thumbnails & avatars
+        deviceSizes: [384, 640, 828, 1200, 1920], // 384px tailored for mobile devices (375px-414px)
+        imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Small sizes for thumbnails & avatars
     },
     headers: async () => [
         {

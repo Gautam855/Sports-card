@@ -254,6 +254,7 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                             </div>
                             <input
                                 autoFocus
+                                aria-label="Search news, blogs, and highlights"
                                 placeholder="Search news, blogs, highlights..."
                                 className="flex-1 bg-transparent border-none outline-none text-base text-slate-900 placeholder:text-slate-400 font-medium"
                                 value={query}
@@ -263,6 +264,7 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                             <Button
                                 variant="ghost"
                                 size="icon"
+                                aria-label="Close search"
                                 className="h-8 w-8 text-slate-400 hover:text-slate-700 flex-shrink-0"
                                 onClick={onClose}
                             >

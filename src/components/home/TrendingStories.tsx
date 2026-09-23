@@ -31,21 +31,13 @@ export function TrendingStories({ stories }: { stories: News[] }) {
                                     {index + 1}
                                 </div>
                                 {coverImage ? (
-                                    item.id.startsWith('serp-') ? (
-                                        <img
-                                            src={coverImage}
-                                            alt={item.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                        />
-                                    ) : (
-                                        <Image
-                                            src={coverImage}
-                                            alt={item.title}
-                                            fill
-                                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                        />
-                                    )
+                                    <Image
+                                        src={coverImage}
+                                        alt={item.title}
+                                        fill
+                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 font-bold text-xl">
                                         {item.title[0]}
@@ -56,7 +48,7 @@ export function TrendingStories({ stories }: { stories: News[] }) {
                                 <h3 className="font-bold text-xs leading-snug line-clamp-2 text-slate-900 group-hover:text-red-600 transition-colors mb-1">
                                     {item.title}
                                 </h3>
-                                <p className="text-[10px] text-slate-500">{formatArticleDate(item)}</p>
+                                <p className="text-[10px] text-slate-600 font-medium">{formatArticleDate(item)}</p>
                             </div>
                         </Link>
                     )

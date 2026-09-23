@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import { formatRelativeTime, getCoverImage } from '@/lib/home-utils'
@@ -26,12 +27,14 @@ export function BreakingNewsStrip({ news }: { news?: News[] }) {
                             className="flex-shrink-0 w-[220px] group"
                         >
                             <div className="home-card p-2 hover:border-red-200">
-                                <div className="w-full aspect-square rounded-lg overflow-hidden bg-slate-100 mb-2.5">
+                                <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-slate-100 mb-2.5">
                                     {coverImage ? (
-                                        <img
+                                        <Image
                                             src={coverImage}
                                             alt={item.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            fill
+                                            sizes="220px"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-300"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 font-bold text-2xl">
@@ -42,7 +45,7 @@ export function BreakingNewsStrip({ news }: { news?: News[] }) {
                                 <h3 className="font-bold text-xs leading-snug line-clamp-2 text-slate-900 group-hover:text-red-600 transition-colors mb-1 px-0.5">
                                     {item.title}
                                 </h3>
-                                <p className="text-[10px] text-slate-500 px-0.5">{formatRelativeTime(item)}</p>
+                                <p className="text-[10px] text-slate-600 font-medium px-0.5">{formatRelativeTime(item)}</p>
                             </div>
                         </Link>
                     )

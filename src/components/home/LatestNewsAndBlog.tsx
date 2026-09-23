@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
     getCategoryName,
@@ -30,12 +31,14 @@ export function LatestNewsAndBlog({ news, blog }: { news?: News[]; blog?: News }
                                         {...getArticleLinkProps(item)}
                                         className="group flex gap-4 py-5 first:pt-0 last:pb-0 items-start"
                                     >
-                                        <div className="w-32 sm:w-40 aspect-[4/3] rounded-xl overflow-hidden flex-shrink-0 bg-slate-100 border border-slate-200">
+                                        <div className="relative w-32 sm:w-40 aspect-[4/3] rounded-xl overflow-hidden flex-shrink-0 bg-slate-100 border border-slate-200">
                                             {coverImage ? (
-                                                <img
+                                                <Image
                                                     src={coverImage}
                                                     alt={item.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    fill
+                                                    sizes="(max-width: 640px) 128px, 160px"
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 font-black text-2xl">
@@ -78,10 +81,12 @@ export function LatestNewsAndBlog({ news, blog }: { news?: News[]; blog?: News }
                                 className="relative block w-full aspect-[16/10] overflow-hidden bg-slate-100 flex-shrink-0"
                             >
                                 {getCoverImage(blog) ? (
-                                    <img
-                                        src={getCoverImage(blog)}
+                                    <Image
+                                        src={getCoverImage(blog)!}
                                         alt={blog.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        fill
+                                        sizes="(max-width: 1024px) 100vw, 42vw"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-slate-200">

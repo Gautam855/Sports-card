@@ -23,10 +23,16 @@ export function ExploreSports() {
             </div>
 
             <div className="relative">
-                <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-10 w-8 h-8 rounded-full bg-white border border-slate-200 shadow flex items-center justify-center hover:bg-slate-50 text-slate-600 hidden md:flex">
+                <button
+                    aria-label="Scroll sports left"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-10 w-8 h-8 rounded-full bg-white border border-slate-200 shadow flex items-center justify-center hover:bg-slate-50 text-slate-600 hidden md:flex"
+                >
                     <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-10 w-8 h-8 rounded-full bg-white border border-slate-200 shadow flex items-center justify-center hover:bg-slate-50 text-slate-600 hidden md:flex">
+                <button
+                    aria-label="Scroll sports right"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-10 w-8 h-8 rounded-full bg-white border border-slate-200 shadow flex items-center justify-center hover:bg-slate-50 text-slate-600 hidden md:flex"
+                >
                     <ChevronRight className="w-4 h-4" />
                 </button>
 

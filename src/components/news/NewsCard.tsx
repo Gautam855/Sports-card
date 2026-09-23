@@ -24,12 +24,7 @@ export function NewsCard({ article, variant = 'default', className }: NewsCardPr
 
         {article.cover_image && (
           <div className="relative w-24 h-20 flex-shrink-0 rounded-lg overflow-hidden">
-            {article.id.startsWith('serp-') ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={article.cover_image} alt={article.cover_alt ?? article.title} className="w-full h-full object-cover" />
-            ) : (
-              <Image src={article.cover_image} alt={article.cover_alt ?? article.title} fill sizes="96px" className="object-cover" />
-            )}
+            <Image src={article.cover_image} alt={article.cover_alt ?? article.title} fill sizes="96px" className="object-cover" />
           </div>
         )}
 
@@ -55,12 +50,7 @@ export function NewsCard({ article, variant = 'default', className }: NewsCardPr
       <Link href={href} target={target} className={cn('news-card block overflow-hidden', className)}>
         <div className="relative h-56 md:h-72">
           {article.cover_image && (
-            article.id.startsWith('serp-') ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={article.cover_image} alt={article.cover_alt ?? article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            ) : (
-              <Image src={article.cover_image} alt={article.cover_alt ?? article.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
-            )
+            <Image src={article.cover_image} alt={article.cover_alt ?? article.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
           )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -90,14 +80,6 @@ export function NewsCard({ article, variant = 'default', className }: NewsCardPr
     <Link href={href} target={target} className={cn('news-card block', className)}>
             {article.cover_image && (
                 <div className="relative h-44 overflow-hidden">
-                    {article.id.startsWith('serp-') ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img 
-                            src={article.cover_image} 
-                            alt={article.cover_alt ?? article.title} 
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                        />
-                    ) : (
                         <Image
                             src={article.cover_image}
                             alt={article.cover_alt ?? article.title}
@@ -105,7 +87,6 @@ export function NewsCard({ article, variant = 'default', className }: NewsCardPr
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                    )}
 
           {article.is_breaking && (
             <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">

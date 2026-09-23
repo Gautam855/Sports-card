@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Newspaper } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
@@ -33,10 +34,12 @@ export function LatestNewsSection({ news }: { news: News[] }) {
                     className="lg:col-span-7 group relative rounded-2xl overflow-hidden bg-slate-900 min-h-[320px] lg:min-h-[420px] shadow-lg"
                 >
                     {leadImage ? (
-                        <img
+                        <Image
                             src={leadImage}
                             alt={lead.title}
-                            className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 58vw"
+                            className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
                         />
                     ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-brand-700 to-slate-900" />
@@ -75,12 +78,14 @@ export function LatestNewsSection({ news }: { news: News[] }) {
                                 {...getArticleLinkProps(item)}
                                 className="group flex gap-4 p-3 rounded-xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:border-brand-200 hover:shadow-md transition-all duration-300 flex-1"
                             >
-                                <div className="w-24 sm:w-28 aspect-[4/3] rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
+                                <div className="relative w-24 sm:w-28 aspect-[4/3] rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
                                     {coverImage ? (
-                                        <img
+                                        <Image
                                             src={coverImage}
                                             alt={item.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            fill
+                                            sizes="112px"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-brand-100 text-brand-500 font-black text-xl">

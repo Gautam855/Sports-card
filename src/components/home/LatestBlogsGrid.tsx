@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { BookOpen } from 'lucide-react'
 import { getArticleLinkProps } from '@/lib/article-links'
 import {
@@ -35,10 +36,12 @@ export function LatestBlogsGrid({ blogs }: { blogs: News[] }) {
                         >
                             <div className="relative aspect-[16/10] overflow-hidden bg-slate-200">
                                 {coverImage ? (
-                                    <img
+                                    <Image
                                         src={coverImage}
                                         alt={blog.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        fill
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-100 to-slate-200">

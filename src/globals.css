@@ -154,3 +154,20 @@
     @apply w-full px-3 py-2 rounded-lg bg-muted/50 border border-border text-sm text-foreground
            focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-colors;
 }
+
+/* ── AdSense CLS Stabilizers & Containment ── */
+ins.adsbygoogle {
+    display: block;
+    contain: layout paint;
+}
+
+ins.adsbygoogle[data-ad-status="unfilled"],
+ins.adsbygoogle[data-adsbygoogle-status="done"][style*="display: none"] {
+    display: none !important;
+}
+
+.google-auto-placed {
+    margin: 1.5rem auto !important;
+    contain: layout;
+}
+

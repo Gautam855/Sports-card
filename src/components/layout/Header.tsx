@@ -72,18 +72,19 @@ export function Header() {
                     <div className="flex items-center gap-3 h-full pl-4 flex-shrink-0">
                         <div className="flex items-center gap-2.5">
                             {[
-                                { Icon: Facebook, href: 'https://www.facebook.com/sportslnvhub/' },
-                                { Icon: Twitter, href: 'https://twitter.com/sportslnv' },
-                                { Icon: Instagram, href: 'https://www.instagram.com/sportslnvhub/' },
-                                { Icon: Youtube, href: 'https://www.youtube.com/@sportslnvhub' },
-                            ].map(({ Icon, href }) => (
-                                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">
+                                { Icon: Facebook, href: 'https://www.facebook.com/sportslnvhub/', label: 'Facebook' },
+                                { Icon: Twitter, href: 'https://twitter.com/sportslnv', label: 'Twitter' },
+                                { Icon: Instagram, href: 'https://www.instagram.com/sportslnvhub/', label: 'Instagram' },
+                                { Icon: Youtube, href: 'https://www.youtube.com/@sportslnvhub', label: 'YouTube' },
+                            ].map(({ Icon, href, label }) => (
+                                <a key={href} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="text-white/60 hover:text-white transition-colors">
                                     <Icon className="w-3 h-3" />
                                 </a>
                             ))}
                         </div>
                         <div className="w-px h-4 bg-white/20" />
                         <button
+                            aria-label="Search"
                             className="flex items-center gap-1.5 hover:text-red-400 transition-colors text-[11px] font-medium"
                             onClick={() => setSearchOpen(true)}
                         >
@@ -212,6 +213,7 @@ export function Header() {
                     {/* Actions */}
                     <div className="flex items-center gap-1">
                         <button
+                            aria-label="Search news and blogs"
                             className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-red-200 hover:bg-red-50 text-slate-500 hover:text-red-600 transition-all text-xs font-medium"
                             onClick={() => setSearchOpen(true)}
                         >
@@ -230,7 +232,7 @@ export function Header() {
                                         onMouseEnter={() => setProfileOpen(true)}
                                         onMouseLeave={() => setProfileOpen(false)}
                                     >
-                                        <button className="flex items-center gap-2 p-1.5 rounded-full hover:bg-accent transition-colors border border-transparent hover:border-border">
+                                        <button aria-label="User account menu" className="flex items-center gap-2 p-1.5 rounded-full hover:bg-accent transition-colors border border-transparent hover:border-border">
                                             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 text-primary font-bold text-xs">
                                                 {user.avatar_url ? (
                                                     <img src={user.avatar_url} alt={user.username} className="w-full h-full object-cover rounded-full" />

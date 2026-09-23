@@ -29,15 +29,16 @@ export function MobileNav() {
                         <Link
                             key={item.href}
                             href={item.href}
+                            aria-label={item.label}
                             className={cn(
-                                'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors min-w-[3rem]',
-                                isActive ? 'text-primary' : 'text-muted-foreground'
+                                'flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-xl transition-colors min-w-[3.5rem] min-h-[48px]',
+                                isActive ? 'text-primary font-bold' : 'text-slate-600 font-medium'
                             )}
                         >
                             <div className="relative">
                                 <item.icon className="w-5 h-5" />
                             </div>
-                            <span className="text-[10px] font-medium">{item.label}</span>
+                            <span className="text-[10px]">{item.label}</span>
                             {isActive && (
                                 <span className="absolute bottom-0 w-1 h-1 bg-primary rounded-full" />
                             )}

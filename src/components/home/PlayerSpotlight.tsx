@@ -41,21 +41,13 @@ export function PlayerSpotlight({
                                 className="relative w-full sm:w-1/2 aspect-square rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 flex-shrink-0 group"
                             >
                                 {spotlightImage ? (
-                                    spotlight.id.startsWith('serp-') ? (
-                                        <img
-                                            src={spotlightImage}
-                                            alt={spotlight.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                        />
-                                    ) : (
-                                        <Image
-                                            src={spotlightImage}
-                                            alt={spotlight.title}
-                                            fill
-                                            sizes="(max-width: 640px) 100vw, 50vw"
-                                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                        />
-                                    )
+                                    <Image
+                                        src={spotlightImage}
+                                        alt={spotlight.title}
+                                        fill
+                                        sizes="(max-width: 640px) 100vw, 50vw"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-slate-800">
                                         <span className="text-5xl font-black text-slate-600">{spotlight.title[0]}</span>
@@ -69,7 +61,7 @@ export function PlayerSpotlight({
                                     {spotlight.title}
                                 </h3>
                                 {spotlight.excerpt && (
-                                    <p className="text-slate-500 text-sm leading-relaxed mb-5 line-clamp-4">
+                                    <p className="text-slate-600 text-sm leading-relaxed mb-5 line-clamp-4">
                                         {spotlight.excerpt}
                                     </p>
                                 )}
@@ -107,21 +99,13 @@ export function PlayerSpotlight({
                                     >
                                         <div className="relative w-28 aspect-video rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 border border-slate-200">
                                             {coverImage ? (
-                                                item.id.startsWith('serp-') ? (
-                                                    <img
-                                                        src={coverImage}
-                                                        alt={item.title}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                    />
-                                                ) : (
-                                                    <Image
-                                                        src={coverImage}
-                                                        alt={item.title}
-                                                        fill
-                                                        sizes="112px"
-                                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                                    />
-                                                )
+                                                <Image
+                                                    src={coverImage}
+                                                    alt={item.title}
+                                                    fill
+                                                    sizes="112px"
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 font-bold">
                                                     {item.title[0]}
@@ -132,7 +116,7 @@ export function PlayerSpotlight({
                                             <h3 className="font-bold text-sm leading-snug line-clamp-2 text-slate-900 group-hover:text-red-600 transition-colors mb-1.5">
                                                 {item.title}
                                             </h3>
-                                            <p className="text-[11px] text-slate-400">
+                                            <p className="text-[11px] text-slate-500 font-medium">
                                                 {formatArticleDate(item)} · {getReadTime(item)}
                                             </p>
                                         </div>

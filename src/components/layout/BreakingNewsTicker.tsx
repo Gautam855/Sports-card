@@ -25,16 +25,21 @@ export async function BreakingNewsTicker() {
                     className="flex gap-8 whitespace-nowrap animate-ticker"
                     style={{ animationDuration: `${Math.max(news.length * 4, 30)}s` }}
                 >
-                    {items.map((item, i) => (
-                        <Link
-                            key={`${item.id}-${i}`}
-                            href={`/news/${item.slug}`}
-                            className="text-xs hover:underline flex-shrink-0"
-                        >
-                            {item.title}
-                            <span className="ml-8 text-red-300">•</span>
-                        </Link>
-                    ))}
+                    {items.map((item, i) => {
+                        const isDuplicate = i >= news.length
+                        return (
+                            <Link
+                                key={`${item.id}-${i}`}
+                                href={`/news/${item.slug}`}
+                                className="text-xs hover:underline flex-shrink-0"
+                                aria-hidden={isDuplicate ? 'true' : undefined}
+                                tabIndex={isDuplicate ? -1 : undefined}
+                            >
+                                {item.title}
+                                <span className="ml-8 text-red-300">•</span>
+                            </Link>
+                        )
+                    })}
                 </div>
             </div>
         </div>
