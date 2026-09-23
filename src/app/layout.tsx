@@ -110,8 +110,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             className={`${GeistSans.variable} ${spaceGrotesk.variable}`}
         >
             <head>
-                {/* Preconnect to image origin — reduces DNS/TLS latency for LCP image */}
-                <link rel="preconnect" href="https://pymtwlzshveziodbfqhc.supabase.co" />
                 {/* DNS-prefetch for third-party origins loaded later */}
                 <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
                 <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />

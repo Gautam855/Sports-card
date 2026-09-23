@@ -26,6 +26,9 @@ export function HeroCarousel({ articles }: { articles: News[] }) {
 
     useEffect(() => {
         setMounted(true)
+        // Hide server-rendered dots placeholder to prevent duplicate dots causing CLS
+        const placeholder = document.querySelector('.hero-carousel-dots-placeholder')
+        if (placeholder) (placeholder as HTMLElement).style.display = 'none'
     }, [])
 
     const goToNext = useCallback(() => {
@@ -57,13 +60,14 @@ export function HeroCarousel({ articles }: { articles: News[] }) {
     if (!article) return null
 
     return (
-        <div
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            className="contents"
-        >
+        <div className="contents">
             {/* Image overlay — all slides stacked with opacity transitions */}
-            <div className="absolute inset-0 z-20" style={{ pointerEvents: currentIndex === 0 ? 'none' : 'auto' }}>
+            <div
+                className="absolute inset-0 z-20"
+                style={{ pointerEvents: currentIndex === 0 ? 'none' : 'auto' }}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+            >
                 {articles.map((a, index) => {
                     // Skip first slide (already rendered by server)
                     if (index === 0) return null
