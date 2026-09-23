@@ -15,7 +15,6 @@ import type { News } from '@/lib/types'
 // Interactive carousel loaded after LCP paint — not in the initial JS bundle
 const HeroCarousel = dynamic(
     () => import('./HeroCarousel').then((m) => m.HeroCarousel),
-    { ssr: false }
 )
 
 export function FeaturedHero({ articles }: { articles: News[] }) {
