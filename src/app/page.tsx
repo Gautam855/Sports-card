@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import {
     getFeaturedNews,
     getTrendingNews,
@@ -9,14 +10,16 @@ import {
 } from '@/lib/api/news'
 import { FeaturedHero } from '@/components/home/FeaturedHero'
 import { BreakingNewsStrip } from '@/components/home/BreakingNewsStrip'
-import { TrendingStories } from '@/components/home/TrendingStories'
-import { LatestNewsTrendingSection } from '@/components/home/LatestNewsTrendingSection'
-import { LatestFromBlogSection } from '@/components/home/LatestFromBlogSection'
-import { ExploreSports } from '@/components/home/ExploreSports'
-import { PlayerSpotlight } from '@/components/home/PlayerSpotlight'
-import { MostPopular } from '@/components/home/MostPopular'
-import { NewsletterSection } from '@/components/layout/NewsletterSection'
 import type { News } from '@/lib/types'
+
+// Below-fold sections — dynamic import keeps them out of the initial JS bundle
+const TrendingStories = dynamic(() => import('@/components/home/TrendingStories').then(m => m.TrendingStories))
+const LatestNewsTrendingSection = dynamic(() => import('@/components/home/LatestNewsTrendingSection').then(m => m.LatestNewsTrendingSection))
+const LatestFromBlogSection = dynamic(() => import('@/components/home/LatestFromBlogSection').then(m => m.LatestFromBlogSection))
+const ExploreSports = dynamic(() => import('@/components/home/ExploreSports').then(m => m.ExploreSports))
+const PlayerSpotlight = dynamic(() => import('@/components/home/PlayerSpotlight').then(m => m.PlayerSpotlight))
+const MostPopular = dynamic(() => import('@/components/home/MostPopular').then(m => m.MostPopular))
+const NewsletterSection = dynamic(() => import('@/components/layout/NewsletterSection').then(m => m.NewsletterSection))
 
 export const metadata: Metadata = {
     title: 'Sports News and Popular Sports Blogs',

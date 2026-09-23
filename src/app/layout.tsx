@@ -1,19 +1,21 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
+import dynamic from 'next/dynamic'
 import { GeistSans } from 'geist/font/sans'
 import { Space_Grotesk } from 'next/font/google'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { AuthProvider } from '@/components/providers/AuthProvider'
-import { Toaster } from 'sonner'
 import { BreakingNewsTicker } from '@/components/layout/BreakingNewsTicker'
 import { Header } from '@/components/layout/Header'
-import { MobileNav } from '@/components/layout/MobileNav'
 import { Footer } from '@/components/layout/Footer'
-import { Analytics } from '@/components/Analytics'
-import { DynamicScripts } from '@/components/seo/DynamicScripts'
 import '../globals.css'
 import { getPublicClient } from '@/lib/supabase/public'
 import { unstable_cache } from 'next/cache'
+
+// Lazy-loaded client components — not needed for initial paint
+const MobileNav = dynamic(() => import('@/components/layout/MobileNav').then(m => m.MobileNav), { ssr: false })
+const DynamicScripts = dynamic(() => import('@/components/seo/DynamicScripts').then(m => m.DynamicScripts), { ssr: false })
+const LazyToaster = dynamic(() => import('sonner').then(m => m.Toaster), { ssr: false })
 
 const spaceGrotesk = Space_Grotesk({
     subsets: ['latin'],
@@ -107,6 +109,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             suppressHydrationWarning
             className={`${GeistSans.variable} ${spaceGrotesk.variable}`}
         >
+            <head>
+                {/* Preconnect to image origin — reduces DNS/TLS latency for LCP image */}
+                <link rel="preconnect" href="https://pymtwlzshveziodbfqhc.supabase.co" />
+                {/* DNS-prefetch for third-party origins loaded later */}
+                <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+                <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+                <link rel="dns-prefetch" href="https://connect.facebook.net" />
+            </head>
             <body className="bg-white font-sans antialiased overflow-x-hidden flex flex-col min-h-dvh">
                 {/* Google Tag Manager (noscript) */}
                 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZG52CQZ"
@@ -124,7 +134,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         </main>
                         <Footer />
                         <MobileNav />
-                        <Toaster
+                        <LazyToaster
                             position="top-right"
                             toastOptions={{
                                 classNames: {
@@ -136,7 +146,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         />
                     </AuthProvider>
                 </QueryProvider>
-                <Analytics />
                 <DynamicScripts />
 
                 {/* Google Tag Manager - lazyOnload stops main-thread competition during initial paint */}
