@@ -66,6 +66,7 @@ export const legacyRedirects: LegacyRedirect[] = [
     { source: '/wp-content/:path*', destination: '/', permanent: true },
     { source: '/wp-sitemap.xml', destination: '/', permanent: true },
     { source: '/wp-login.php', destination: '/', permanent: true },
+    { source: '/:path(.*\\.php)', destination: '/', permanent: true },
 
     // ── Catch-all legacy WordPress permalinks ──
     { source: '/index.php', destination: '/', permanent: true },
